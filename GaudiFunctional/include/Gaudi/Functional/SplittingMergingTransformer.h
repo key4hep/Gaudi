@@ -1,5 +1,5 @@
 /*****************************************************************************\
-* (c) Copyright 2022-2025 CERN for the benefit of the LHCb Collaboration      *
+* (c) Copyright 2022-2026 CERN for the benefit of the LHCb Collaboration      *
 *                                                                             *
 * This software is distributed under the terms of the GNU General Public      *
 * Licence version 3 (GPL Version 3), copied verbatim in the file "COPYING".   *
@@ -46,12 +46,6 @@ namespace Gaudi::Functional {
                               [this]( Gaudi::Details::PropertyBase& ) {
                                 this->m_inputs =
                                     make_vector_of_handles<decltype( this->m_inputs )>( this, m_inputLocations );
-                                if ( std::is_pointer_v<In> ) { // handle constructor does not (yet) allow to set
-                                                               // optional flag... so do it
-                                                               // explicitly here...
-                                  std::for_each( this->m_inputs.begin(), this->m_inputs.end(),
-                                                 []( auto& h ) { h.setOptional( true ); } );
-                                }
                               },
                               Gaudi::Details::Property::ImmediatelyInvokeHandler{ true } }
           , m_outputLocations(
@@ -59,12 +53,6 @@ namespace Gaudi::Functional {
                 [this]( Gaudi::Details::PropertyBase& ) {
                   this->m_outputs =
                       details::make_vector_of_handles<decltype( this->m_outputs )>( this, m_outputLocations );
-                  if constexpr ( details::is_optional<Out> ) { // handle constructor does not (yet) allow to
-                                                               // set optional flag... so
-                                                               // do it explicitly here...
-                    std::for_each( this->m_outputs.begin(), this->m_outputs.end(),
-                                   []( auto& h ) { h.setOptional( true ); } );
-                  }
                 },
                 Gaudi::Details::Property::ImmediatelyInvokeHandler{ true } ) {}
 

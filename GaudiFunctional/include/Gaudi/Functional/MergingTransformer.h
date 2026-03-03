@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -64,12 +64,6 @@ namespace Gaudi::Functional {
                               [this]( Gaudi::Details::PropertyBase& ) {
                                 this->m_inputs =
                                     make_vector_of_handles<decltype( this->m_inputs )>( this, m_inputLocations );
-                                if ( std::is_pointer_v<In> ) { // handle constructor does not (yet) allow to set
-                                                               // optional flag... so do it
-                                                               // explicitly here...
-                                  std::for_each( this->m_inputs.begin(), this->m_inputs.end(),
-                                                 []( auto& h ) { h.setOptional( true ); } );
-                                }
                               },
                               Gaudi::Details::Property::ImmediatelyInvokeHandler{ true } } {
         static_assert( std::is_void_v<Out> );
@@ -81,12 +75,6 @@ namespace Gaudi::Functional {
                               [this]( Gaudi::Details::PropertyBase& ) {
                                 this->m_inputs =
                                     make_vector_of_handles<decltype( this->m_inputs )>( this, m_inputLocations );
-                                if ( std::is_pointer_v<In> ) { // handle constructor does not (yet) allow to set
-                                                               // optional flag... so do it
-                                                               // explicitly here...
-                                  std::for_each( this->m_inputs.begin(), this->m_inputs.end(),
-                                                 []( auto& h ) { h.setOptional( true ); } );
-                                }
                               },
                               Gaudi::Details::Property::ImmediatelyInvokeHandler{ true } } {
         static_assert( !std::is_void_v<Out> );
@@ -140,21 +128,14 @@ namespace Gaudi::Functional {
         return details::for_<sizeof...( Ins )>( [&]( auto I ) {
           constexpr auto i   = decltype( I )::value;
           auto&          ins = std::get<i>( inputs );
-          return Gaudi::Property<std::vector<DataObjID>>{
-              this, ins.first, details::to_DataObjID( ins.second ),
-              [this]( auto&& ) {
-                auto& handles = std::get<i>( this->m_inputs );
-                auto& ins     = std::get<i>( this->m_inputLocations );
-                using Handles = typename std::decay_t<decltype( handles )>;
-                handles       = make_vector_of_handles<Handles>( this, ins );
-                if ( std::is_pointer_v<typename Handles::value_type> ) { // handle constructor does not (yet) allow to
-                                                                         // set
-                                                                         // optional flag... so do it
-                                                                         // explicitly here...
-                  std::for_each( handles.begin(), handles.end(), []( auto& h ) { h.setOptional( true ); } );
-                }
-              },
-              Gaudi::Details::Property::ImmediatelyInvokeHandler{ true } };
+          return Gaudi::Property<std::vector<DataObjID>>{ this, ins.first, details::to_DataObjID( ins.second ),
+                                                          [this]( auto&& ) {
+                                                            auto& handles = std::get<i>( this->m_inputs );
+                                                            auto& ins     = std::get<i>( this->m_inputLocations );
+                                                            using Handles = typename std::decay_t<decltype( handles )>;
+                                                            handles = make_vector_of_handles<Handles>( this, ins );
+                                                          },
+                                                          Gaudi::Details::Property::ImmediatelyInvokeHandler{ true } };
         } );
       }
 
@@ -265,13 +246,7 @@ namespace Gaudi::Functional {
               [this]( auto&& ) {
                 auto& handles = std::get<i>( this->m_inputs );
                 auto& ins     = std::get<i>( this->m_inputLocations );
-                using In      = typename std::decay_t<decltype( handles )>::value_type;
                 handles       = details::make_vector_of_handles<std::decay_t<decltype( handles )>>( this, ins );
-                if ( std::is_pointer_v<In> ) { // handle constructor does not (yet) allow to set
-                                               // optional flag... so do it
-                                               // explicitly here...
-                  std::for_each( handles.begin(), handles.end(), []( auto& h ) { h.setOptional( true ); } );
-                }
               },
               Gaudi::Details::Property::ImmediatelyInvokeHandler{ true } };
         } ) } {}
@@ -400,16 +375,11 @@ namespace Gaudi::Functional {
                                                                          KeyValues const&   inputs,
                                                                          OutKeys const&     outputs )
       : base_class( name, pSvcLocator, outputs )
-      , m_inputLocations{
-            this, inputs.first, details::to_DataObjID( inputs.second ),
-            [this]( Gaudi::Details::PropertyBase& ) {
-              this->m_inputs = details::make_vector_of_handles<decltype( this->m_inputs )>( this, m_inputLocations );
-              if ( std::is_pointer_v<In> ) { // handle constructor does not (yet) allow to set
-                                             // optional flag... so do it
-                                             // explicitly here...
-                std::for_each( this->m_inputs.begin(), this->m_inputs.end(), []( auto& h ) { h.setOptional( true ); } );
-              }
-            },
-            Gaudi::Details::Property::ImmediatelyInvokeHandler{ true } } {}
+      , m_inputLocations{ this, inputs.first, details::to_DataObjID( inputs.second ),
+                          [this]( Gaudi::Details::PropertyBase& ) {
+                            this->m_inputs =
+                                details::make_vector_of_handles<decltype( this->m_inputs )>( this, m_inputLocations );
+                          },
+                          Gaudi::Details::Property::ImmediatelyInvokeHandler{ true } } {}
 
 } // namespace Gaudi::Functional

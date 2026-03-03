@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -27,8 +27,7 @@ DataObjectHandleBase::DataObjectHandleBase( DataObjectHandleBase&& other )
     : Gaudi::DataHandle( other )
     , m_EDS( std::move( other.m_EDS ) )
     , m_MS( std::move( other.m_MS ) )
-    , m_init( other.m_init )
-    , m_optional( other.m_optional ) {
+    , m_init( other.m_init ) {
   m_owner->declare( *this );
 }
 
@@ -36,10 +35,9 @@ DataObjectHandleBase::DataObjectHandleBase( DataObjectHandleBase&& other )
 DataObjectHandleBase& DataObjectHandleBase::operator=( const DataObjectHandleBase& other ) {
   // FIXME: operator= should not change our owner, only our 'value'
   Gaudi::DataHandle::operator=( other );
-  m_EDS      = other.m_EDS;
-  m_MS       = other.m_MS;
-  m_init     = other.m_init;
-  m_optional = other.m_optional;
+  m_EDS  = other.m_EDS;
+  m_MS   = other.m_MS;
+  m_init = other.m_init;
   return *this;
 }
 
@@ -105,6 +103,5 @@ std::ostream& operator<<( std::ostream& str, const DataObjectHandleBase& d ) {
 
   str << d.fullKey() << "  m: " << d.mode();
   if ( d.owner() ) str << "  o: " << d.owner()->name();
-  str << "  opt: " << d.isOptional();
   return str;
 }
