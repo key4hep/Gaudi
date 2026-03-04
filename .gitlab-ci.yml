@@ -57,6 +57,7 @@ variables:
     paths:
       - .ccache
       - build/Testing
+  interruptible: true
 
 .lhcb_build: &template_lhcb_build
   <<: *template_build
@@ -167,6 +168,7 @@ variables:
   script:
     - ci-utils/build-check ${LOG}
   allow_failure: true
+  interruptible: true
 
 
 ### Regular builds
@@ -284,6 +286,7 @@ check-unused:
   script:
     - ci-utils/check-sources compile_commands.json
   allow_failure: true
+  interruptible: true
 
 pre-commit-checks:
   image: registry.cern.ch/docker.io/library/python:3.9
@@ -325,6 +328,7 @@ pre-commit-checks:
       - 0001-pre-commit-fixes.patch
     when: on_failure
     expire_in: 1 week
+  interruptible: true
 
 ### Documentation
 website:
