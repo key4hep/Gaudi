@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -56,23 +56,48 @@ namespace {
 
   template <std::ranges::range R>
     requires std::common_reference_with<std::ranges::range_reference_t<R>, const AlgEntry&>
-  void dumpGraphFile( std::string const& fname, R const& algorithms ) {
+  void dumpDataDepsGraphFile( std::string const& fname, R const& algorithms ) {
     Gaudi::Hive::Graph g{ fname };
 
-    // loop over all algorithms to create nodes
-    for ( const AlgEntry& entry : algorithms ) { g.addNode( entry.alg->name(), std::to_string( entry.index ) ); }
+    std::size_t algoIndex = 0ul;
 
-    // loop over all algorithms to create list of outputs with corresponding alg indexes
-    std::unordered_map<std::string, size_t> output2Idx;
+    // define algs and objects
+    std::set<std::size_t> definedObjects;
+
+    // Remember algorithm indices by their name
+    std::map<std::string, std::string> indexByName;
+
+    // loop over all algorithms to generate indexes
+    std::unordered_map<std::string, std::string> output2Idx;
     for ( const AlgEntry& entry : algorithms ) {
-      for ( const auto* id : entry.outputs ) { output2Idx[id->key()] = entry.index; }
+      std::string algIndex           = "Alg_" + std::to_string( algoIndex );
+      indexByName[entry.alg->name()] = algIndex;
+      ++algoIndex;
     }
 
-    // loop over all algorithms to create edges
+    // loop over all algorithms to create nodes and edges
     for ( const AlgEntry& entry : algorithms ) {
+      // Create algorithm node
+      g.addNode( indexByName[entry.alg->name()], entry.alg->name() );
+
+      // inputs
       for ( const auto* id : entry.inputs ) {
-        g.addEdge( entry.alg->name(), std::to_string( entry.index ), id->key(), std::to_string( output2Idx[id->key()] ),
-                   id->key() );
+        const auto [itr, inserted] = definedObjects.insert( id->hash() );
+        std::string objIndex       = "obj_" + std::to_string( id->hash() );
+        if ( inserted ) g.addNode( objIndex, id->key() );
+
+        // the object is the source, the algorithm taking it as an input is the target
+        g.addEdge( objIndex, indexByName[entry.alg->name()] );
+      }
+
+      // outputs
+      for ( const auto* id : entry.outputs ) {
+        const auto [itr, inserted] = definedObjects.insert( id->hash() );
+        std::string objIndex       = "obj_" + std::to_string( id->hash() );
+        if ( inserted ) g.addNode( objIndex, id->key() );
+
+        // the algorithm that generated the object is the source, the object is the target
+        g.addEdge( indexByName[entry.alg->name()], objIndex );
       }
     }
   }
@@ -124,10 +149,10 @@ private:
   Gaudi::Property<std::vector<std::string>> m_producers{
       this, "DataProducers", {}, "List of algorithms to be used to resolve data dependencies" };
 
-  Gaudi::Property<std::string> m_dataDepsGraphFile{
-      this, "DataDepsGraphFile", "",
-      "Name of the output file (.dot or .md extensions allowed) containing the data dependency graph. If empty, no "
-      "graph is dumped" };
+  Gaudi::Property<std::string> m_dataDepsGraphFile{ this, "DataDepsGraphFile", "",
+                                                    "Name of the output file (.dot, .md or .graphml extensions "
+                                                    "allowed) containing the data dependency graph. "
+                                                    "If empty, no graph is dumped" };
 
   std::map<std::string, AlgEntry>
   instantiateAndInitializeAlgorithms( const std::vector<std::string>& names ) const; // algorithms must be fully
@@ -267,10 +292,10 @@ HiveDataBrokerSvc::mapProducers( std::map<std::string, AlgEntry>& algorithms ) c
     debug() << endmsg;
   }
 
-  // If requested, dump a graph of the data dependencies in a .dot or .md file
+  // If requested, dump a graph of the data dependencies in a .dot, .md or .graphml file
   if ( !m_dataDepsGraphFile.empty() ) {
     info() << "Dumping data dependencies graph to file: " << m_dataDepsGraphFile.value() << endmsg;
-    dumpGraphFile( m_dataDepsGraphFile, m_algorithms | std::views::values );
+    dumpDataDepsGraphFile( m_dataDepsGraphFile, m_algorithms | std::views::values );
   }
 
   // figure out all outputs

@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -152,8 +152,8 @@ public:
   virtual void recordOccupancy( int samplePeriod, std::function<void( OccupancySnapshot )> callback ) override;
 
 private:
-  StatusCode dumpGraphFile( const std::map<std::string, DataObjIDColl>& inDeps,
-                            const std::map<std::string, DataObjIDColl>& outDeps ) const;
+  StatusCode dumpDataDepsGraphFile( const std::map<std::string, DataObjIDColl>& inDeps,
+                                    const std::map<std::string, DataObjIDColl>& outDeps ) const;
 
 private:
   using AState = AlgsExecutionStates::State;
@@ -221,8 +221,8 @@ private:
 
   Gaudi::Property<std::string> m_dataDepsGraphFile{
       this, "DataDepsGraphFile", "",
-      "Name of the output file (.dot or .md extensions allowed) containing the data dependency graph for some selected "
-      "Algorithms" };
+      "Name of the output file (.dot, .md or .graphml extensions allowed) containing the data dependency graph "
+      "for some selected Algorithms" };
 
   Gaudi::Property<std::string> m_dataDepsGraphAlgoPattern{
       this, "DataDepsGraphAlgPattern", ".*",

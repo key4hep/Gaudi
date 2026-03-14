@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -19,15 +19,15 @@
 namespace {
   void buildSimpleGraph( std::string const& fn, Gaudi::Hive::FileType type = Gaudi::Hive::FileType::UNKNOWN ) {
     Gaudi::Hive::Graph g{ fn, type };
-    g.addNode( "Node1", "Id1" );
-    g.addNode( "Node2", "Id2" );
-    g.addEdge( "Node1", "Id1", "Node2", "Id2" );
+    g.addNode( "Id1", "Node1" );
+    g.addNode( "Id2", "Node2" );
+    g.addEdge( "Id1", "Id2" );
   }
   void buildGraphWithLabel( std::string const& fn, Gaudi::Hive::FileType type ) {
     Gaudi::Hive::Graph g{ fn, type };
-    g.addNode( "Node1", "Id1" );
-    g.addNode( "Node2", "Id2" );
-    g.addEdge( "Node1", "Id1", "Node2", "Id2", "EdgeLabel" );
+    g.addNode( "Id1", "Node1" );
+    g.addNode( "Id2", "Node2" );
+    g.addEdge( "Id1", "Id2", "EdgeLabel" );
   }
   std::string readFile( std::string const& fn ) {
     std::ifstream is( fn, std::ios::binary | std::ios::ate );
@@ -49,9 +49,22 @@ namespace {
       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<graphml xmlns=\"http://graphml.graphdrawing.org/xmlns\"\n         "
       "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n         "
       "xsi:schemaLocation=\"http://graphml.graphdrawing.org/xmlns "
-      "http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd\">\n  <graph id=\"Data dependencies\" "
-      "edgedefault=\"directed\">\n    <node id=\"Node1\"/>\n    <node id=\"Node2\"/>\n    <edge source=\"Node1\" "
-      "target=\"Node2\"/>\n  </graph>\n</graphml>";
+      "http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd\">\n  <key id=\"d1\" for=\"edge\" attr.name=\"label\" "
+      "attr.type=\"string\"/>\n  <key id=\"d0\" for=\"node\" attr.name=\"label\" attr.type=\"string\"/>\n  <graph "
+      "id=\"Dependencies\" edgedefault=\"directed\">\n    <node id=\"Id1\">\n      <data "
+      "key=\"d0\">Node1</data>\n    </node>\n    <node id=\"Id2\">\n      <data key=\"d0\">Node2</data>\n    </node>\n "
+      "   <edge source=\"Id1\" target=\"Id2\"/>\n  </graph>\n</graphml>";
+  const std::string labelMLRef =
+      "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<graphml xmlns=\"http://graphml.graphdrawing.org/xmlns\"\n         "
+      "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n         "
+      "xsi:schemaLocation=\"http://graphml.graphdrawing.org/xmlns "
+      "http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd\">\n  <key id=\"d1\" for=\"edge\" attr.name=\"label\" "
+      "attr.type=\"string\"/>\n  <key id=\"d0\" for=\"node\" attr.name=\"label\" attr.type=\"string\"/>\n  <graph "
+      "id=\"Dependencies\" edgedefault=\"directed\">\n    <node id=\"Id1\">\n      <data "
+      "key=\"d0\">Node1</data>\n    </node>\n    <node id=\"Id2\">\n      <data key=\"d0\">Node2</data>\n    </node>\n "
+      "   <edge source=\"Id1\" target=\"Id2\">\n      <data key=\"d1\">EdgeLabel</data>\n    </edge>\n  "
+      "</graph>\n</graphml>";
+
 } // namespace
 
 BOOST_AUTO_TEST_CASE( test_dot_simple ) {
@@ -130,6 +143,6 @@ BOOST_AUTO_TEST_CASE( test_ml_label ) {
   std::string fn = "test_GraphDumper_label_outputFile.graphml";
   buildGraphWithLabel( fn, Gaudi::Hive::FileType::ML );
   auto str = readFile( fn );
-  BOOST_CHECK_EQUAL( str, simpleMLRef ); // no label support in graphML
+  BOOST_CHECK_EQUAL( str, labelMLRef );
   std::remove( fn.c_str() );
 }
