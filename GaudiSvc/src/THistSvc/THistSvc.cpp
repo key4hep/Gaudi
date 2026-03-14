@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -314,7 +314,11 @@ StatusCode THistSvc::finalize() {
   m_ids.clear();   // vhid* is deleted in m_tobjs
 
   for ( auto& obj : m_tobjs ) {
-    // TObject*'s are already dealt with through root file i/o
+    // Delete temporary TObjects (not owned by any TFile)
+    // Non-temporary objects are owned by their TFile and already
+    // deleted when the file was closed above
+    THistID& hid = obj.second.first->at( obj.second.second );
+    if ( hid.temp ) { delete obj.first; }
     // only delete vector if this object is index 0
     if ( obj.second.second == 0 ) {
       delete obj.second.first; // delete vhid*

@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 2024-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 2024-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -16,6 +16,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <utility>
 
 namespace {
   // Mapping from C++ type names to ROOT branch types for branch creation
@@ -49,7 +50,9 @@ namespace Gaudi::details {
 
     } else if ( TClass::GetClass( m_className.c_str() ) ) {
       // Create a branch for object types using the classname string
-      m_branch         = tree->Branch( branchName.c_str(), m_className.c_str(), &m_dataBuffer, bufferSize, splitLevel );
+      m_branch = tree->Branch( branchName.c_str(), m_className.c_str(), &m_dataBuffer, bufferSize, splitLevel );
+      // ROOT auto-allocates an object
+      m_ownsBuffer     = m_dataBuffer != nullptr;
       setBranchAddress = []( gsl::not_null<TBranch*> br, const void** wrappedDataPtr ) {
         br->SetAddress( wrappedDataPtr );
       };
@@ -66,9 +69,44 @@ namespace Gaudi::details {
     }
   }
 
+  BranchWrapper::~BranchWrapper() {
+    if ( m_ownsBuffer && m_dataBuffer ) {
+      auto* cls = TClass::GetClass( m_className.c_str() );
+      if ( cls ) cls->Destructor( const_cast<void*>( m_dataBuffer ) );
+      m_dataBuffer = nullptr;
+      m_ownsBuffer = false;
+    }
+  }
+
+  BranchWrapper::BranchWrapper( BranchWrapper&& other ) noexcept
+      : m_dataBuffer( other.m_dataBuffer )
+      , m_branch( std::exchange( other.m_branch, nullptr ) )
+      , m_ownsBuffer( std::exchange( other.m_ownsBuffer, false ) )
+      , m_className( std::move( other.m_className ) )
+      , m_location( std::move( other.m_location ) )
+      , setBranchAddress( other.setBranchAddress ) {}
+
+  BranchWrapper& BranchWrapper::operator=( BranchWrapper&& other ) noexcept {
+    if ( this != &other ) {
+      // Clean up current state
+      if ( m_ownsBuffer && m_dataBuffer ) {
+        auto* cls = TClass::GetClass( m_className.c_str() );
+        if ( cls ) cls->Destructor( const_cast<void*>( m_dataBuffer ) );
+      }
+      m_dataBuffer     = other.m_dataBuffer;
+      m_branch         = std::exchange( other.m_branch, nullptr );
+      m_ownsBuffer     = std::exchange( other.m_ownsBuffer, false );
+      m_className      = std::move( other.m_className );
+      m_location       = std::move( other.m_location );
+      setBranchAddress = other.setBranchAddress;
+    }
+    return *this;
+  }
+
   // Set the data pointer for the branch from a given address
   // Used by Gaudi::NTuple::Writer
   void BranchWrapper::setDataPtr( void const* dataPtr ) {
+    m_ownsBuffer = false;
     m_dataBuffer = dataPtr;
     setBranchAddress( m_branch, &m_dataBuffer );
   }
@@ -77,6 +115,7 @@ namespace Gaudi::details {
   // Used by Gaudi::NTuple::GenericWriter
   void BranchWrapper::setBranchData( const gsl::not_null<DataObject*> pObj ) {
     auto baseWrapper = dynamic_cast<AnyDataWrapperBase*>( pObj.get() );
+    m_ownsBuffer     = false;
     m_dataBuffer     = baseWrapper ? baseWrapper->payload() : pObj.get();
     setBranchAddress( m_branch, &m_dataBuffer );
   }
