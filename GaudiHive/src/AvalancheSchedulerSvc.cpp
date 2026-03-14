@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -239,9 +239,9 @@ StatusCode AvalancheSchedulerSvc::initialize() {
 
   if ( m_showDataDeps ) { info() << ostdd.str() << endmsg; }
 
-  // If requested, dump a graph of the data dependencies in a .dot or .md file
+  // If requested, dump a graph of the data dependencies in a .dot, .md or .graphml file
   if ( not m_dataDepsGraphFile.empty() ) {
-    if ( dumpGraphFile( algosInputDependenciesMap, algosOutputDependenciesMap ).isFailure() ) {
+    if ( dumpDataDepsGraphFile( algosInputDependenciesMap, algosOutputDependenciesMap ).isFailure() ) {
       return StatusCode::FAILURE;
     }
   }
@@ -1175,8 +1175,8 @@ void AvalancheSchedulerSvc::recordOccupancy( int samplePeriod, std::function<voi
   m_actionsQueue.push( std::move( action ) );
 }
 
-StatusCode AvalancheSchedulerSvc::dumpGraphFile( const std::map<std::string, DataObjIDColl>& inDeps,
-                                                 const std::map<std::string, DataObjIDColl>& outDeps ) const {
+StatusCode AvalancheSchedulerSvc::dumpDataDepsGraphFile( const std::map<std::string, DataObjIDColl>& inDeps,
+                                                         const std::map<std::string, DataObjIDColl>& outDeps ) const {
   // Both maps should have the same algorithm entries
   assert( inDeps.size() == outDeps.size() );
 
@@ -1195,7 +1195,7 @@ StatusCode AvalancheSchedulerSvc::dumpGraphFile( const std::map<std::string, Dat
   for ( const auto& [algName, ideps] : inDeps ) {
     if ( not std::regex_search( algName, algNameRegex ) ) continue;
     std::string algIndex = "Alg_" + std::to_string( algoIndex );
-    g.addNode( algName, algIndex );
+    g.addNode( algIndex, algName );
 
     // inputs
     for ( const auto& dep : ideps ) {
@@ -1203,9 +1203,9 @@ StatusCode AvalancheSchedulerSvc::dumpGraphFile( const std::map<std::string, Dat
 
       const auto [itr, inserted] = definedObjects.insert( dep.hash() );
       std::string objIndex       = "obj_" + std::to_string( dep.hash() );
-      if ( inserted ) g.addNode( dep.key(), objIndex );
+      if ( inserted ) g.addNode( objIndex, dep.key() );
 
-      g.addEdge( dep.key(), objIndex, algName, algIndex );
+      g.addEdge( objIndex, algIndex );
     } // loop on ideps
 
     const auto& odeps = outDeps.at( algName );
@@ -1214,9 +1214,9 @@ StatusCode AvalancheSchedulerSvc::dumpGraphFile( const std::map<std::string, Dat
 
       const auto [itr, inserted] = definedObjects.insert( dep.hash() );
       std::string objIndex       = "obj_" + std::to_string( dep.hash() );
-      if ( inserted ) g.addNode( dep.key(), objIndex );
+      if ( inserted ) g.addNode( objIndex, dep.key() );
 
-      g.addEdge( algName, algIndex, dep.key(), objIndex );
+      g.addEdge( algIndex, objIndex );
     } // loop on odeps
 
     ++algoIndex;
