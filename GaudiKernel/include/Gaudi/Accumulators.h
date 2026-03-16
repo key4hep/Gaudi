@@ -558,6 +558,10 @@ namespace Gaudi::Accumulators {
     void operator+( AccumulatorSet<Arithmetic, Ato, InputType, Bases...>&& other ) {
       ( Bases<Atomicity, Arithmetic>::operator+( static_cast<Bases<Ato, Arithmetic>&&>( other ) ), ... );
     }
+    // explicitely delete operator++ as it's not 100% clear what one would expect from them in more
+    // complex cases, e.g. binomial counters, or counters based on enums, etc...
+    void operator++()      = delete;
+    void operator++( int ) = delete;
 
   protected:
     AccumulatorSet( const InternalType& t ) : AccumulatorSet() { reset( t ); }
