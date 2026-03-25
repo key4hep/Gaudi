@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -71,6 +71,8 @@ public:
   /// cold functionality
   virtual void create_msgStream() const = 0;
 
+  virtual MSG::Level setUpMessaging() const = 0;
+
   /** The standard message service.
    *  Returns a pointer to the standard message service.
    */
@@ -121,6 +123,15 @@ public:
   /// shortcut for the method msgStream(MSG::INFO)
   MsgStream& msg() const { return msgStream( MSG::INFO ); }
 
+  /// get the cached level (originally extracted from the embedded MsgStream)
+  MSG::Level msgLevel() const {
+    if ( m_commonMessagingReady ) return m_level;
+    return setUpMessaging();
+  };
+
+  /// get the output level from the embedded MsgStream
+  bool msgLevel( MSG::Level lvl ) const { return msgLevel() <= lvl; }
+
 private:
   template <typename Base>
   friend class CommonMessaging;
@@ -143,15 +154,6 @@ public:
   /// Forward constructor to base class constructor
   using add_serviceLocator<add_name<BASE>>::add_serviceLocator;
 
-  /// get the cached level (originally extracted from the embedded MsgStream)
-  MSG::Level msgLevel() const {
-    if ( m_commonMessagingReady ) return m_level;
-    return setUpMessaging();
-  }
-
-  /// get the output level from the embedded MsgStream
-  bool msgLevel( MSG::Level lvl ) const { return msgLevel() <= lvl; }
-
 private:
   // out-of-line 'cold' functions -- put here so as to not blow up the inline 'hot' functions
   void create_msgStream() const override final { m_msgStream.reset( new MsgStream( msgSvc(), this->name() ) ); }
@@ -170,10 +172,11 @@ private:
 
 protected:
   /// Set up local caches
-  MSG::Level setUpMessaging() const {
+  MSG::Level setUpMessaging() const override final {
     if ( !m_commonMessagingReady ) { initMessaging(); }
     return m_level;
   }
+
   /// Reinitialize internal states.
   MSG::Level resetMessaging() {
     m_commonMessagingReady = false;
