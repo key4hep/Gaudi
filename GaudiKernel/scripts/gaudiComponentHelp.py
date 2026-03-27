@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -69,7 +69,7 @@ if __name__ == "__main__":
         except AttributeError:
             print("  Not a configurable component. No properties to show.")
             sys.exit()
-        for label, (value, desc) in sorted(properties.iteritems()):
+        for label, (value, desc) in sorted(properties.items()):
             print(
                 (
                     "  %s\t : %s\t (%s) "
