@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -97,10 +97,7 @@ void Gaudi::pushCurrentDataObject( DataObject** pobjAddr ) {
 
 void Gaudi::popCurrentDataObject() {
   static std::vector<DataObject**>& c = objectStack();
-  if ( !c.empty() ) {
-    s_currObj = c.back();
-    c.pop_back();
-  } else {
-    s_currObj = &s_objPtr;
-  }
+  if ( !c.empty() ) c.pop_back();
+
+  s_currObj = c.empty() ? &s_objPtr : c.back();
 }
