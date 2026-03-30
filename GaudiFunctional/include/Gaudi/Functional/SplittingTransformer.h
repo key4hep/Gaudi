@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -49,12 +49,6 @@ namespace Gaudi::Functional {
                 [this]( Gaudi::Details::PropertyBase& ) {
                   this->m_outputs =
                       details::make_vector_of_handles<decltype( this->m_outputs )>( this, m_outputLocations );
-                  if constexpr ( details::is_optional<Out> ) { // handle constructor does not (yet) allow to
-                                                               // set optional flag... so
-                                                               // do it explicitly here...
-                    std::for_each( this->m_outputs.begin(), this->m_outputs.end(),
-                                   []( auto& h ) { h.setOptional( true ); } );
-                  }
                 },
                 Gaudi::Details::Property::ImmediatelyInvokeHandler{ true } ) {}
 
@@ -116,12 +110,6 @@ namespace Gaudi::Functional {
                 [this]( Gaudi::Details::PropertyBase& ) {
                   this->m_outputs =
                       details::make_vector_of_handles<decltype( this->m_outputs )>( this, m_outputLocations );
-                  if constexpr ( details::is_optional<Out> ) { // handle constructor does not (yet) allow to
-                                                               // set optional flag... so
-                                                               // do it explicitly here...
-                    std::for_each( this->m_outputs.begin(), this->m_outputs.end(),
-                                   []( auto& h ) { h.setOptional( true ); } );
-                  }
                 },
                 Gaudi::Details::Property::ImmediatelyInvokeHandler{ true } ) {}
 

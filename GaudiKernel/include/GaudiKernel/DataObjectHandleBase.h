@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -44,10 +44,6 @@ public:
 
   friend std::ostream& operator<<( std::ostream& str, const DataObjectHandleBase& d );
 
-  /// Check if the data object declared is optional for the algorithm
-  bool isOptional() const { return m_optional; }
-  void setOptional( bool optional = true ) { m_optional = optional; }
-
   bool isValid() const;
 
 protected:
@@ -59,6 +55,5 @@ protected:
   SmartIF<IDataProviderSvc> m_EDS;
   SmartIF<IMessageSvc>      m_MS;
 
-  bool m_init     = false;
-  bool m_optional = false;
+  bool m_init = false;
 };
