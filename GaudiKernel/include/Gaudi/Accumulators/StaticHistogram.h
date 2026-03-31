@@ -253,9 +253,7 @@ namespace Gaudi::Accumulators {
       } else {
         auto floatIdx = std::floor( ( value - m_minValue ) * m_ratio ) + 1;
         // Converting NaN or infinity to int is undefined behaviour
-        if ( !std::isfinite( floatIdx ) ) {
-          return floatIdx > 0 ? numBins() + 1 : 0;
-        }
+        if ( !std::isfinite( floatIdx ) ) { return floatIdx > 0 ? numBins() + 1 : 0; }
         idx = static_cast<int>( floatIdx );
       }
       return idx < 0 ? 0 : ( (unsigned int)idx > numBins() ? numBins() + 1 : (unsigned int)idx );
