@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -268,7 +268,9 @@ StatusCode RootDataConnection::connectRead() {
       }
     }
   }
-  if ( !need_fid && fid != m_fid ) {
+  // Compare uuids in a case insensitive way
+  if ( !need_fid &&
+       !std::ranges::equal( fid, m_fid, []( char a, char b ) { return std::tolower( a ) == std::tolower( b ); } ) ) {
     msgSvc() << MSG::ERROR << "FID mismatch:" << fid << "(Catalog) != " << m_fid << "(file)" << endmsg
              << "for PFN:" << m_pfn << endmsg;
     return StatusCode::FAILURE;
