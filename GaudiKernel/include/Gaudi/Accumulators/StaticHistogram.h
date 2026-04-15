@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -251,7 +251,10 @@ namespace Gaudi::Accumulators {
       if constexpr ( std::is_integral_v<Arithmetic> ) {
         idx = ( ( value - m_minValue ) * nBins / ( m_maxValue - m_minValue ) ) + 1;
       } else {
-        idx = std::floor( ( value - m_minValue ) * m_ratio ) + 1;
+        auto floatIdx = std::floor( ( value - m_minValue ) * m_ratio ) + 1;
+        // Converting NaN or infinity to int is undefined behaviour
+        if ( !std::isfinite( floatIdx ) ) { return floatIdx > 0 ? numBins() + 1 : 0; }
+        idx = static_cast<int>( floatIdx );
       }
       return idx < 0 ? 0 : ( (unsigned int)idx > numBins() ? numBins() + 1 : (unsigned int)idx );
     }
