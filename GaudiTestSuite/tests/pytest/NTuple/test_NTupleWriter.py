@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 2024-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 2024-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -35,26 +35,31 @@ class Test(GaudiExeTest):
         file = ROOT.TFile.Open(str(cwd / OUTPUT_FILE_NAME))
         stree = file.Get("Simple" + ALG_NAME)
         tree = file.Get(ALG_NAME)
-        yield file, stree, tree
+        someDir = file.Get("someDir")
+        dtree = someDir.Get("myNTuple")
+        yield file, stree, tree, dtree
         file.Close()
 
     def test_branch_creation(self, setup_file_tree):
         """
         Test to ensure that all expected branches are correctly created in the ROOT file.
         """
-        _, stree, tree = setup_file_tree
+        _, stree, tree, dtree = setup_file_tree
         assert stree.GetBranch("Branch1"), "Branch1 should exist in WriterTree."
         assert stree.GetBranch("Branch2"), "Branch2 should exist in WriterTree."
         assert stree.GetBranch("Branch3"), "Branch3 should exist in WriterTree."
         assert tree.GetBranch("Branch1"), "Branch1 should exist in WriterTree."
         assert tree.GetBranch("Branch2"), "Branch2 should exist in WriterTree."
         assert tree.GetBranch("Branch3"), "Branch3 should exist in WriterTree."
+        assert dtree.GetBranch("Branch1"), "Branch1 should exist in WriterTree."
+        assert dtree.GetBranch("Branch2"), "Branch2 should exist in WriterTree."
+        assert dtree.GetBranch("Branch3"), "Branch3 should exist in WriterTree."
 
     def test_data_types(self, setup_file_tree):
         """
         Verify the data within the branches to ensure they match expected transformations.
         """
-        _, stree, tree = setup_file_tree
+        _, stree, tree, dtree = setup_file_tree
         for entry in stree:
             assert isinstance(
                 entry.Branch1, int
@@ -75,10 +80,20 @@ class Test(GaudiExeTest):
             assert isinstance(
                 entry.Branch3, float
             ), "Branch3 does not contain float values as expected."
+        for entry in dtree:
+            assert isinstance(
+                entry.Branch1, int
+            ), "Branch1 does not contain int values as expected."
+            assert isinstance(
+                entry.Branch2, int
+            ), "Branch2 does not contain int values as expected."
+            assert isinstance(
+                entry.Branch3, float
+            ), "Branch3 does not contain float values as expected."
 
     def test_data_values(self, setup_file_tree):
         """ """
-        _, stree, tree = setup_file_tree
+        _, stree, tree, dtree = setup_file_tree
         assert (
             stree.GetEntries() == EXPECTED_ENTRIES * EXPECTED_VECTOR_SIZE
         ), "Tree does not contain expected number of entries"
@@ -96,6 +111,13 @@ class Test(GaudiExeTest):
             assert (
                 entry.Branch2 == EXPECTED_VECTOR_SIZE
             ), "Branch2 does not contain the correct value."
+        assert (
+            dtree.GetEntries() == EXPECTED_ENTRIES * EXPECTED_VECTOR_SIZE
+        ), "Tree does not contain expected number of entries"
+        for entry in dtree:
+            assert (
+                entry.Branch1 == entry.Branch2
+            ), "Branch1 does not contain the correct value."
 
 
 def config():
@@ -116,6 +138,12 @@ def config():
         E.TestSuite.NTuple.NTupleWriter_V(
             ALG_NAME,
             OutputFile="NTuple",
+            BranchNames=["Branch1", "Branch2", "Branch3"],
+        ),
+        E.TestSuite.NTuple.NTupleSimpleWriter_V(
+            ALG_NAME + "WithSubDir",
+            OutputFile="NTuple",
+            NTupleName="someDir/myNTuple",
             BranchNames=["Branch1", "Branch2", "Branch3"],
         ),
     ]

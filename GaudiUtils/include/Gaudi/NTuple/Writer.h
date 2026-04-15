@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 2024-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 2024-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -15,15 +15,19 @@
 #include <Gaudi/Interfaces/IFileSvc.h>
 #include <Gaudi/details/BranchWrapper.h>
 #include <GaudiKernel/StdArrayAsProperty.h>
+
+#include <mutex>
+#include <numeric>
+#include <ranges>
+#include <tuple>
+#include <utility>
+
 #include <TFile.h>
 #include <TTree.h>
+
 #include <fmt/format.h>
 #include <gsl/pointers>
 #include <gsl/span>
-#include <mutex>
-#include <numeric>
-#include <tuple>
-#include <utility>
 
 namespace Gaudi::NTuple {
 
@@ -44,9 +48,19 @@ namespace Gaudi::NTuple {
   class Wrapper {
   public:
     // Initialize the TTree and creates branches
-    void initTree( TFile& file, std::string const& algName, std::string const& name,
+    void initTree( TFile& file, std::string const& algName, std::string name,
                    std::array<std::string, sizeof...( COLUMNS )> const& branchNames ) {
-      file.cd();
+      // handle the case where the name given includes '/', then it's actually a directory and a name
+      auto pos = name.rfind( '/' );
+      if ( pos != std::string::npos ) {
+        m_dir = name.substr( 0, pos );
+        name  = name.substr( pos + 1 );
+      }
+      // create directory if needed
+      if ( m_dir != "" ) file.mkdir( m_dir.c_str(), "", true );
+      // Needed for ROOT to write data of the TTree in the right file
+      file.cd( m_dir.c_str() );
+      // create TTree and branches
       m_tree = std::make_unique<TTree>( name.c_str(), "Tree of Writer Algorithm" ).release();
       m_branchWrappers.reserve( m_branchWrappers.size() + sizeof...( COLUMNS ) );
       createBranches( std::make_index_sequence<sizeof...( COLUMNS )>{}, algName, branchNames );
@@ -69,7 +83,8 @@ namespace Gaudi::NTuple {
 
     // Write the TTree to the given ROOT file
     void writeTree( TFile& file, std::string const& algName ) {
-      file.cd();
+      // Change to the proper directory in the ROOT file
+      file.cd( m_dir.c_str() );
       if ( m_tree->Write() <= 0 ) {
         throw GaudiException( "Failed to write TTree to ROOT file.", algName, StatusCode::FAILURE );
       }
@@ -77,9 +92,10 @@ namespace Gaudi::NTuple {
     }
 
   private:
-    TTree*                                      m_tree{ nullptr };  // Pointer to the TTree being written to
-    mutable std::vector<details::BranchWrapper> m_branchWrappers{}; // Container for BranchWrapper objects
-    mutable std::mutex                          m_mtx;              // Mutex for thread-safe operations
+    TTree*                                             m_tree{ nullptr };  // Pointer to the TTree being written to
+    std::string                                        m_dir{};            // Directory where to create m_tree
+    mutable std::vector<Gaudi::details::BranchWrapper> m_branchWrappers{}; // Container for BranchWrapper objects
+    mutable std::mutex                                 m_mtx;              // Mutex for thread-safe operations
 
     // Create branches in the TTree based on the provided names and output data types
     template <std::size_t... Is>
