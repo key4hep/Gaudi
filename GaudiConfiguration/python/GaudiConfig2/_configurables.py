@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -53,9 +53,10 @@ class Property(object):
         return self.semantics.name
 
     def __get__(self, instance, owner):
-        if self.name not in instance._properties and hasattr(self.semantics, "default"):
-            instance._properties[self.name] = self.semantics.default(self.default)
-        return self.semantics.load(instance._properties.get(self.name, self.default))
+        name = self.name  # cache lookup
+        if name not in instance._properties and hasattr(self.semantics, "default"):
+            instance._properties[name] = self.semantics.default(self.default)
+        return self.semantics.load(instance._properties.get(name, self.default))
 
     def __set__(self, instance, value):
         instance._properties[self.name] = self.semantics.store(value)
