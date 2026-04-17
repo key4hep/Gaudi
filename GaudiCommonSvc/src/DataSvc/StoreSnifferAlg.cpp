@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -23,8 +23,10 @@
 #include <GaudiKernel/LinkManager.h>
 #include <GaudiKernel/SmartDataPtr.h>
 #include <GaudiKernel/SmartIF.h>
-
-using namespace std;
+#include <iomanip>
+#include <map>
+#include <string>
+#include <vector>
 
 /**@class StoreSnifferAlg
  *
@@ -46,8 +48,8 @@ public:
     int  id;
     CLID clid;
   };
-  typedef map<string, LeafInfo>      SniffInfo;
-  typedef map<string, map<int, int>> Correlations;
+  typedef std::map<std::string, LeafInfo>           SniffInfo;
+  typedef std::map<std::string, std::map<int, int>> Correlations;
 
   SniffInfo    m_info, m_curr;
   Correlations m_corr, m_links;
@@ -56,14 +58,14 @@ public:
     if ( pObj ) {
       auto mgr = eventSvc().as<IDataManagerSvc>();
       if ( mgr ) {
-        vector<IRegistry*> leaves;
-        StatusCode         sc = m_mgr->objectLeaves( pObj, leaves );
+        std::vector<IRegistry*> leaves;
+        StatusCode              sc = m_mgr->objectLeaves( pObj, leaves );
         if ( sc.isSuccess() ) {
           for ( auto& pReg : leaves ) {
             /// We are only interested in leaves with an object
             if ( !pReg->address() || !pReg->object() ) continue;
-            const string& id = pReg->identifier();
-            auto          j  = m_info.find( id );
+            const std::string& id = pReg->identifier();
+            auto               j  = m_info.find( id );
             if ( j == m_info.end() ) {
               m_info[id]      = LeafInfo();
               j               = m_info.find( id );
@@ -94,15 +96,16 @@ public:
     log << "== BEGIN ============= Access list content:" << m_info.size() << endmsg;
     for ( const auto& i : m_info ) {
       const LeafInfo& info = i.second;
-      log << "== ITEM == " << right << setw( 4 ) << dec << info.id << " clid:" << right << setw( 8 ) << hex << info.clid
-          << " Count:" << right << setw( 6 ) << dec << info.count << " " << i.first + ":" << endmsg;
+      log << "== ITEM == " << std::right << std::setw( 4 ) << std::dec << info.id << " clid:" << std::right
+          << std::setw( 8 ) << std::hex << info.clid << " Count:" << std::right << std::setw( 6 ) << std::dec
+          << info.count << " " << i.first + ":" << endmsg;
       auto c = m_corr.find( i.first );
       if ( c != m_corr.end() ) {
         int cnt = 0;
         log << "== CORRELATIONS:" << ( *c ).second.size() << endmsg;
         for ( const auto& k : c->second ) {
           if ( k.second > 0 ) {
-            log << dec << k.first << ":" << k.second << "  ";
+            log << std::dec << k.first << ":" << k.second << "  ";
             if ( ++cnt == 10 ) {
               cnt = 0;
               log << endmsg;
@@ -117,7 +120,7 @@ public:
         log << "== LINKS:" << l->second.size() << endmsg;
         for ( const auto& k : l->second ) {
           if ( k.second > 0 ) {
-            log << dec << k.first << ":" << k.second << "  ";
+            log << std::dec << k.first << ":" << k.second << "  ";
             if ( ++cnt == 10 ) {
               cnt = 0;
               log << endmsg;
@@ -144,7 +147,7 @@ public:
       evnt.id    = m_curr.size();
       for ( const auto& i : m_curr ) m_info[i.first].count++;
       for ( const auto& i : m_info ) {
-        const string& nam = i.first;
+        const std::string& nam = i.first;
         // const LeafInfo& leaf = (*i).second;
         auto c = m_corr.find( nam );
         if ( c == m_corr.end() ) {

@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -10,6 +10,8 @@
 \***********************************************************************************/
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE test_ProfileHistoSpeed
+
+#include <nlohmann/json.hpp>
 
 #include <Gaudi/Accumulators/StaticHistogram.h>
 #include <Gaudi/Histograming/Sink/Utils.h>
@@ -41,13 +43,6 @@ namespace {
     }
     std::deque<Gaudi::Monitoring::Hub::Entity> m_entities;
   };
-
-  // Little helper for using automatic nlohmann conversion mechanism
-  template <typename T>
-  nlohmann::json toJSON( T const& t ) {
-    nlohmann::json j = t;
-    return t;
-  }
 } // namespace
 
 BOOST_AUTO_TEST_CASE( test_profile_histo_speed, *boost::unit_test::tolerance( 1e-14 ) ) {
@@ -63,7 +58,7 @@ BOOST_AUTO_TEST_CASE( test_profile_histo_speed, *boost::unit_test::tolerance( 1e
             << std::chrono::duration_cast<std::chrono::microseconds>( filledTime - startTime ).count() << "\n";
 
   // convert to json
-  nlohmann::json j             = toJSON( histo );
+  nlohmann::json j             = nlohmann::json( histo );
   auto           convertedTime = std::chrono::steady_clock::now();
   std::cout << "  json convertion      : "
             << std::chrono::duration_cast<std::chrono::microseconds>( convertedTime - filledTime ).count() << "\n";

@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 2022 CERN for the benefit of the LHCb and ATLAS collaborations      *
+* (c) Copyright 2022-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -9,7 +9,7 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 #include <Gaudi/Accumulators.h>
-#include <map>
+#include <nlohmann/json.hpp>
 #include <optional>
 #include <string>
 #include <utility>
@@ -32,23 +32,11 @@ namespace {
     void removeEntity( Gaudi::Monitoring::Hub::Entity const& ) override {}
     std::optional<Gaudi::Monitoring::Hub::Entity> entity;
   };
-  struct Owner {
-    Owner*                  serviceLocator() { return this; }
-    Gaudi::Monitoring::Hub& monitoringHub() { return localHub; }
-    std::string             name() { return "owner"; }
-  };
   struct DummyData {
     friend void to_json( nlohmann::json& j, DummyData const& ) {
       j = { { "type", "DummyData" }, { "data", "dummy data" } };
     }
   };
-
-  // Little helper for using automatic nlohmann conversion mechanism
-  template <typename T>
-  nlohmann::json toJSON( T const& t ) {
-    nlohmann::json j = t;
-    return t;
-  }
 } // namespace
 
 TEST_CASE( "Gaudi::Monitoring::Hub::Entity" ) {
@@ -72,10 +60,10 @@ TEST_CASE( "Gaudi::Monitoring::Hub::Entity" ) {
     CHECK( de.typeIndex() == std::type_index{ typeid( d ) } );
   }
   SECTION( "serialize to JSON" ) {
-    CHECK( toJSON( c ) == toJSON( e ) );
-    CHECK( toJSON( d ) == toJSON( de ) );
+    CHECK( nlohmann::json( c ) == nlohmann::json( e ) );
+    CHECK( nlohmann::json( d ) == nlohmann::json( de ) );
     c += 5;
-    CHECK( toJSON( c ) == toJSON( e ) );
+    CHECK( nlohmann::json( c ) == nlohmann::json( e ) );
   }
   SECTION( "simple merge" ) {
     SECTION( "from Entity" ) {

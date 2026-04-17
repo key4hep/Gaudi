@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -12,6 +12,8 @@
 #define BOOST_TEST_MODULE test_GenericSink
 
 #include <Gaudi/MonitoringHub.h>
+
+#include <nlohmann/json.hpp>
 
 #include <boost/test/unit_test.hpp>
 
@@ -55,13 +57,6 @@ namespace {
     }
     std::deque<Gaudi::Monitoring::Hub::Entity> m_entities;
   };
-
-  // Little helper for using automatic nlohmann conversion mechanism
-  template <typename T>
-  nlohmann::json toJSON( T const& t ) {
-    nlohmann::json j = t;
-    return t;
-  }
 } // namespace
 
 BOOST_AUTO_TEST_CASE( test_entity_no_merge_reset, *boost::unit_test::tolerance( 1e-14 ) ) {
@@ -79,6 +74,6 @@ BOOST_AUTO_TEST_CASE( test_entity_no_merge_reset, *boost::unit_test::tolerance( 
   auto& entities = sink.m_entities;
   std::sort( begin( entities ), end( entities ), []( const auto& a, const auto& b ) { return a.name < b.name; } );
   std::string output;
-  for ( auto& ent : entities ) { output += toJSON( ent ).get<std::string>(); }
+  for ( auto& ent : entities ) { output += nlohmann::json( ent ).get<std::string>(); }
   BOOST_TEST( output == "Hello World !" );
 }

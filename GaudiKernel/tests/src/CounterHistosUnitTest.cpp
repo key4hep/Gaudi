@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -10,6 +10,8 @@
 \***********************************************************************************/
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE test_CounterHistos
+
+#include <nlohmann/json.hpp>
 
 #include <Gaudi/Accumulators/Histogram.h>
 #include <Gaudi/Accumulators/RootHistogram.h>
@@ -58,13 +60,6 @@ namespace {
     }
     std::deque<Gaudi::Monitoring::Hub::Entity> m_entities;
   };
-
-  // Little helper for using automatic nlohmann conversion mechanism
-  template <typename T>
-  nlohmann::json toJSON( T const& t ) {
-    nlohmann::json j = t;
-    return t;
-  }
 } // namespace
 
 BOOST_AUTO_TEST_CASE( test_counter_histos, *boost::unit_test::tolerance( 1e-14 ) ) {
@@ -74,34 +69,34 @@ BOOST_AUTO_TEST_CASE( test_counter_histos, *boost::unit_test::tolerance( 1e-14 )
     Gaudi::Accumulators::StaticHistogram<1> histo1d{
         &algo, "GaudiH1D", "A Gaudi 1D histogram", { 21, -10.5, 10.5, "X" } };
     ++histo1d[-10.0]; // fill the first (non-overflow) bin
-    BOOST_TEST( toJSON( histo1d ).at( "bins" )[1] == 1 );
+    BOOST_TEST( nlohmann::json( histo1d ).at( "bins" )[1] == 1 );
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
     histo1d += -10.0; // fill the first (non-overflow) bin
 #pragma GCC diagnostic pop
-    BOOST_TEST( toJSON( histo1d ).at( "bins" )[1] == 2 );
+    BOOST_TEST( nlohmann::json( histo1d ).at( "bins" )[1] == 2 );
   }
   {
     Gaudi::Accumulators::StaticHistogram<2> histo2d{
         &algo, "GaudiH2D", "A Gaudi 2D histogram", { { 21, -10.5, 10.5, "X" }, { 21, -10.5, 10.5, "Y" } } };
     ++histo2d[{ -10.0, -10.0 }]; // fill the first (non-overflow) bin
-    BOOST_TEST( toJSON( histo2d ).at( "bins" )[( 1 + 21 + 1 ) + 1] == 1 );
+    BOOST_TEST( nlohmann::json( histo2d ).at( "bins" )[( 1 + 21 + 1 ) + 1] == 1 );
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
     histo2d += { -10.0, -10.0 }; // fill the first (non-overflow) bin
 #pragma GCC diagnostic pop
-    BOOST_TEST( toJSON( histo2d ).at( "bins" )[( 1 + 21 + 1 ) + 1] == 2 );
+    BOOST_TEST( nlohmann::json( histo2d ).at( "bins" )[( 1 + 21 + 1 ) + 1] == 2 );
   }
   {
     Gaudi::Accumulators::StaticWeightedHistogram<1> histo1dw{ &algo, "", "", { 21, -10.5, 10.5, "X" } };
     histo1dw[-10.0] += 0.25; // fill the first (non-overflow) bin
-    BOOST_TEST( toJSON( histo1dw ).at( "bins" )[1] == 0.25 );
-    BOOST_TEST( toJSON( histo1dw ).at( "nEntries" ).get<unsigned long>() == 1 );
+    BOOST_TEST( nlohmann::json( histo1dw ).at( "bins" )[1] == 0.25 );
+    BOOST_TEST( nlohmann::json( histo1dw ).at( "nEntries" ).get<unsigned long>() == 1 );
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
     histo1dw += { -10.0, 0.5 }; // fill the first (non-overflow) bin
-    BOOST_TEST( toJSON( histo1dw ).at( "bins" )[1] == 0.75 );
-    BOOST_TEST( toJSON( histo1dw ).at( "nEntries" ).get<unsigned long>() == 2 );
+    BOOST_TEST( nlohmann::json( histo1dw ).at( "bins" )[1] == 0.75 );
+    BOOST_TEST( nlohmann::json( histo1dw ).at( "nEntries" ).get<unsigned long>() == 2 );
 #pragma GCC diagnostic pop
   }
 
@@ -111,7 +106,7 @@ BOOST_AUTO_TEST_CASE( test_counter_histos, *boost::unit_test::tolerance( 1e-14 )
   for ( int i = 0; i < 10; i++ ) { histo[10.0 * double( i ) + 0.5] += double( i ); }
   histo[120.0] += 120.0;
 
-  nlohmann::json j        = toJSON( histo );
+  nlohmann::json j        = nlohmann::json( histo );
   auto           nEntries = j.at( "nEntries" ).get<unsigned long>();
   BOOST_TEST( nEntries == 12 );
 
@@ -143,62 +138,62 @@ BOOST_AUTO_TEST_CASE( test_counter_root_histos, *boost::unit_test::tolerance( 1e
     Gaudi::Accumulators::StaticRootHistogram<1> histo1d{
         &algo, "GaudiH1D", "A Gaudi 1D histogram", { 4, -10, 10, "X" } };
     ++histo1d[1];
-    BOOST_TEST( toJSON( histo1d ).at( "bins" )[3] == 1 );
+    BOOST_TEST( nlohmann::json( histo1d ).at( "bins" )[3] == 1 );
     ++histo1d[2];
     ++histo1d[-100];
-    BOOST_TEST( toJSON( histo1d ).at( "bins" )[3] == 2 );
-    BOOST_TEST( toJSON( histo1d ).at( "nEntries" ) == 3 );
-    BOOST_TEST( toJSON( histo1d ).at( "nTotEntries" ) == 2 );
-    BOOST_TEST( toJSON( histo1d ).at( "sum" ) == 3 );
-    BOOST_TEST( toJSON( histo1d ).at( "sum2" ) == 5 );
-    BOOST_TEST( toJSON( histo1d ).at( "mean" ) == 1.5 );
-    BOOST_TEST( toJSON( histo1d ).at( "standard_deviation" ) == 0.5 );
+    BOOST_TEST( nlohmann::json( histo1d ).at( "bins" )[3] == 2 );
+    BOOST_TEST( nlohmann::json( histo1d ).at( "nEntries" ) == 3 );
+    BOOST_TEST( nlohmann::json( histo1d ).at( "nTotEntries" ) == 2 );
+    BOOST_TEST( nlohmann::json( histo1d ).at( "sum" ) == 3 );
+    BOOST_TEST( nlohmann::json( histo1d ).at( "sum2" ) == 5 );
+    BOOST_TEST( nlohmann::json( histo1d ).at( "mean" ) == 1.5 );
+    BOOST_TEST( nlohmann::json( histo1d ).at( "standard_deviation" ) == 0.5 );
   }
   {
     Gaudi::Accumulators::StaticRootHistogram<2> histo2d{
         &algo, "GaudiH2D", "A Gaudi 2D histogram", { { 4, -10, 10, "X" }, { 4, -10, 10, "Y" } } };
     ++histo2d[{ 1, 1 }]; // fill the first (non-overflow) bin
-    BOOST_TEST( toJSON( histo2d ).at( "bins" )[( 1 + 4 + 1 ) * 3 + 3] == 1 );
+    BOOST_TEST( nlohmann::json( histo2d ).at( "bins" )[( 1 + 4 + 1 ) * 3 + 3] == 1 );
     ++histo2d[{ 2, 3 }]; // fill the first (non-overflow) bin
     ++histo2d[{ -100, -100 }];
-    BOOST_TEST( toJSON( histo2d ).at( "bins" )[( 1 + 4 + 1 ) * 3 + 3] == 2 );
-    BOOST_TEST( toJSON( histo2d ).at( "nEntries" ) == 3 );
-    BOOST_TEST( toJSON( histo2d ).at( "nTotEntries" ) == 2 );
-    BOOST_TEST( toJSON( histo2d ).at( "sumx" ) == 3 );
-    BOOST_TEST( toJSON( histo2d ).at( "sumy" ) == 4 );
-    BOOST_TEST( toJSON( histo2d ).at( "sumx2" ) == 5 );
-    BOOST_TEST( toJSON( histo2d ).at( "sumy2" ) == 10 );
-    BOOST_TEST( toJSON( histo2d ).at( "sumxy" ) == 7 );
-    BOOST_TEST( toJSON( histo2d ).at( "meanx" ) == 1.5 );
-    BOOST_TEST( toJSON( histo2d ).at( "meany" ) == 2 );
-    BOOST_TEST( toJSON( histo2d ).at( "standard_deviationx" ) == .5 );
-    BOOST_TEST( toJSON( histo2d ).at( "standard_deviationy" ) == 1 );
+    BOOST_TEST( nlohmann::json( histo2d ).at( "bins" )[( 1 + 4 + 1 ) * 3 + 3] == 2 );
+    BOOST_TEST( nlohmann::json( histo2d ).at( "nEntries" ) == 3 );
+    BOOST_TEST( nlohmann::json( histo2d ).at( "nTotEntries" ) == 2 );
+    BOOST_TEST( nlohmann::json( histo2d ).at( "sumx" ) == 3 );
+    BOOST_TEST( nlohmann::json( histo2d ).at( "sumy" ) == 4 );
+    BOOST_TEST( nlohmann::json( histo2d ).at( "sumx2" ) == 5 );
+    BOOST_TEST( nlohmann::json( histo2d ).at( "sumy2" ) == 10 );
+    BOOST_TEST( nlohmann::json( histo2d ).at( "sumxy" ) == 7 );
+    BOOST_TEST( nlohmann::json( histo2d ).at( "meanx" ) == 1.5 );
+    BOOST_TEST( nlohmann::json( histo2d ).at( "meany" ) == 2 );
+    BOOST_TEST( nlohmann::json( histo2d ).at( "standard_deviationx" ) == .5 );
+    BOOST_TEST( nlohmann::json( histo2d ).at( "standard_deviationy" ) == 1 );
   }
   {
     Gaudi::Accumulators::StaticRootHistogram<3> histo3d{
         &algo, "GaudiH3D", "A Gaudi 3D histogram", { { 4, -10, 10, "X" }, { 4, -10, 10, "Y" }, { 4, -10, 10, "Z" } } };
     ++histo3d[{ 1, 1, 1 }]; // fill the first (non-overflow) bin
-    BOOST_TEST( toJSON( histo3d ).at( "bins" )[36 * 3 + 6 * 3 + 3] == 1 );
+    BOOST_TEST( nlohmann::json( histo3d ).at( "bins" )[36 * 3 + 6 * 3 + 3] == 1 );
     ++histo3d[{ 2, 3, 2 }]; // fill the first (non-overflow) bin
     ++histo3d[{ -100, -100, -100 }];
-    BOOST_TEST( toJSON( histo3d ).at( "bins" )[36 * 3 + 6 * 3 + 3] == 2 );
-    BOOST_TEST( toJSON( histo3d ).at( "nEntries" ) == 3 );
-    BOOST_TEST( toJSON( histo3d ).at( "nTotEntries" ) == 2 );
-    BOOST_TEST( toJSON( histo3d ).at( "sumx" ) == 3 );
-    BOOST_TEST( toJSON( histo3d ).at( "sumy" ) == 4 );
-    BOOST_TEST( toJSON( histo3d ).at( "sumz" ) == 3 );
-    BOOST_TEST( toJSON( histo3d ).at( "sumx2" ) == 5 );
-    BOOST_TEST( toJSON( histo3d ).at( "sumy2" ) == 10 );
-    BOOST_TEST( toJSON( histo3d ).at( "sumz2" ) == 5 );
-    BOOST_TEST( toJSON( histo3d ).at( "sumxy" ) == 7 );
-    BOOST_TEST( toJSON( histo3d ).at( "sumxz" ) == 5 );
-    BOOST_TEST( toJSON( histo3d ).at( "sumyz" ) == 7 );
-    BOOST_TEST( toJSON( histo3d ).at( "meanx" ) == 1.5 );
-    BOOST_TEST( toJSON( histo3d ).at( "meany" ) == 2 );
-    BOOST_TEST( toJSON( histo3d ).at( "meanz" ) == 1.5 );
-    BOOST_TEST( toJSON( histo3d ).at( "standard_deviationx" ) == .5 );
-    BOOST_TEST( toJSON( histo3d ).at( "standard_deviationy" ) == 1 );
-    BOOST_TEST( toJSON( histo3d ).at( "standard_deviationz" ) == .5 );
+    BOOST_TEST( nlohmann::json( histo3d ).at( "bins" )[36 * 3 + 6 * 3 + 3] == 2 );
+    BOOST_TEST( nlohmann::json( histo3d ).at( "nEntries" ) == 3 );
+    BOOST_TEST( nlohmann::json( histo3d ).at( "nTotEntries" ) == 2 );
+    BOOST_TEST( nlohmann::json( histo3d ).at( "sumx" ) == 3 );
+    BOOST_TEST( nlohmann::json( histo3d ).at( "sumy" ) == 4 );
+    BOOST_TEST( nlohmann::json( histo3d ).at( "sumz" ) == 3 );
+    BOOST_TEST( nlohmann::json( histo3d ).at( "sumx2" ) == 5 );
+    BOOST_TEST( nlohmann::json( histo3d ).at( "sumy2" ) == 10 );
+    BOOST_TEST( nlohmann::json( histo3d ).at( "sumz2" ) == 5 );
+    BOOST_TEST( nlohmann::json( histo3d ).at( "sumxy" ) == 7 );
+    BOOST_TEST( nlohmann::json( histo3d ).at( "sumxz" ) == 5 );
+    BOOST_TEST( nlohmann::json( histo3d ).at( "sumyz" ) == 7 );
+    BOOST_TEST( nlohmann::json( histo3d ).at( "meanx" ) == 1.5 );
+    BOOST_TEST( nlohmann::json( histo3d ).at( "meany" ) == 2 );
+    BOOST_TEST( nlohmann::json( histo3d ).at( "meanz" ) == 1.5 );
+    BOOST_TEST( nlohmann::json( histo3d ).at( "standard_deviationx" ) == .5 );
+    BOOST_TEST( nlohmann::json( histo3d ).at( "standard_deviationy" ) == 1 );
+    BOOST_TEST( nlohmann::json( histo3d ).at( "standard_deviationz" ) == .5 );
   }
 }
 
@@ -209,7 +204,7 @@ BOOST_AUTO_TEST_CASE( test_integer_histos ) {
       &algo, "IntH1D", "A 1D histogram with integer content", { 10, 0, 10, "X" } };
   ++histo[1]; // fill the second (non-overflow) bin
   ++histo[3]; // fill the fourth (non-overflow) bin
-  auto j = toJSON( histo );
+  auto j = nlohmann::json( histo );
   BOOST_TEST( j.at( "bins" )[0] == 0 );
   BOOST_TEST( j.at( "bins" )[2] == 1 );
   BOOST_TEST( j.at( "bins" )[4] == 1 );
@@ -222,7 +217,7 @@ BOOST_AUTO_TEST_CASE( test_integer_histos_small_ratio ) {
       &algo, "IntH1D", "A 1D histogram with integer content", { 5, 0, 10, "X" } };
   ++histo[1]; // fill the first (non-overflow) bin
   ++histo[3]; // fill the second (non-overflow) bin
-  auto j = toJSON( histo );
+  auto j = nlohmann::json( histo );
   BOOST_TEST( j.at( "bins" )[1] == 1 );
   BOOST_TEST( j.at( "bins" )[2] == 1 );
 }
@@ -285,7 +280,7 @@ BOOST_AUTO_TEST_CASE( test_custom_axis ) {
   ++hist[TestEnum::B];
   hist[TestEnum::C] += 2;
 
-  auto j = toJSON( hist );
+  auto j = nlohmann::json( hist );
 
   auto bins = j["bins"];
   BOOST_TEST( bins[0] == 0 );
@@ -313,7 +308,7 @@ BOOST_AUTO_TEST_CASE( test_mixed_axis ) {
   ++hist[{ TestEnum::B, 1.5 }];
   hist[{ TestEnum::C, 2.5 }] += 2;
 
-  auto j = toJSON( hist );
+  auto j = nlohmann::json( hist );
 
   auto bins = j["bins"];
   BOOST_TEST( bins[6 + 1] == 1 );
@@ -342,7 +337,7 @@ BOOST_AUTO_TEST_CASE( test_custom_input ) {
   ++hist[9.];
   ++hist[32456789.];
 
-  auto j = toJSON( hist );
+  auto j = nlohmann::json( hist );
 
   auto bins = j["bins"];
   BOOST_TEST( bins[0] == 1 );
@@ -366,7 +361,7 @@ BOOST_AUTO_TEST_CASE( test_custom_input_2d ) {
   ++hist[{ 9, .1 }];
   ++hist[{ .2, .3 }];
 
-  auto j    = toJSON( hist );
+  auto j    = nlohmann::json( hist );
   auto bins = j["bins"];
   BOOST_TEST( bins[0] == 1 );
   BOOST_TEST( bins[1] == 0 );
@@ -405,17 +400,17 @@ BOOST_AUTO_TEST_CASE( test_histos_merge_reset, *boost::unit_test::tolerance( 1e-
   }
 
   mergeAndReset( ent1a, ent2a );
-  BOOST_TEST( toJSON( hist1 ).at( "nEntries" ).get<unsigned long>() == 135 );
-  BOOST_TEST( toJSON( hist2 ).at( "nEntries" ).get<unsigned long>() == 0 );
+  BOOST_TEST( nlohmann::json( hist1 ).at( "nEntries" ).get<unsigned long>() == 135 );
+  BOOST_TEST( nlohmann::json( hist2 ).at( "nEntries" ).get<unsigned long>() == 0 );
   mergeAndReset( ent2b, ent1b );
-  BOOST_TEST( toJSON( hist1 ).at( "nEntries" ).get<unsigned long>() == 0 );
-  BOOST_TEST( toJSON( hist2 ).at( "nEntries" ).get<unsigned long>() == 135 );
+  BOOST_TEST( nlohmann::json( hist1 ).at( "nEntries" ).get<unsigned long>() == 0 );
+  BOOST_TEST( nlohmann::json( hist2 ).at( "nEntries" ).get<unsigned long>() == 135 );
   mergeAndReset( ent1a, ent2b );
-  BOOST_TEST( toJSON( hist1 ).at( "nEntries" ).get<unsigned long>() == 135 );
-  BOOST_TEST( toJSON( hist2 ).at( "nEntries" ).get<unsigned long>() == 0 );
+  BOOST_TEST( nlohmann::json( hist1 ).at( "nEntries" ).get<unsigned long>() == 135 );
+  BOOST_TEST( nlohmann::json( hist2 ).at( "nEntries" ).get<unsigned long>() == 0 );
   mergeAndReset( ent2b, ent1a );
-  BOOST_TEST( toJSON( hist1 ).at( "nEntries" ).get<unsigned long>() == 0 );
-  BOOST_TEST( toJSON( hist2 ).at( "nEntries" ).get<unsigned long>() == 135 );
+  BOOST_TEST( nlohmann::json( hist1 ).at( "nEntries" ).get<unsigned long>() == 0 );
+  BOOST_TEST( nlohmann::json( hist2 ).at( "nEntries" ).get<unsigned long>() == 135 );
 }
 
 BOOST_AUTO_TEST_CASE( test_2d_histos, *boost::unit_test::tolerance( 1e-14 ) ) {
@@ -430,7 +425,7 @@ BOOST_AUTO_TEST_CASE( test_2d_histos, *boost::unit_test::tolerance( 1e-14 ) ) {
     for ( int j = 0; j < 52; ++j ) { ++hist[{ i, j }]; }
   }
 
-  auto j        = toJSON( hist );
+  auto j        = nlohmann::json( hist );
   auto nEntries = j.at( "nEntries" ).get<unsigned long>();
   BOOST_TEST( nEntries == 64 * 52 );
 }
@@ -448,7 +443,7 @@ BOOST_AUTO_TEST_CASE( test_histos_buffer_move, *boost::unit_test::tolerance( 1e-
     for ( int i = 0; i < 64; ++i ) { ++buff2[i]; }
   }
 
-  auto j        = toJSON( hist );
+  auto j        = nlohmann::json( hist );
   auto nEntries = j.at( "nEntries" ).get<unsigned long>();
   BOOST_TEST( nEntries == 64 * 2 );
 }
@@ -467,7 +462,7 @@ BOOST_AUTO_TEST_CASE( test_2d_histos_unique_ptr, *boost::unit_test::tolerance( 1
     }
   }
 
-  auto j        = toJSON( histos[0] );
+  auto j        = nlohmann::json( histos[0] );
   auto nEntries = j.at( "nEntries" ).get<unsigned long>();
   BOOST_TEST( nEntries == 100 );
 }
@@ -480,7 +475,7 @@ BOOST_AUTO_TEST_CASE( test_custom_Histos, *boost::unit_test::tolerance( 1e-14 ) 
     algo.setProperty( "GaudiH1D_Title", "A Gaudi 1D histogram" ).ignore();
     algo.setProperty( "GaudiH1D_Axis0", "( 21, -10.5, 10.5, \"X\" )" ).ignore();
     histo1d.createHistogram( algo );
-    auto jHisto = toJSON( histo1d );
+    auto jHisto = nlohmann::json( histo1d );
     BOOST_TEST( jHisto.at( "title" ) == "A Gaudi 1D histogram" );
     auto axis = jHisto.at( "axis" )[0];
     std::cout << jHisto << std::endl;
@@ -490,10 +485,10 @@ BOOST_AUTO_TEST_CASE( test_custom_Histos, *boost::unit_test::tolerance( 1e-14 ) 
     BOOST_TEST( axis.at( "title" ) == "X" );
     BOOST_TEST( jHisto.at( "bins" ).get<std::vector<double>>().size() == 23 );
     ++histo1d[-10.0]; // fill the first (non-overflow) bin
-    std::cout << toJSON( histo1d ) << std::endl;
-    BOOST_TEST( toJSON( histo1d ).at( "bins" )[1] == 1 );
+    std::cout << nlohmann::json( histo1d ) << std::endl;
+    BOOST_TEST( nlohmann::json( histo1d ).at( "bins" )[1] == 1 );
     ++histo1d[-10.0]; // fill the first (non-overflow) bin
-    BOOST_TEST( toJSON( histo1d ).at( "bins" )[1] == 2 );
+    BOOST_TEST( nlohmann::json( histo1d ).at( "bins" )[1] == 2 );
   }
   {
     Gaudi::Accumulators::Histogram<2> histo2d{ &algo, "GaudiH2D" };
@@ -501,7 +496,7 @@ BOOST_AUTO_TEST_CASE( test_custom_Histos, *boost::unit_test::tolerance( 1e-14 ) 
     algo.setProperty( "GaudiH2D_Axis0", "( 21, -10.5, 10.5, \"X\" )" ).ignore();
     algo.setProperty( "GaudiH2D_Axis1", "( 41, -20.5, 20.5 )" ).ignore();
     histo2d.createHistogram( algo );
-    auto jHisto = toJSON( histo2d );
+    auto jHisto = nlohmann::json( histo2d );
     BOOST_TEST( jHisto.at( "title" ) == "A Gaudi 2D histogram" );
     auto axis0 = jHisto.at( "axis" )[0];
     BOOST_TEST( axis0.at( "nBins" ) == 21 );
@@ -515,16 +510,16 @@ BOOST_AUTO_TEST_CASE( test_custom_Histos, *boost::unit_test::tolerance( 1e-14 ) 
     BOOST_TEST( axis1.at( "title" ) == "" );
     BOOST_TEST( jHisto.at( "bins" ).get<std::vector<double>>().size() == 43 * 23 );
     ++histo2d[{ -10.0, -20.0 }]; // fill the first (non-overflow) bin
-    BOOST_TEST( toJSON( histo2d ).at( "bins" )[( 1 + 21 + 1 ) + 1] == 1 );
+    BOOST_TEST( nlohmann::json( histo2d ).at( "bins" )[( 1 + 21 + 1 ) + 1] == 1 );
     ++histo2d[{ -10.0, -20.0 }]; // fill the first (non-overflow) bin
-    BOOST_TEST( toJSON( histo2d ).at( "bins" )[( 1 + 21 + 1 ) + 1] == 2 );
+    BOOST_TEST( nlohmann::json( histo2d ).at( "bins" )[( 1 + 21 + 1 ) + 1] == 2 );
   }
   {
     Gaudi::Accumulators::WeightedHistogram<1> histo1dw{ &algo, "GaudiH1DW" };
     algo.setProperty( "GaudiH1dw_Title", "A Gaudi 1DW histogram" ).ignore();
     algo.setProperty( "GaudiH1dw_Axis0", "( 21, -10.5, 10.5, \"X\" )" ).ignore();
     histo1dw.createHistogram( algo );
-    auto jHisto = toJSON( histo1dw );
+    auto jHisto = nlohmann::json( histo1dw );
     BOOST_TEST( jHisto.at( "title" ) == "A Gaudi 1DW histogram" );
     auto axis0 = jHisto.at( "axis" )[0];
     BOOST_TEST( axis0.at( "nBins" ) == 21 );
@@ -532,9 +527,9 @@ BOOST_AUTO_TEST_CASE( test_custom_Histos, *boost::unit_test::tolerance( 1e-14 ) 
     BOOST_TEST( axis0.at( "maxValue" ) == 10.5 );
     BOOST_TEST( axis0.at( "title" ) == "X" );
     histo1dw[-10.0] += 0.25; // fill the first (non-overflow) bin
-    BOOST_TEST( toJSON( histo1dw ).at( "bins" )[1] == 0.25 );
+    BOOST_TEST( nlohmann::json( histo1dw ).at( "bins" )[1] == 0.25 );
     histo1dw[-10.0] += 0.5; // fill the first (non-overflow) bin
-    BOOST_TEST( toJSON( histo1dw ).at( "bins" )[1] == 0.75 );
+    BOOST_TEST( nlohmann::json( histo1dw ).at( "bins" )[1] == 0.75 );
   }
   {
     Gaudi::Accumulators::ProfileHistogram<1u> histo{ &algo, "GaudiP1D" };
@@ -544,7 +539,7 @@ BOOST_AUTO_TEST_CASE( test_custom_Histos, *boost::unit_test::tolerance( 1e-14 ) 
     histo[-0.5] += -0.5;
     for ( int i = 0; i < 10; i++ ) { histo[10.0 * double( i ) + 0.5] += double( i ); }
     histo[120.0] += 120.0;
-    nlohmann::json j        = toJSON( histo );
+    nlohmann::json j        = nlohmann::json( histo );
     auto           nEntries = j.at( "nEntries" ).get<unsigned long>();
     BOOST_TEST( nEntries == 12 );
     auto bincont = j.at( "bins" ).get<std::vector<std::tuple<std::tuple<unsigned int, double>, double>>>();
@@ -578,16 +573,16 @@ BOOST_AUTO_TEST_CASE( test_custom_root_histos, *boost::unit_test::tolerance( 1e-
     algo.setProperty( "GaudiH1D_Axis0", "( 4, -10, 10, \"X\" )" ).ignore();
     histo1d.createHistogram( algo );
     ++histo1d[1];
-    BOOST_TEST( toJSON( histo1d ).at( "bins" )[3] == 1 );
+    BOOST_TEST( nlohmann::json( histo1d ).at( "bins" )[3] == 1 );
     ++histo1d[2];
     ++histo1d[-100];
-    BOOST_TEST( toJSON( histo1d ).at( "bins" )[3] == 2 );
-    BOOST_TEST( toJSON( histo1d ).at( "nEntries" ) == 3 );
-    BOOST_TEST( toJSON( histo1d ).at( "nTotEntries" ) == 2 );
-    BOOST_TEST( toJSON( histo1d ).at( "sum" ) == 3 );
-    BOOST_TEST( toJSON( histo1d ).at( "sum2" ) == 5 );
-    BOOST_TEST( toJSON( histo1d ).at( "mean" ) == 1.5 );
-    BOOST_TEST( toJSON( histo1d ).at( "standard_deviation" ) == 0.5 );
+    BOOST_TEST( nlohmann::json( histo1d ).at( "bins" )[3] == 2 );
+    BOOST_TEST( nlohmann::json( histo1d ).at( "nEntries" ) == 3 );
+    BOOST_TEST( nlohmann::json( histo1d ).at( "nTotEntries" ) == 2 );
+    BOOST_TEST( nlohmann::json( histo1d ).at( "sum" ) == 3 );
+    BOOST_TEST( nlohmann::json( histo1d ).at( "sum2" ) == 5 );
+    BOOST_TEST( nlohmann::json( histo1d ).at( "mean" ) == 1.5 );
+    BOOST_TEST( nlohmann::json( histo1d ).at( "standard_deviation" ) == 0.5 );
   }
   {
     Gaudi::Accumulators::RootHistogram<2> histo2d{ &algo, "GaudiH2D" };
@@ -596,21 +591,21 @@ BOOST_AUTO_TEST_CASE( test_custom_root_histos, *boost::unit_test::tolerance( 1e-
     algo.setProperty( "GaudiH2D_Axis1", "( 4, -10, 10, \"Y\" )" ).ignore();
     histo2d.createHistogram( algo );
     ++histo2d[{ 1, 1 }]; // fill the first (non-overflow) bin
-    BOOST_TEST( toJSON( histo2d ).at( "bins" )[( 1 + 4 + 1 ) * 3 + 3] == 1 );
+    BOOST_TEST( nlohmann::json( histo2d ).at( "bins" )[( 1 + 4 + 1 ) * 3 + 3] == 1 );
     ++histo2d[{ 2, 3 }]; // fill the first (non-overflow) bin
     ++histo2d[{ -100, -100 }];
-    BOOST_TEST( toJSON( histo2d ).at( "bins" )[( 1 + 4 + 1 ) * 3 + 3] == 2 );
-    BOOST_TEST( toJSON( histo2d ).at( "nEntries" ) == 3 );
-    BOOST_TEST( toJSON( histo2d ).at( "nTotEntries" ) == 2 );
-    BOOST_TEST( toJSON( histo2d ).at( "sumx" ) == 3 );
-    BOOST_TEST( toJSON( histo2d ).at( "sumy" ) == 4 );
-    BOOST_TEST( toJSON( histo2d ).at( "sumx2" ) == 5 );
-    BOOST_TEST( toJSON( histo2d ).at( "sumy2" ) == 10 );
-    BOOST_TEST( toJSON( histo2d ).at( "sumxy" ) == 7 );
-    BOOST_TEST( toJSON( histo2d ).at( "meanx" ) == 1.5 );
-    BOOST_TEST( toJSON( histo2d ).at( "meany" ) == 2 );
-    BOOST_TEST( toJSON( histo2d ).at( "standard_deviationx" ) == .5 );
-    BOOST_TEST( toJSON( histo2d ).at( "standard_deviationy" ) == 1 );
+    BOOST_TEST( nlohmann::json( histo2d ).at( "bins" )[( 1 + 4 + 1 ) * 3 + 3] == 2 );
+    BOOST_TEST( nlohmann::json( histo2d ).at( "nEntries" ) == 3 );
+    BOOST_TEST( nlohmann::json( histo2d ).at( "nTotEntries" ) == 2 );
+    BOOST_TEST( nlohmann::json( histo2d ).at( "sumx" ) == 3 );
+    BOOST_TEST( nlohmann::json( histo2d ).at( "sumy" ) == 4 );
+    BOOST_TEST( nlohmann::json( histo2d ).at( "sumx2" ) == 5 );
+    BOOST_TEST( nlohmann::json( histo2d ).at( "sumy2" ) == 10 );
+    BOOST_TEST( nlohmann::json( histo2d ).at( "sumxy" ) == 7 );
+    BOOST_TEST( nlohmann::json( histo2d ).at( "meanx" ) == 1.5 );
+    BOOST_TEST( nlohmann::json( histo2d ).at( "meany" ) == 2 );
+    BOOST_TEST( nlohmann::json( histo2d ).at( "standard_deviationx" ) == .5 );
+    BOOST_TEST( nlohmann::json( histo2d ).at( "standard_deviationy" ) == 1 );
   }
   {
     Gaudi::Accumulators::RootHistogram<3> histo3d{ &algo, "GaudiH3D" };
@@ -620,27 +615,27 @@ BOOST_AUTO_TEST_CASE( test_custom_root_histos, *boost::unit_test::tolerance( 1e-
     algo.setProperty( "GaudiH3D_Axis2", "( 4, -10, 10, \"Z\" )" ).ignore();
     histo3d.createHistogram( algo );
     ++histo3d[{ 1, 1, 1 }]; // fill the first (non-overflow) bin
-    BOOST_TEST( toJSON( histo3d ).at( "bins" )[36 * 3 + 6 * 3 + 3] == 1 );
+    BOOST_TEST( nlohmann::json( histo3d ).at( "bins" )[36 * 3 + 6 * 3 + 3] == 1 );
     ++histo3d[{ 2, 3, 2 }]; // fill the first (non-overflow) bin
     ++histo3d[{ -100, -100, -100 }];
-    BOOST_TEST( toJSON( histo3d ).at( "bins" )[36 * 3 + 6 * 3 + 3] == 2 );
-    BOOST_TEST( toJSON( histo3d ).at( "nEntries" ) == 3 );
-    BOOST_TEST( toJSON( histo3d ).at( "nTotEntries" ) == 2 );
-    BOOST_TEST( toJSON( histo3d ).at( "sumx" ) == 3 );
-    BOOST_TEST( toJSON( histo3d ).at( "sumy" ) == 4 );
-    BOOST_TEST( toJSON( histo3d ).at( "sumz" ) == 3 );
-    BOOST_TEST( toJSON( histo3d ).at( "sumx2" ) == 5 );
-    BOOST_TEST( toJSON( histo3d ).at( "sumy2" ) == 10 );
-    BOOST_TEST( toJSON( histo3d ).at( "sumz2" ) == 5 );
-    BOOST_TEST( toJSON( histo3d ).at( "sumxy" ) == 7 );
-    BOOST_TEST( toJSON( histo3d ).at( "sumxz" ) == 5 );
-    BOOST_TEST( toJSON( histo3d ).at( "sumyz" ) == 7 );
-    BOOST_TEST( toJSON( histo3d ).at( "meanx" ) == 1.5 );
-    BOOST_TEST( toJSON( histo3d ).at( "meany" ) == 2 );
-    BOOST_TEST( toJSON( histo3d ).at( "meanz" ) == 1.5 );
-    BOOST_TEST( toJSON( histo3d ).at( "standard_deviationx" ) == .5 );
-    BOOST_TEST( toJSON( histo3d ).at( "standard_deviationy" ) == 1 );
-    BOOST_TEST( toJSON( histo3d ).at( "standard_deviationz" ) == .5 );
+    BOOST_TEST( nlohmann::json( histo3d ).at( "bins" )[36 * 3 + 6 * 3 + 3] == 2 );
+    BOOST_TEST( nlohmann::json( histo3d ).at( "nEntries" ) == 3 );
+    BOOST_TEST( nlohmann::json( histo3d ).at( "nTotEntries" ) == 2 );
+    BOOST_TEST( nlohmann::json( histo3d ).at( "sumx" ) == 3 );
+    BOOST_TEST( nlohmann::json( histo3d ).at( "sumy" ) == 4 );
+    BOOST_TEST( nlohmann::json( histo3d ).at( "sumz" ) == 3 );
+    BOOST_TEST( nlohmann::json( histo3d ).at( "sumx2" ) == 5 );
+    BOOST_TEST( nlohmann::json( histo3d ).at( "sumy2" ) == 10 );
+    BOOST_TEST( nlohmann::json( histo3d ).at( "sumz2" ) == 5 );
+    BOOST_TEST( nlohmann::json( histo3d ).at( "sumxy" ) == 7 );
+    BOOST_TEST( nlohmann::json( histo3d ).at( "sumxz" ) == 5 );
+    BOOST_TEST( nlohmann::json( histo3d ).at( "sumyz" ) == 7 );
+    BOOST_TEST( nlohmann::json( histo3d ).at( "meanx" ) == 1.5 );
+    BOOST_TEST( nlohmann::json( histo3d ).at( "meany" ) == 2 );
+    BOOST_TEST( nlohmann::json( histo3d ).at( "meanz" ) == 1.5 );
+    BOOST_TEST( nlohmann::json( histo3d ).at( "standard_deviationx" ) == .5 );
+    BOOST_TEST( nlohmann::json( histo3d ).at( "standard_deviationy" ) == 1 );
+    BOOST_TEST( nlohmann::json( histo3d ).at( "standard_deviationz" ) == .5 );
   }
 }
 
@@ -653,7 +648,7 @@ BOOST_AUTO_TEST_CASE( test_custom_integer_histos ) {
   histo.createHistogram( algo );
   ++histo[1]; // fill the second (non-overflow) bin
   ++histo[3]; // fill the fourth (non-overflow) bin
-  auto j = toJSON( histo );
+  auto j = nlohmann::json( histo );
   BOOST_TEST( j.at( "bins" )[0] == 0 );
   BOOST_TEST( j.at( "bins" )[2] == 1 );
   BOOST_TEST( j.at( "bins" )[4] == 1 );
@@ -669,7 +664,7 @@ BOOST_AUTO_TEST_CASE( test_custom_custom_axis ) {
   hist[TestEnum::A] += 1;
   ++hist[TestEnum::B];
   hist[TestEnum::C] += 2;
-  auto j    = toJSON( hist );
+  auto j    = nlohmann::json( hist );
   auto bins = j["bins"];
   BOOST_TEST( bins[0] == 0 );
   BOOST_TEST( bins[1] == 1 );
@@ -693,7 +688,7 @@ BOOST_AUTO_TEST_CASE( test_custom_mixed_axis ) {
   hist[{ TestEnum::A, 0.5 }] += 1;
   ++hist[{ TestEnum::B, 1.5 }];
   hist[{ TestEnum::C, 2.5 }] += 2;
-  auto j    = toJSON( hist );
+  auto j    = nlohmann::json( hist );
   auto bins = j["bins"];
   BOOST_TEST( bins[6 + 1] == 1 );
   BOOST_TEST( bins[6 * 2 + 2] == 1 );

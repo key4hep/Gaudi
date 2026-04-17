@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -22,6 +22,11 @@ gaudi_add_library(GaudiTestSuiteLib
                   LINK PUBLIC GaudiKernel)
 
 # Build the plugin
+# Files with special include order requirements for unity builds
+set_source_files_properties(
+    src/ExtendedProperties/BoostArrayProperties.cpp
+    src/ExtendedProperties/ExtendedProperties2.cpp
+    PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON)
 gaudi_add_module(GaudiTestSuiteComponents
                  SOURCES src/AbortEvent/AbortEventAlg.cpp
                          src/AlgSequencer/HelloWorld.cpp

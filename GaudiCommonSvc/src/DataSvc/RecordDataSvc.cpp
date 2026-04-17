@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -38,7 +38,6 @@
 #include <GaudiKernel/SmartIF.h>
 
 #include "RecordDataSvc.h"
-using namespace std;
 
 // Instantiation of a static factory class used by clients to create
 // instances of this service
@@ -121,10 +120,10 @@ void RecordDataSvc::loadRecords( IRegistry* pObj ) {
   if ( !pObj ) {
     error() << "Failed to load records object" << endmsg;
   } else {
-    vector<IRegistry*> leaves;
-    DataObject*        p   = nullptr;
-    const string&      id0 = pObj->identifier();
-    StatusCode         sc  = retrieveObject( id0, p );
+    std::vector<IRegistry*> leaves;
+    DataObject*             p   = nullptr;
+    const std::string&      id0 = pObj->identifier();
+    StatusCode              sc  = retrieveObject( id0, p );
     if ( sc.isSuccess() ) {
       debug() << "Loaded records object: " << id0 << endmsg;
       sc = objectLeaves( pObj, leaves );
@@ -136,9 +135,9 @@ void RecordDataSvc::loadRecords( IRegistry* pObj ) {
 }
 
 /// Load new run record into the data store if necessary
-void RecordDataSvc::registerRecord( const string& data, IOpaqueAddress* pAddr ) {
+void RecordDataSvc::registerRecord( const std::string& data, IOpaqueAddress* pAddr ) {
   if ( !data.empty() && pAddr ) {
-    string fid = data;
+    std::string fid = data;
     debug() << "Request to load record for file " << fid << endmsg;
     StatusCode sc = registerAddress( m_root.get(), fid, pAddr );
     if ( !sc.isSuccess() ) {
@@ -154,6 +153,6 @@ void RecordDataSvc::registerRecord( const string& data, IOpaqueAddress* pAddr ) 
 }
 
 /// Standard Constructor
-RecordDataSvc::RecordDataSvc( const string& name, ISvcLocator* svc ) : base_class( name, svc ) {
+RecordDataSvc::RecordDataSvc( const std::string& name, ISvcLocator* svc ) : base_class( name, svc ) {
   m_rootName = "/Records";
 }

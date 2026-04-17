@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -27,7 +27,6 @@
 // Define the algorithm factory for the standard output data writer
 DECLARE_COMPONENT( SequentialOutputStream )
 
-using namespace std;
 namespace bf = boost::filesystem;
 
 //=============================================================================
@@ -59,15 +58,15 @@ StatusCode SequentialOutputStream::execute() {
 void SequentialOutputStream::makeFilename() {
   if ( m_events % m_eventsPerFile != 0 ) return;
 
-  bf::path outputPath( m_outputName.value() );
-  string   filename  = outputPath.filename().string();
-  bf::path dir       = outputPath.parent_path();
-  string   stem      = outputPath.stem().string();
-  string   extension = outputPath.extension().string();
+  bf::path    outputPath( m_outputName.value() );
+  std::string filename  = outputPath.filename().string();
+  bf::path    dir       = outputPath.parent_path();
+  std::string stem      = outputPath.stem().string();
+  std::string extension = outputPath.extension().string();
 
   if ( !dir.empty() ) {
     if ( !bf::exists( dir ) ) {
-      stringstream stream;
+      std::stringstream stream;
       stream << "Directory " << dir << " does not exist.";
       throw GaudiException( stream.str(), "error", StatusCode::FAILURE );
     }
@@ -78,16 +77,16 @@ void SequentialOutputStream::makeFilename() {
       try {
         m_iFile = std::stoul( stem );
       } catch ( const std::invalid_argument& /* cast */ ) {
-        string msg = "Filename " + filename + " is not a number, which was needed.";
+        std::string msg = "Filename " + filename + " is not a number, which was needed.";
         throw GaudiException( msg, "error", StatusCode::FAILURE );
       }
     }
-    string       iFile  = std::to_string( m_iFile );
+    std::string  iFile  = std::to_string( m_iFile );
     unsigned int length = 0;
 
     if ( stem.length() > iFile.length() ) { length = stem.length() - iFile.length(); }
 
-    stringstream name;
+    std::stringstream name;
     if ( !dir.empty() ) name << dir << "/";
     for ( unsigned int i = 0; i < length; ++i ) { name << "0"; }
     name << iFile << extension;
@@ -98,12 +97,12 @@ void SequentialOutputStream::makeFilename() {
       stem.resize( pos );
     }
 
-    string iFile = std::to_string( m_iFile );
+    std::string iFile = std::to_string( m_iFile );
 
     unsigned int length = 0;
     if ( m_nNumbersAdded > iFile.length() ) { length = m_nNumbersAdded - iFile.length(); }
 
-    stringstream name;
+    std::stringstream name;
     name << dir << "/" << stem;
     for ( unsigned int i = 0; i < length; ++i ) {
       if ( i == 0 ) name << "_";
