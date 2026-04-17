@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -12,11 +12,12 @@
 #define BOOST_TEST_MODULE test_CounterArray
 #include <Gaudi/Accumulators/CounterArray.h>
 
+#include <nlohmann/json.hpp>
+
 #include <boost/test/unit_test.hpp>
 
 #include <format>
 
-#include <iostream>
 #include <vector>
 
 namespace {
@@ -40,13 +41,6 @@ namespace {
     }
     std::vector<Gaudi::Monitoring::Hub::Entity> m_entities;
   };
-
-  // Little helper for using automatic nlohmann conversion mechanism
-  template <typename T>
-  nlohmann::json toJSON( T const& t ) {
-    nlohmann::json j = t;
-    return t;
-  }
 } // namespace
 
 BOOST_AUTO_TEST_CASE( test_counter_array ) {
@@ -66,7 +60,7 @@ BOOST_AUTO_TEST_CASE( test_counter_array ) {
       i++;
     }
     // check json output
-    for ( unsigned int i = 0; i < 5; i++ ) { BOOST_TEST( toJSON( counters[i] ).at( "nEntries" ) == 1 ); }
+    for ( unsigned int i = 0; i < 5; i++ ) { BOOST_TEST( nlohmann::json( counters[i] ).at( "nEntries" ) == 1 ); }
   }
 
   {
@@ -86,8 +80,8 @@ BOOST_AUTO_TEST_CASE( test_counter_array ) {
     }
     // check json output
     for ( unsigned int i = 0; i < 5; i++ ) {
-      BOOST_TEST( toJSON( counters[i] ).at( "nEntries" ) == 1 );
-      BOOST_TEST( toJSON( counters[i] ).at( "sum" ) == i );
+      BOOST_TEST( nlohmann::json( counters[i] ).at( "nEntries" ) == 1 );
+      BOOST_TEST( nlohmann::json( counters[i] ).at( "sum" ) == i );
     }
   }
 
@@ -105,7 +99,7 @@ BOOST_AUTO_TEST_CASE( test_counter_array ) {
       i++;
     }
     // check json output
-    for ( unsigned int i = 0; i < 5; i++ ) { BOOST_TEST( toJSON( counters[i] ).at( "nEntries" ) == 1 ); }
+    for ( unsigned int i = 0; i < 5; i++ ) { BOOST_TEST( nlohmann::json( counters[i] ).at( "nEntries" ) == 1 ); }
     // test buffer method
     {
       auto cbuffer = counters.buffer();

@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -9,6 +9,15 @@
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
 # GaudiCoreSvc subdirectory
+
+# Files that define ON_DEBUG/ON_VERBOSE macros differently cannot be combined in unity builds
+set_source_files_properties(
+    src/IncidentSvc/IncidentSvc.cpp
+    src/ApplicationMgr/ServiceManager.cpp
+    src/ApplicationMgr/ToolSvc.cpp
+    src/ApplicationMgr/ApplicationMgr.cpp
+    src/ApplicationMgr/EventLoopMgr.cpp
+    PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON)
 
 # Build the plugin library
 gaudi_add_module(GaudiCoreSvc

@@ -9,6 +9,7 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 #include <Gaudi/Accumulators.h>
+#include <nlohmann/json.hpp>
 #if __has_include( <catch2/catch.hpp>)
 // Catch2 v2
 #  include <catch2/catch.hpp>
@@ -35,13 +36,6 @@ class CommonMessaging<Algo> : public CommonMessagingBase {
 };
 
 namespace {
-  // Little helper for using automatic nlohmann conversion mechanism
-  template <typename T>
-  nlohmann::json toJSON( T const& t ) {
-    nlohmann::json j = t;
-    return t;
-  }
-
   // Mock code for the test
   struct MonitoringHub : Gaudi::Monitoring::Hub {};
   struct ServiceLocator {
@@ -63,15 +57,15 @@ namespace {
     counter_t c;
 
     void check_data() const {
-      nlohmann::json j = toJSON( c );
+      nlohmann::json j = nlohmann::json( c );
       CHECK( j["type"].get<std::string>() == c.typeString );
       CHECK( j["empty"].get<bool>() == !c.toBePrinted() );
       static_cast<const helper<C>*>( this )->check_details( j, j["empty"].get<bool>() );
     }
     void check_round_trip() const {
-      auto j  = toJSON( c );
+      auto j  = nlohmann::json( c );
       auto c2 = c.fromJSON( j );
-      auto j2 = toJSON( c2 );
+      auto j2 = nlohmann::json( c2 );
       CHECK( j == j2 );
     }
     void check() {
@@ -197,7 +191,7 @@ namespace {
     }
 
     void check_data() const {
-      nlohmann::json j = toJSON( c );
+      nlohmann::json j = nlohmann::json( c );
       CHECK( j["type"].get<std::string>() == c.typeString );
       CHECK( j["empty"].get<bool>() == !c.toBePrinted() );
       CHECK( j["level"].get<MSG::Level>() == MSG::DEBUG );
@@ -210,9 +204,9 @@ namespace {
     }
 
     void check_round_trip() const {
-      auto j  = toJSON( c );
+      auto j  = nlohmann::json( c );
       auto c2 = c.fromJSON( j );
-      auto j2 = toJSON( c2 );
+      auto j2 = nlohmann::json( c2 );
       CHECK( j == j2 );
     }
 

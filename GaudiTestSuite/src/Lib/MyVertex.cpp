@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -13,15 +13,15 @@
 using namespace Gaudi::TestSuite;
 
 namespace {
-  struct InstanceCount {
+  struct MyVertexInstanceCount {
     long count;
-    InstanceCount() : count( 0 ) {}
-    ~InstanceCount() {
+    MyVertexInstanceCount() : count( 0 ) {}
+    ~MyVertexInstanceCount() {
       if ( count ) std::cout << "Number of MyVertex instances:" << count << std::endl;
     }
   };
 } // namespace
-static InstanceCount s_instances;
+static MyVertexInstanceCount s_instances;
 
 /// Standard constructor
 MyVertex::MyVertex() : m_x( 0.0 ), m_y( 0.0 ), m_z( 0.0 ) { s_instances.count++; }

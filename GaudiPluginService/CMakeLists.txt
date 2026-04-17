@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 2013-2022 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 2013-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -38,6 +38,10 @@ else()
 endif()
 
 # Build library
+# PluginServiceV1 and V2 have conflicting symbols in anonymous namespaces,
+# so they cannot be combined in a unity build
+set_source_files_properties(src/PluginServiceV1.cpp src/PluginServiceV2.cpp
+                            PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON)
 gaudi_add_library(GaudiPluginService
                   SOURCES src/PluginServiceV2.cpp
                           src/PluginServiceV1.cpp

@@ -421,6 +421,9 @@ if(BUILD_TESTING)
       Boost::thread
     TEST
   )
+  foreach(target IN ITEMS GaudiKernel_catch2_tests test_ProfileHistoSpeed test_CounterArray test_CounterHistoMap test_CounterHistos test_CounterHistoArray test_GenericSink)
+    target_include_directories(${target} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/tests/include)
+  endforeach()
 
   gaudi_add_pytest(tests/pytest)
 

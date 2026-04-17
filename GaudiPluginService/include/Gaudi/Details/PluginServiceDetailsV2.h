@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 2013-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 2013-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -230,7 +230,18 @@ namespace Gaudi {
   } // namespace PluginService
 } // namespace Gaudi
 
+// __COUNTER__ is a widely-supported compiler extension (GCC, Clang, MSVC) but not standard C++.
+// In Clang 22+ it warns as a C2y extension; suppress that at each expansion site.
+#if defined( __clang__ ) && __clang_major__ >= 22
+#  define _PS_V2_CNAME_PRAGMA_PUSH                                                                                     \
+    _Pragma( "clang diagnostic push" ) _Pragma( "clang diagnostic ignored \"-Wc2y-extensions\"" )
+#  define _PS_V2_CNAME_PRAGMA_POP _Pragma( "clang diagnostic pop" )
+#else
+#  define _PS_V2_CNAME_PRAGMA_PUSH
+#  define _PS_V2_CNAME_PRAGMA_POP
+#endif
+
 #define _PS_V2_INTERNAL_FACTORY_MAKE_REGISTER_CNAME_TOKEN( serial ) _register_##serial
 #define _PS_V2_INTERNAL_FACTORY_MAKE_REGISTER_CNAME( serial )                                                          \
   _PS_V2_INTERNAL_FACTORY_MAKE_REGISTER_CNAME_TOKEN( serial )
-#define _PS_V2_INTERNAL_FACTORY_REGISTER_CNAME _PS_V2_INTERNAL_FACTORY_MAKE_REGISTER_CNAME( __LINE__ )
+#define _PS_V2_INTERNAL_FACTORY_REGISTER_CNAME _PS_V2_INTERNAL_FACTORY_MAKE_REGISTER_CNAME( __COUNTER__ )

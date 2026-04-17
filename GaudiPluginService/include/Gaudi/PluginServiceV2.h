@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 2013-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 2013-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -162,26 +162,34 @@ namespace Gaudi {
 } // namespace Gaudi
 
 #define _PS_V2_DECLARE_COMPONENT( type )                                                                               \
+  _PS_V2_CNAME_PRAGMA_PUSH                                                                                             \
   namespace {                                                                                                          \
     ::Gaudi::PluginService::v2::DeclareFactory<type> _PS_V2_INTERNAL_FACTORY_REGISTER_CNAME{};                         \
-  }
+  }                                                                                                                    \
+  _PS_V2_CNAME_PRAGMA_POP
 
 #define _PS_V2_DECLARE_COMPONENT_WITH_ID( type, id )                                                                   \
+  _PS_V2_CNAME_PRAGMA_PUSH                                                                                             \
   namespace {                                                                                                          \
     ::Gaudi::PluginService::v2::DeclareFactory<type> _PS_V2_INTERNAL_FACTORY_REGISTER_CNAME{                           \
         ::Gaudi::PluginService::v2::Details::stringify_id( id ) };                                                     \
-  }
+  }                                                                                                                    \
+  _PS_V2_CNAME_PRAGMA_POP
 
 #define _PS_V2_DECLARE_FACTORY( type, factory )                                                                        \
+  _PS_V2_CNAME_PRAGMA_PUSH                                                                                             \
   namespace {                                                                                                          \
     ::Gaudi::PluginService::v2::DeclareFactory<type, factory> _PS_V2_INTERNAL_FACTORY_REGISTER_CNAME{};                \
-  }
+  }                                                                                                                    \
+  _PS_V2_CNAME_PRAGMA_POP
 
 #define _PS_V2_DECLARE_FACTORY_WITH_ID( type, id, factory )                                                            \
+  _PS_V2_CNAME_PRAGMA_PUSH                                                                                             \
   namespace {                                                                                                          \
     ::Gaudi::PluginService::v2::DeclareFactory<type, factory> _PS_V2_INTERNAL_FACTORY_REGISTER_CNAME{                  \
         ::Gaudi::PluginService::v2::Details::stringify_id( id ) };                                                     \
-  }
+  }                                                                                                                    \
+  _PS_V2_CNAME_PRAGMA_POP
 
 #define _PS_V2_DECLARE_COMPONENT_PROPERTY( id, name, value )                                                           \
   namespace {                                                                                                          \
