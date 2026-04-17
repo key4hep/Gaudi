@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -60,9 +60,9 @@ struct EventSlot {
   void addSubSlot( std::unique_ptr<EventContext> viewContext, const std::string& nodeName ) {
     unsigned int lastIndex = allSubSlots.size();
 
-    auto search = subSlotsByNode.find( nodeName );
+    const auto search = subSlotsByNode.find( nodeName );
     if ( search != subSlotsByNode.end() )
-      subSlotsByNode[nodeName].push_back( lastIndex );
+      search->second.push_back( lastIndex );
     else
       subSlotsByNode.emplace( std::piecewise_construct, std::forward_as_tuple( nodeName ),
                               std::forward_as_tuple( 1, lastIndex ) );
