@@ -411,6 +411,7 @@ if(BUILD_TESTING)
       tests/src/test_SmartRef.cpp
       tests/src/test_SerializeSTL.cpp
       tests/src/test_AnyDataObject.cpp
+      tests/src/test_SynchronizedValue.cpp
       tests/src/test_GaudiTime.cpp
       tests/src/test_GaudiTiming.cpp
       tests/src/test_LockedHandle.cpp
