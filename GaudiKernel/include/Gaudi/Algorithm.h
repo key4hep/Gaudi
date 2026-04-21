@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -394,7 +394,7 @@ namespace Gaudi {
     /// Return the cardinality
     unsigned int cardinality() const override { return m_cardinality; }
 
-    const std::vector<std::string>& neededResources() const override { return m_neededResources; }
+    const AlgResources_t& neededResources() const override { return m_neededResources; }
 
   protected:
     /// Has the Algorithm already been initialized?
@@ -495,9 +495,9 @@ namespace Gaudi {
     Gaudi::Property<bool> m_registerContext{ this, "RegisterForContextService", false,
                                              "flag to enforce the registration for Algorithm Context Service" };
 
-    Gaudi::Property<int>                      m_cardinality{ this, "Cardinality", 0,
+    Gaudi::Property<int>            m_cardinality{ this, "Cardinality", 0,
                                         "how many clones to create - 0 means algo is reentrant" };
-    Gaudi::Property<std::vector<std::string>> m_neededResources{
+    Gaudi::Property<AlgResources_t> m_neededResources{
         this, "NeededResources", {}, "named resources needed during event looping" };
 
     Gaudi::Property<bool> m_asynchronous{ this, "Asynchronous", false,

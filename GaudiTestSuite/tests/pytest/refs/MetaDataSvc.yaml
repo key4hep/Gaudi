@@ -247,7 +247,7 @@ stdout: |-
   NTupleAlgorithm.ExtraOutputs:set()
   NTupleAlgorithm.FilterCircularDependencies:True
   NTupleAlgorithm.MonitorService:'MonitorSvc'
-  NTupleAlgorithm.NeededResources:[  ]
+  NTupleAlgorithm.NeededResources:{  }
   NTupleAlgorithm.OutputLevel:3
   NTupleAlgorithm.RegisterForContextService:False
   NTupleAlgorithm.Timeline:False

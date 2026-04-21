@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -50,8 +50,21 @@ StatusCode AlgResourcePool::initialize() {
   sc = decodeTopAlgs();
   if ( sc.isFailure() ) warning() << "Algorithms could not be properly decoded." << endmsg;
 
-  // let's assume all resources are there
-  m_available_resources.set();
+  if ( !m_availableResources.empty() ) info() << m_availableResources << endmsg;
+
+  // Check if an algorithm requests more of a resource than is available
+  for ( const IAlgorithm* algo : m_flatUniqueAlgList ) {
+    for ( const auto& [res_name, res_required] : algo->neededResources() ) {
+      auto res           = m_availableResources.find( res_name );
+      auto res_available = ( res != m_availableResources.end() ) ? res->second : 0;
+      if ( res_required > res_available ) {
+        error() << "Cannot satisfy resource requirement '" << res_name << "' for algorithm '" << algo->name()
+                << " (required: " << res_required << ", available: " << res_available << ")" << endmsg;
+        return StatusCode::FAILURE;
+      }
+    }
+  }
+
   return StatusCode::SUCCESS;
 }
 
@@ -112,22 +125,38 @@ StatusCode AlgResourcePool::acquireAlgorithm( std::string_view name, IAlgorithm*
   if ( sc.isFailure() )
     DEBUG_MSG << "No instance of algorithm " << name << " could be retrieved in non-blocking mode" << endmsg;
 
-  // if (m_lazyCreation ) {
-  //    TODO: fill the lazyCreation part
-  // }
   if ( sc.isSuccess() ) {
-    state_type requirements = m_resource_requirements[algo_id];
-    m_resource_mutex.lock();
-    if ( requirements.is_subset_of( m_available_resources ) ) {
-      m_available_resources ^= requirements;
-    } else {
-      sc = StatusCode::FAILURE;
-      error() << "Failure to allocate resources of algorithm " << name << endmsg;
-      // in case of not reentrant, push it back. Reentrant ones are pushed back
-      // in all cases further down
-      if ( !algo->isReEntrant() ) { itQueueIAlgPtr->second->push( algo ); }
+    // Try to acquire all the resources the algorithm needs
+    if ( !algo->neededResources().empty() ) {
+      std::scoped_lock lock( m_resource_mutex );
+
+      auto tmpResources = m_availableResources; // backup resources
+      for ( const auto& [res_name, res_value] : algo->neededResources() ) {
+        auto res = m_availableResources.find( res_name );
+        if ( res != m_availableResources.end() && res->second >= res_value ) {
+          res->second -= res_value;
+        } else {
+          sc             = StatusCode::FAILURE;
+          const auto lvl = static_cast<MSG::Level>( m_missingResourceMsgLevel.value() );
+          if ( msgLevel( lvl ) ) {
+            msgStream( lvl ) << "Failure to allocate resource '" << res_name << "' for algorithm " << name
+                             << " (required: " << res_value << ", available: " << res->second << ")" << endmsg;
+          }
+          break;
+        }
+      }
+
+      // Could not acquire all resources
+      if ( sc.isFailure() ) {
+        // Restore resources
+        m_availableResources = std::move( tmpResources );
+
+        // in case of not reentrant, push it back. Reentrant ones are pushed back
+        // in all cases further down
+        if ( !algo->isReEntrant() ) { itQueueIAlgPtr->second->push( algo ); }
+      }
     }
-    m_resource_mutex.unlock();
+
     if ( algo->isReEntrant() ) {
       // push back reentrant algorithms immediately as it can be reused
       itQueueIAlgPtr->second->push( algo );
@@ -144,9 +173,13 @@ StatusCode AlgResourcePool::releaseAlgorithm( std::string_view name, IAlgorithm*
   size_t                      algo_id = hash_function( name );
 
   // release resources used by the algorithm
-  m_resource_mutex.lock();
-  m_available_resources |= m_resource_requirements[algo_id];
-  m_resource_mutex.unlock();
+  {
+    std::scoped_lock lock( m_resource_mutex );
+    for ( const auto& [res_name, res_value] : algo->neededResources() ) {
+      auto res = m_availableResources.find( res_name );
+      if ( res != m_availableResources.end() ) { res->second += res_value; }
+    }
+  }
 
   // release algorithm itself if not reentrant
   if ( !algo->isReEntrant() ) { m_algqueue_map[algo_id]->push( algo ); }
@@ -155,19 +188,25 @@ StatusCode AlgResourcePool::releaseAlgorithm( std::string_view name, IAlgorithm*
 
 //---------------------------------------------------------------------------
 
-StatusCode AlgResourcePool::acquireResource( std::string_view name ) {
-  m_resource_mutex.lock();
-  m_available_resources[m_resource_indices[name]] = false;
-  m_resource_mutex.unlock();
-  return StatusCode::SUCCESS;
+StatusCode AlgResourcePool::acquireResource( std::string_view name, unsigned int value ) {
+  std::scoped_lock lock( m_resource_mutex );
+  auto             res = m_availableResources.find( name );
+  if ( res != m_availableResources.end() && res->second >= value ) {
+    res->second -= value;
+    return StatusCode::SUCCESS;
+  }
+
+  return StatusCode::FAILURE;
 }
 
 //---------------------------------------------------------------------------
 
-StatusCode AlgResourcePool::releaseResource( std::string_view name ) {
-  m_resource_mutex.lock();
-  m_available_resources[m_resource_indices[name]] = true;
-  m_resource_mutex.unlock();
+StatusCode AlgResourcePool::releaseResource( std::string_view name, unsigned int value ) {
+  std::scoped_lock lock( m_resource_mutex );
+  auto             res = m_availableResources.find( name );
+  if ( res == m_availableResources.end() ) { return StatusCode::FAILURE; }
+
+  res->second += value;
   return StatusCode::SUCCESS;
 }
 
@@ -250,7 +289,6 @@ StatusCode AlgResourcePool::decodeTopAlgs() {
   // Unrolled ---
 
   // Now let's manage the clones
-  unsigned int           resource_counter( 0 );
   std::hash<std::string> hash_function;
   for ( IAlgorithm* ialgo : m_flatUniqueAlgList ) {
 
@@ -291,28 +329,14 @@ StatusCode AlgResourcePool::decodeTopAlgs() {
     }
     m_n_of_created_instances[algo_id] = 1;
 
-    state_type requirements( 0 );
-
-    for ( auto& resource_name : ialgo->neededResources() ) {
-      auto ret = m_resource_indices.emplace( resource_name, resource_counter );
-      // insert successful means == wasn't known before. So increment counter
-      if ( ret.second ) ++resource_counter;
-      // Resize for every algorithm according to the found resources
-      requirements.resize( resource_counter );
-      // in any case the return value holds the proper product index
-      requirements[ret.first->second] = true;
-    }
-
-    m_resource_requirements[algo_id] = requirements;
-
     // potentially create clones; if not lazy creation we have to do it now
     if ( !m_lazyCreation ) {
       for ( unsigned int i = 1, end = m_n_of_allowed_instances[algo_id]; i < end; ++i ) {
         DEBUG_MSG << "type/name to create clone of: " << item_type << "/" << item_name << endmsg;
         IAlgorithm* ialgoClone( nullptr );
 
-        if ( StatusCode createAlgSc =
-                 algMan->createAlgorithm( item_type, item_name, ialgoClone, /*managed*/ true, /*checkIfExists*/ false );
+        if ( StatusCode createAlgSc = algMan->createAlgorithm( item_type, item_name, ialgoClone, /*managed*/ true,
+                                                               /*checkIfExists*/ false );
              createAlgSc.isFailure() ) {
           return createAlgSc;
         }
@@ -322,13 +346,6 @@ StatusCode AlgResourcePool::decodeTopAlgs() {
       }
     }
   }
-
-  // Now resize all the requirement bitsets to the same size
-  for ( auto& kv : m_resource_requirements ) { kv.second.resize( resource_counter ); }
-
-  // Set all resources to be available
-  m_available_resources.resize( resource_counter );
-  m_available_resources.set();
 
   return sc;
 }
