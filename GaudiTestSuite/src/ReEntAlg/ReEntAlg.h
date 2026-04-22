@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -26,4 +26,8 @@ public:
 
 private:
   Gaudi::Property<unsigned int> m_sleep{ this, "SleepFor", 1000, "ms to sleep in execute" };
+
+  // Count maximum number of concurrent executions
+  mutable std::atomic<int> m_concurrentExecs{ 0 };
+  mutable std::atomic<int> m_maxConcurrency{ 0 };
 };
