@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2021 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -18,6 +18,8 @@
 #include <boost/test/unit_test.hpp>
 
 #include <chrono>
+#include <condition_variable>
+#include <mutex>
 #include <sstream>
 #include <string>
 
@@ -71,26 +73,47 @@ const std::string RegularLine{ "Flush called regularly\n" };
 const std::string FinalLine{ "Flush called in stop\n" };
 
 struct TestFlushSink : public Gaudi::Monitoring::BaseSink {
-  TestFlushSink( std::ostream& output, ISvcLocator* sl ) : BaseSink( "TestFlushSink", sl ), m_output( output ) {}
-  void          flush( bool isStop ) override { m_output << ( isStop ? FinalLine : RegularLine ); }
-  std::ostream& m_output;
+  TestFlushSink( ISvcLocator* sl ) : BaseSink( "TestFlushSink", sl ) {}
+  void flush( bool isStop ) override {
+    {
+      std::lock_guard lock{ m_mutex };
+      m_output << ( isStop ? FinalLine : RegularLine );
+      ++m_flushCount;
+    }
+    m_cv.notify_all();
+  }
+  /// Block until at least n flushes have occurred (5 s timeout).
+  void waitForFlushCount( int n ) {
+    std::unique_lock lock{ m_mutex };
+    m_cv.wait_for( lock, std::chrono::seconds( 5 ), [&] { return m_flushCount >= n; } );
+  }
+  /// Thread-safe snapshot of the accumulated output.
+  std::string str() {
+    std::lock_guard lock{ m_mutex };
+    return m_output.str();
+  }
+  std::stringstream       m_output;
+  std::mutex              m_mutex;
+  std::condition_variable m_cv;
+  int                     m_flushCount{ 0 };
 };
 
 BOOST_AUTO_TEST_CASE( test_sink_autoflush ) {
-  using namespace std::chrono_literals;
   Gaudi::Application::Options opts{ { "ApplicationMgr.JobOptionsType", "\"NONE\"" } };
   auto                        app = Gaudi::Application( std::move( opts ) );
   app.run( []( SmartIF<IStateful>& app ) -> int {
-    std::stringstream output;
-    TestFlushSink     sink{ output, app.as<ISvcLocator>() };
+    TestFlushSink sink{ app.as<ISvcLocator>() };
     sink.setProperty( "AutoFlushPeriod", .5 ).ignore();
+    auto t0 = std::chrono::steady_clock::now();
     sink.start().ignore();
-    std::this_thread::sleep_for( 600ms );
-    BOOST_TEST( output.str() == RegularLine );
-    std::this_thread::sleep_for( 600ms );
-    BOOST_TEST( output.str() == RegularLine + RegularLine );
+    sink.waitForFlushCount( 1 );
+    BOOST_CHECK( std::chrono::steady_clock::now() - t0 >= std::chrono::milliseconds( 500 ) );
+    BOOST_TEST( sink.str() == RegularLine );
+    sink.waitForFlushCount( 2 );
+    BOOST_CHECK( std::chrono::steady_clock::now() - t0 >= std::chrono::milliseconds( 1000 ) );
+    BOOST_TEST( sink.str() == RegularLine + RegularLine );
     sink.stop().ignore();
-    BOOST_TEST( output.str() == RegularLine + RegularLine + FinalLine );
+    BOOST_TEST( sink.str() == RegularLine + RegularLine + FinalLine );
     return 0;
   } );
 }
