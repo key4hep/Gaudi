@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -51,10 +51,16 @@ public:
   void reportMessage( const StatusCode& code, std::string_view source = "" ) override;
 
 private:
-  void m_activate();
-  void m_deactivate();
-  bool m_isActive = false;
+  void              m_activate();
+  void              m_deactivate();
+  std::atomic<bool> m_isActive = false;
 
+  void i_onSuppressChanged( bool v ) override {
+    m_messageActionsQueue.emplace( [this, v] { m_suppress = v; } );
+  }
+  void i_onDefaultFormatChanged( const std::string& v ) override {
+    m_messageActionsQueue.emplace( [this, v] { m_defaultFormat = v; } );
+  }
   tbb::concurrent_bounded_queue<std::function<void()>> m_messageActionsQueue;
 
   std::thread m_thread;

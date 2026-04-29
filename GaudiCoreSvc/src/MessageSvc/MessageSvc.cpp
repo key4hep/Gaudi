@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -15,6 +15,7 @@
 #include <GaudiKernel/Message.h>
 #include <GaudiKernel/StatusCode.h>
 #include <GaudiKernel/System.h>
+
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -320,13 +321,13 @@ void MessageSvc::i_reportMessage( const Message& msg, int outputLevel ) {
     if ( m_loggedStreams.end() != iLog ) { ( *iLog->second ) << *cmsg << std::endl; }
   }
 
-  if ( m_suppress.value() || m_stats.value() ) {
+  if ( m_suppress || m_stats.value() ) {
 
     // Increase the counter of 'key' type of messages for the source and
     // get the new value.
     const int nmsg = ++( m_sourceMap[msg.getSource()].msg[key] );
 
-    if ( m_suppress.value() && m_msgLimit[key] != 0 ) {
+    if ( m_suppress && m_msgLimit[key] != 0 ) {
       if ( nmsg > m_msgLimit[key] ) return;
       if ( nmsg == m_msgLimit[key] ) {
         std::string txt = levelNames[key] + " message limit (" + std::to_string( m_msgLimit[key].value() ) +
@@ -355,6 +356,11 @@ void MessageSvc::i_reportMessage( const Message& msg, int outputLevel ) {
 }
 
 void MessageSvc::reportMessage( const Message& msg ) { reportMessage( msg, outputLevel( msg.getSource() ) ); }
+
+StatusCode MessageSvc::setPropertyRepr( const std::string& n, const std::string& r ) {
+  auto lock = std::scoped_lock{ m_reportMutex };
+  return Service::setPropertyRepr( n, r );
+}
 
 void MessageSvc::reportMessage( std::string source, int type, std::string message ) {
   reportMessage( Message{ std::move( source ), type, std::move( message ) } );

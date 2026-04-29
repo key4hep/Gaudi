@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -23,6 +23,7 @@ StatusCode InertMessageSvc::initialize() {
 }
 
 StatusCode InertMessageSvc::InertMessageSvc::finalize() {
+  m_messageActionsQueue.emplace( [this] { m_suppress = false; } );
   m_deactivate();
   m_thread.join();
   return MessageSvc::finalize(); // must be called after all other actions
