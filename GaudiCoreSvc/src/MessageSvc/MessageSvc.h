@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -15,6 +15,7 @@
 #include <GaudiKernel/Message.h>
 #include <GaudiKernel/Service.h>
 #include <GaudiKernel/StatusCode.h>
+
 #include <iosfwd>
 #include <map>
 #include <memory>
@@ -121,6 +122,11 @@ public:
   // Implementation of IInactiveMessageCounter::incrInactiveCount()
   void incrInactiveCount( MSG::Level level, std::string_view src ) override;
 
+  // Override setPropertyRepr to serialize property writes with m_reportMutex,
+  // preventing data races between property updates and concurrent
+  // i_reportMessage calls.
+  StatusCode setPropertyRepr( const std::string& n, const std::string& r ) override;
+
 protected:
   /// Internal implementation of reportMessage(const Message&,int) without lock.
   virtual void i_reportMessage( const Message& msg, int outputLevel );
@@ -128,8 +134,18 @@ protected:
   /// Internal implementation of reportMessage(const StatusCode&,const std::string&) without lock.
   virtual void i_reportMessage( const StatusCode& code, std::string_view source );
 
+  bool         m_suppress{ false };
+  std::string  m_defaultFormat{ Message::getDefaultFormat() };
+  virtual void i_onSuppressChanged( bool v ) { m_suppress = v; }
+  virtual void i_onDefaultFormatChanged( const std::string& v ) { m_defaultFormat = v; }
+
 private:
-  Gaudi::Property<std::string>  m_defaultFormat{ this, "Format", Message::getDefaultFormat(), "" };
+  /// Mutex to synchronize multiple threads printing.
+  mutable std::recursive_mutex m_reportMutex;
+
+  Gaudi::Property<std::string> m_defaultFormatProp{
+      this, "Format", Message::getDefaultFormat(),
+      [this]( auto& ) { i_onDefaultFormatChanged( m_defaultFormatProp.value() ); }, "" };
   Gaudi::Property<std::string>  m_defaultTimeFormat{ this, "timeFormat", Message::getDefaultTimeFormat(), "" };
   Gaudi::Property<bool>         m_stats{ this, "showStats", false, "" };
   Gaudi::Property<unsigned int> m_statLevel{ this, "statLevel", 0, "" };
@@ -163,7 +179,8 @@ private:
                                                                   { this, "fatalLimit", 500 },
                                                                   { this, "alwaysLimit", 0 } } };
 
-  Gaudi::Property<bool> m_suppress{ this, "enableSuppression", false, "" };
+  Gaudi::Property<bool> m_suppressProp{ this, "enableSuppression", false,
+                                        [this]( auto& ) { i_onSuppressChanged( m_suppressProp.value() ); }, "" };
   Gaudi::Property<bool> m_inactCount{ this, "countInactive", false, &MessageSvc::setupInactCount, "" };
 
   Gaudi::Property<std::vector<std::string>> m_tracedInactiveSources{
@@ -203,9 +220,6 @@ private:
   void setupInactCount( Gaudi::Details::PropertyBase& prop );
 
   void setupLogStreams();
-
-  /// Mutex to synchronize multiple threads printing.
-  mutable std::recursive_mutex m_reportMutex;
 
   /// Mutex to synchronize multiple access to m_messageMap.
   mutable std::recursive_mutex m_messageMapMutex;
