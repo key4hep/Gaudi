@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -10,6 +10,7 @@
 \***********************************************************************************/
 #pragma once
 #include <algorithm>
+#include <concepts>
 #include <functional>
 #include <mutex>
 #include <shared_mutex>
@@ -26,48 +27,47 @@ namespace Gaudi::cxx {
             typename ReadLock  = std::conditional_t<std::is_same_v<std::shared_mutex, Mutex>, std::shared_lock<Mutex>,
                                                    std::lock_guard<Mutex>>,
             typename WriteLock = std::lock_guard<Mutex>>
+    requires( !std::is_reference_v<Value> ) // Value must not be a reference
   class SynchronizedValue {
-    static_assert( !std::is_reference_v<Value>, "Value must not be a reference" );
     Value         m_obj;
     mutable Mutex m_mtx;
 
   public:
     template <typename... Args>
-      requires( std::is_constructible_v<Value, Args...> )
-    SynchronizedValue( Args&&... args ) : m_obj{ std::forward<Args>( args )... } {}
+      requires std::constructible_from<Value, Args...> &&
+               ( sizeof...( Args ) != 1 || !( std::same_as<SynchronizedValue, std::remove_cvref_t<Args>> || ... ) )
+    explicit( sizeof...( Args ) == 1 ) SynchronizedValue( Args&&... args ) : m_obj( std::forward<Args>( args )... ) {}
 
-    SynchronizedValue( const SynchronizedValue& rhs ) {
-      static_assert( std::is_default_constructible_v<Value> ); // bound to hold, as otherwise we wouldn't get this
-                                                               // far... so for 'documnentation purpose' really (C++20:
-                                                               // turn into a `requires` clause )...
-      static_assert( std::is_copy_assignable_v<Value> );
-      auto lock = std::scoped_lock{ rhs.m_mtx, m_mtx };
-      m_obj     = rhs.m_obj;
-    }
+    SynchronizedValue( SynchronizedValue const& rhs )
+      requires std::constructible_from<Value, Value const&>
+        : m_obj( [&] {
+          auto _ = ReadLock{ rhs.m_mtx };
+          return Value( rhs.m_obj );
+        }() ) {}
 
-    SynchronizedValue& operator=( const SynchronizedValue& rhs ) {
-      static_assert( std::is_copy_assignable_v<Value> );
+    SynchronizedValue& operator=( const SynchronizedValue& rhs )
+      requires std::assignable_from<Value&, Value const&>
+    {
       if ( this != &rhs ) {
-        auto lock = std::scoped_lock{ rhs.m_mtx, m_mtx };
-        m_obj     = rhs.m_obj;
+        auto _ = std::scoped_lock{ rhs.m_mtx, m_mtx };
+        m_obj  = rhs.m_obj;
       }
       return *this;
     }
 
-    SynchronizedValue( SynchronizedValue&& rhs ) {
-      static_assert( std::is_default_constructible_v<Value> ); // bound to hold, as otherwise we wouldn't get this
-                                                               // far... so for 'documnentation purpose' really (C++20:
-                                                               // turn into a `requires` clause )...
-      static_assert( std::is_move_assignable_v<Value> );
-      auto lock = std::scoped_lock{ rhs.m_mtx, m_mtx };
-      m_obj     = std::move( rhs.m_obj );
-    }
+    SynchronizedValue( SynchronizedValue&& rhs )
+      requires std::constructible_from<Value, Value&&>
+        : m_obj( [&] {
+          auto _ = WriteLock{ rhs.m_mtx };
+          return Value( std::move( rhs.m_obj ) );
+        }() ) {}
 
-    SynchronizedValue& operator=( SynchronizedValue&& rhs ) {
-      static_assert( std::is_move_assignable_v<Value> );
+    SynchronizedValue& operator=( SynchronizedValue&& rhs )
+      requires std::assignable_from<Value&, Value&&>
+    {
       if ( this != &rhs ) {
-        auto lock = std::scoped_lock{ rhs.m_mtx, m_mtx };
-        m_obj     = std::move( rhs.m_obj );
+        auto _ = std::scoped_lock{ rhs.m_mtx, m_mtx };
+        m_obj  = std::move( rhs.m_obj );
       }
       return *this;
     }
@@ -75,13 +75,13 @@ namespace Gaudi::cxx {
     template <typename... Args, std::invocable<Value&, Args...> F>
       requires( !std::is_invocable_v<F, const Value&, Args...> )
     decltype( auto ) with_lock( F&& f, Args&&... args ) {
-      WriteLock _{ m_mtx };
+      auto _ = WriteLock{ m_mtx };
       return std::invoke( std::forward<F>( f ), m_obj, std::forward<Args>( args )... );
     }
 
     template <typename... Args, std::invocable<const Value&, Args...> F>
     decltype( auto ) with_lock( F&& f, Args&&... args ) const {
-      ReadLock _{ m_mtx };
+      auto _ = ReadLock{ m_mtx };
       return std::invoke( std::forward<F>( f ), m_obj, std::forward<Args>( args )... );
     }
   };
