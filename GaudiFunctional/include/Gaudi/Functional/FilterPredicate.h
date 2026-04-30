@@ -16,14 +16,15 @@ namespace Gaudi::Functional {
 
   namespace details {
 
-    template <typename Algorithm>
-    StatusCode execute_filter_predicate( const Algorithm& algo, const EventContext& ctx ) {
+    template <typename T, typename Traits_, bool isLegacy>
+    struct FilterPredicate;
+
+    template <typename... In, typename Traits_, bool isLegacy>
+    StatusCode execute_filter_predicate( const FilterPredicate<bool( const In&... ), Traits_, isLegacy>& algo,
+                                         const EventContext&                                             ctx ) {
       return details::execute(
           algo, [&] { return algo.invoke( algo, ctx ) ? FilterDecision::PASSED : FilterDecision::FAILED; } );
     }
-
-    template <typename T, typename Traits_, bool isLegacy>
-    struct FilterPredicate;
 
     template <typename... In, typename Traits_>
     struct FilterPredicate<bool( const In&... ), Traits_, true>

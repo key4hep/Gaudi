@@ -34,10 +34,7 @@ namespace Gaudi::Functional {
 
       // derived classes can NOT implement execute
       StatusCode execute( const EventContext& ctx ) const override final {
-        return details::execute( *this, [&] {
-          details::put( std::get<0>( this->m_outputs ), this->invoke( *this, ctx ) );
-          return FilterDecision::PASSED;
-        } );
+        return details::execute_single_output( *this, ctx, this->m_outputs );
       }
 
       // TODO/FIXME: how does the callee know in which order to produce the outputs?

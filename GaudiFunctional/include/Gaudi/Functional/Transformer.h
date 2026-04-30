@@ -24,31 +24,11 @@ namespace Gaudi ::Functional {
 
   namespace details {
 
-    template <typename Algorithm, typename OutHandles>
-    StatusCode execute_transformer( const Algorithm& algo, const EventContext& ctx, const OutHandles& out_handles )
-      requires( Algorithm::N_out <= 1 )
-    {
-      return details::execute( algo, [&] {
-        if constexpr ( Algorithm::N_out == 0 ) {
-          algo.invoke( algo, ctx );
-        } else {
-          put( std::get<0>( out_handles ), algo.invoke( algo, ctx ) );
-        }
-        return FilterDecision::PASSED;
-      } );
-    }
-
-    template <typename Algorithm, typename OutHandles>
-    StatusCode execute_multi_transformer( const Algorithm& algo, const EventContext& ctx,
-                                          const OutHandles& out_handles ) {
-      return details::execute( algo, [&] {
-        put_results( out_handles, algo.invoke( algo, ctx ) );
-        return FilterDecision::PASSED;
-      } );
-    }
-
     template <typename Signature, typename Traits_, bool isLegacy>
     struct Transformer;
+
+    template <typename Signature, typename Traits_, bool isLegacy>
+    struct MultiTransformer;
 
     // general N -> 1 algorithms
     template <typename Out, typename... In, typename Traits_>
@@ -58,7 +38,7 @@ namespace Gaudi ::Functional {
 
       // derived classes can NOT implement execute
       StatusCode execute() override final {
-        return execute_transformer( *this, Gaudi::Hive::currentContext(), this->m_outputs );
+        return execute_single_output( *this, Gaudi::Hive::currentContext(), this->m_outputs );
       }
 
       // instead they MUST implement this operator
@@ -72,7 +52,7 @@ namespace Gaudi ::Functional {
 
       // derived classes can NOT implement execute
       StatusCode execute( const EventContext& ctx ) const override final {
-        return execute_transformer( *this, ctx, this->m_outputs );
+        return execute_single_output( *this, ctx, this->m_outputs );
       }
 
       // instead they MUST implement this operator
@@ -82,9 +62,6 @@ namespace Gaudi ::Functional {
     //
     // general N -> M algorithms
     //
-    template <typename Signature, typename Traits_, bool isLegacy>
-    struct MultiTransformer;
-
     template <typename... Out, typename... In, typename Traits_>
     struct MultiTransformer<std::tuple<Out...>( const In&... ), Traits_, true>
         : DataHandleMixin<type_list<Out...>, type_list<In...>, Traits_> {
@@ -92,7 +69,7 @@ namespace Gaudi ::Functional {
 
       // derived classes can NOT implement execute
       StatusCode execute() override final {
-        return execute_multi_transformer( *this, Gaudi::Hive::currentContext(), this->m_outputs );
+        return execute_outputs( *this, Gaudi::Hive::currentContext(), this->m_outputs );
       }
 
       // instead they MUST implement this operator
@@ -106,7 +83,7 @@ namespace Gaudi ::Functional {
 
       // derived classes can NOT implement execute
       StatusCode execute( const EventContext& ctx ) const override final {
-        return execute_multi_transformer( *this, ctx, this->m_outputs );
+        return execute_outputs( *this, ctx, this->m_outputs );
       }
 
       // instead they MUST implement this operator
@@ -126,17 +103,7 @@ namespace Gaudi ::Functional {
 
       // derived classes can NOT implement execute
       StatusCode execute( const EventContext& ctx ) const override final {
-        return details::execute( *this, [&] {
-          return std::apply(
-                     [this]( bool passed, auto&&... data ) {
-                       put_results( this->m_outputs,
-                                    std::forward_as_tuple( std::forward<decltype( data )>( data )... ) );
-                       return passed;
-                     },
-                     this->invoke( *this, ctx ) )
-                     ? FilterDecision::PASSED
-                     : FilterDecision::FAILED;
-        } );
+        return execute_filtered_outputs( *this, ctx, this->m_outputs );
       }
 
       // instead they MUST implement this operator

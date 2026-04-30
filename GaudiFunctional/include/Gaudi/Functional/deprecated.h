@@ -56,7 +56,7 @@ namespace Gaudi::Functional::details {
   }
 
   template <typename... In>
-  struct [[deprecated( "use EventContextHandle in DataHandleMixin inputs instead" )]] filter_evtcontext_t {
+  struct /*[[deprecated( "use EventContextHandle in DataHandleMixin inputs instead" )]]*/ filter_evtcontext_t {
     using type = std::tuple<In...>;
 
     static_assert( !std::disjunction_v<std::is_same<EventContext, In>...>,
@@ -69,8 +69,9 @@ namespace Gaudi::Functional::details {
   };
 
   template <typename... In>
-  struct [[deprecated(
-      "use EventContextHandle in DataHandleMixin inputs instead" )]] filter_evtcontext_t<EventContext, In...> {
+  struct /*[[deprecated(
+      "use EventContextHandle in DataHandleMixin inputs instead" )]]*/
+      filter_evtcontext_t<EventContext, In...> {
     using type = std::tuple<In...>;
 
     static_assert( !std::disjunction_v<std::is_same<EventContext, In>...>,
@@ -83,7 +84,7 @@ namespace Gaudi::Functional::details {
   };
 
   template <typename... In>
-  using filter_evtcontext [[deprecated( "use EventContextHandle in DataHandleMixin inputs instead" )]] =
+  using filter_evtcontext /*[[deprecated( "use EventContextHandle in DataHandleMixin inputs instead" )]]*/ =
       typename filter_evtcontext_t<In...>::type;
 
   template <typename... Out, typename... In, typename Traits_>

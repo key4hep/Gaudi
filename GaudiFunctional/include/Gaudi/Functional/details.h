@@ -551,39 +551,41 @@ namespace Gaudi::Functional::details {
   template <typename T>
   inline constexpr bool is_event_context_v = std::is_same_v<std::remove_cvref_t<T>, EventContext>;
 
-  template <typename T>
-  inline constexpr bool is_vector_input_v = false;
-  template <typename T>
-  inline constexpr bool is_vector_input_v<vector_of_input_<T>> = true;
-
-  template <typename T>
-  inline constexpr bool is_vector_output_v = false;
-  template <typename T>
-  inline constexpr bool is_vector_output_v<vector_of_output_<T>> = true;
-
   template <typename Arg, typename KeyValue, typename KeyValues>
-  using InputSpec_t = std::conditional_t<is_event_context_v<Arg>, std::tuple<>,
-                                         std::conditional_t<is_vector_input_v<Arg>, KeyValues, KeyValue>>;
+  struct LocationSpecFor {
+    using type = KeyValue;
+  };
+  template <typename KeyValue, typename KeyValues>
+  struct LocationSpecFor<EventContext, KeyValue, KeyValues> {
+    using type = std::tuple<>;
+  };
+  template <typename T, typename KeyValue, typename KeyValues>
+  struct LocationSpecFor<vector_of_input_<T>, KeyValue, KeyValues> {
+    using type = KeyValues;
+  };
+  template <typename T, typename KeyValue, typename KeyValues>
+  struct LocationSpecFor<vector_of_output_<T>, KeyValue, KeyValues> {
+    using type = KeyValues;
+  };
+  template <typename Arg, typename KeyValue, typename KeyValues>
+  using LocationSpec_t = typename LocationSpecFor<std::remove_cvref_t<Arg>, KeyValue, KeyValues>::type;
 
   template <typename KeyValue, typename KeyValues, typename... Args>
-  using InputSpecs_t = std::tuple<InputSpec_t<Args, KeyValue, KeyValues>...>;
+  using LocationSpecs_t = std::tuple<LocationSpec_t<Args, KeyValue, KeyValues>...>;
 
   template <typename KeyValue, typename KeyValues, typename... Args>
-  struct TailInputSpecs {
+  struct TailLocationSpecs {
     using type = std::tuple<>;
   };
   template <typename KeyValue, typename KeyValues, typename First, typename... Rest>
-  struct TailInputSpecs<KeyValue, KeyValues, First, Rest...> {
-    using type = InputSpecs_t<KeyValue, KeyValues, Rest...>;
+  struct TailLocationSpecs<KeyValue, KeyValues, First, Rest...> {
+    using type = LocationSpecs_t<KeyValue, KeyValues, Rest...>;
   };
   template <typename KeyValue, typename KeyValues, typename... Args>
-  using TailInputSpecs_t = typename TailInputSpecs<KeyValue, KeyValues, Args...>::type;
+  using TailLocationSpecs_t = typename TailLocationSpecs<KeyValue, KeyValues, Args...>::type;
 
-  template <typename Out, typename KeyValue, typename KeyValues>
-  using OutputSpec_t = std::conditional_t<is_vector_output_v<Out>, KeyValues, KeyValue>;
-
-  template <typename KeyValue, typename KeyValues, typename... Outs>
-  using OutputSpecs_t = std::tuple<OutputSpec_t<Outs, KeyValue, KeyValues>...>;
+  template <typename KeyValue, typename KeyValues, typename... Args>
+  using InputSpecs_t = LocationSpecs_t<KeyValue, KeyValues, Args...>;
 
   template <typename Tuple>
   struct first_or_empty {
@@ -596,15 +598,58 @@ namespace Gaudi::Functional::details {
   template <typename Tuple>
   using first_or_empty_t = typename first_or_empty<Tuple>::type;
 
+  template <typename Tuple, typename T>
+  inline constexpr bool tuple_elements_are_v = false;
+  template <typename T, typename... Elements>
+  inline constexpr bool tuple_elements_are_v<std::tuple<Elements...>, T> = ( std::same_as<Elements, T> && ... );
+
   template <typename... Args>
   inline constexpr bool first_is_event_context_v = false;
   template <typename First, typename... Rest>
   inline constexpr bool first_is_event_context_v<First, Rest...> = is_event_context_v<First>;
 
-  template <typename Inputs>
-  auto prepend_event_context_input( Inputs&& inputs ) {
-    return std::tuple_cat( std::tuple<std::tuple<>>{}, std::forward<Inputs>( inputs ) );
+  template <typename Tuple, typename Spec, std::size_t... I>
+  Tuple location_specs_tuple( std::initializer_list<Spec> specs, std::index_sequence<I...>, const char* component ) {
+    if constexpr ( sizeof...( I ) == 1 ) {
+      if ( specs.size() == 0 ) return Tuple{ Spec{} };
+    }
+    if ( specs.size() != sizeof...( I ) ) {
+      throw GaudiException( "Wrong number of location specifications", component, StatusCode::FAILURE );
+    }
+    return Tuple{ *std::next( specs.begin(), I )... };
   }
+
+  template <typename Tuple>
+  class LocationSpecs {
+    using First = first_or_empty_t<Tuple>;
+
+  public:
+    static constexpr auto indices = std::make_index_sequence<std::tuple_size_v<Tuple>>{};
+
+    LocationSpecs()
+      requires( std::tuple_size_v<Tuple> == 0 )
+    = default;
+    LocationSpecs( Tuple specs ) : m_specs{ std::move( specs ) } {}
+    template <typename... Specs>
+    LocationSpecs( Specs&&... specs )
+      requires( sizeof...( Specs ) > 0 && std::constructible_from<Tuple, Specs...> )
+        : m_specs{ std::forward<Specs>( specs )... } {}
+    LocationSpecs( std::string name, std::string loc )
+      requires( std::tuple_size_v<Tuple> == 1 && std::constructible_from<First, std::string, std::string> )
+        : LocationSpecs{ First{ std::move( name ), std::move( loc ) } } {}
+    LocationSpecs( std::string name, std::vector<std::string> locs )
+      requires( std::tuple_size_v<Tuple> == 1 && std::constructible_from<First, std::string, std::vector<std::string>> )
+        : LocationSpecs{ First{ std::move( name ), std::move( locs ) } } {}
+    LocationSpecs( std::initializer_list<First> specs )
+      requires( std::tuple_size_v<Tuple> > 0 && tuple_elements_are_v<Tuple, First> )
+        : m_specs{ location_specs_tuple<Tuple>( specs, indices, "Gaudi::Functional::details::LocationSpecs" ) } {}
+
+    Tuple const& tuple() const { return m_specs; }
+    auto         with_context() const { return std::tuple_cat( std::tuple<std::tuple<>>{}, m_specs ); }
+
+  private:
+    Tuple m_specs{};
+  };
 
   template <typename Traits>
   inline constexpr bool isLegacy =
@@ -665,19 +710,22 @@ namespace Gaudi::Functional::details {
     constexpr static std::size_t N_in  = sizeof...( In );
     constexpr static std::size_t N_out = sizeof...( Out );
 
-    using InputHandles                                     = std::tuple<details::InputHandle_t<Traits_, In>...>;
-    using OutputHandles                                    = std::tuple<details::OutputHandle_t<Traits_, Out>...>;
-    using KeyValue                                         = std::pair<std::string, std::string>;
-    using KeyValues                                        = std::pair<std::string, std::vector<std::string>>;
-    using InputSpecs                                       = InputSpecs_t<KeyValue, KeyValues, In...>;
-    using InputSpec                                        = first_or_empty_t<InputSpecs>;
-    using LegacyInputSpecs                                 = TailInputSpecs_t<KeyValue, KeyValues, In...>;
-    using LegacyInputSpec                                  = first_or_empty_t<LegacyInputSpecs>;
-    using OutputSpecs                                      = OutputSpecs_t<KeyValue, KeyValues, Out...>;
-    using OutputSpec                                       = first_or_empty_t<OutputSpecs>;
-    constexpr static bool        starts_with_event_context = first_is_event_context_v<In...>;
-    constexpr static std::size_t input_location_offset     = starts_with_event_context ? 1 : 0;
-    constexpr static std::size_t N_input_locations         = N_in - input_location_offset;
+    using KeyValue  = std::pair<std::string, std::string>;
+    using KeyValues = std::pair<std::string, std::vector<std::string>>;
+
+  private:
+    using InputHandles                              = std::tuple<details::InputHandle_t<Traits_, In>...>;
+    using OutputHandles                             = std::tuple<details::OutputHandle_t<Traits_, Out>...>;
+    using InputSpecTuple                            = LocationSpecs_t<KeyValue, KeyValues, In...>;
+    using LegacyInputSpecTuple                      = TailLocationSpecs_t<KeyValue, KeyValues, In...>;
+    using InputSpecs                                = details::LocationSpecs<InputSpecTuple>;
+    using LegacyInputSpecs                          = details::LocationSpecs<LegacyInputSpecTuple>;
+    using OutputSpecTuple                           = LocationSpecs_t<KeyValue, KeyValues, Out...>;
+    using OutputSpecs                               = details::LocationSpecs<OutputSpecTuple>;
+    constexpr static bool starts_with_event_context = first_is_event_context_v<In...>;
+    using EmptyInputSpecTuple = std::conditional_t<starts_with_event_context, InputSpecTuple, std::tuple<>>;
+    constexpr static std::size_t input_location_offset = starts_with_event_context ? 1 : 0;
+    constexpr static std::size_t N_input_locations     = N_in - input_location_offset;
     template <std::size_t N>
     constexpr static std::size_t input_handle_index = N + input_location_offset;
     template <std::size_t N>
@@ -694,143 +742,50 @@ namespace Gaudi::Functional::details {
       return std::forward_as_tuple( std::get<input_handle_index<I>>( m_inputs )... );
     }
 
-    template <typename Spec>
-    static Spec single_spec( std::initializer_list<Spec> inputs ) {
-      if ( inputs.size() > 1 ) {
-        throw GaudiException( "Expected exactly one input location specification",
-                              "Gaudi::Functional::details::DataHandleMixin", StatusCode::FAILURE );
-      }
-      return inputs.size() == 0 ? Spec{} : *inputs.begin();
-    }
+    static EmptyInputSpecTuple no_input_specs() { return {}; }
 
-    // generic constructor:  N -> M
-    DataHandleMixin( std::string name, ISvcLocator* pSvcLocator, InputSpecs const& inputs, OutputSpecs const& outputs )
-      requires( N_in != 0 && N_out != 0 )
-        : DataHandleMixin( std::move( name ), pSvcLocator, inputs, std::index_sequence_for<In...>{}, outputs,
-                           std::index_sequence_for<Out...>{} ) {}
-    // special cases: forward to the generic case...
-    // 0 -> 0
+  public:
+    // 0 -> 0, with the historic optional empty tuple arguments.
     DataHandleMixin( std::string name, ISvcLocator* locator, std::tuple<> = {}, std::tuple<> = {} )
       requires( N_in == 0 && N_out == 0 )
-        : DataHandleMixin( std::move( name ), locator, std::tuple<>{}, std::index_sequence_for<In...>{}, std::tuple<>{},
-                           std::index_sequence<>{} ) {}
-    // 1 -> 0
-    DataHandleMixin( std::string name, ISvcLocator* locator, const InputSpec& input )
-      requires( N_in == 1 && N_out == 0 && !starts_with_event_context )
-        : DataHandleMixin( std::move( name ), locator, std::forward_as_tuple( input ), std::index_sequence_for<In...>{},
-                           std::tuple<>{}, std::index_sequence<>{} ) {}
-    DataHandleMixin( std::string name, ISvcLocator* locator, std::initializer_list<InputSpec> input )
-      requires( N_in == 1 && N_out == 0 && !starts_with_event_context )
-        : DataHandleMixin( std::move( name ), locator, single_spec( input ) ) {}
-    // 0 -> 1
-    DataHandleMixin( std::string name, ISvcLocator* locator, const OutputSpec& output )
-      requires( N_in == 0 && N_out == 1 )
-        : DataHandleMixin( std::move( name ), locator, std::tuple<>{}, std::index_sequence_for<In...>{},
-                           std::forward_as_tuple( output ), std::index_sequence<0>{} ) {}
-    // 1 -> 1
-    DataHandleMixin( std::string name, ISvcLocator* locator, const InputSpec& input, const OutputSpec& output )
-      requires( N_in == 1 && N_out == 1 && !starts_with_event_context )
-        : DataHandleMixin( std::move( name ), locator, std::forward_as_tuple( input ), std::index_sequence_for<In...>{},
-                           std::forward_as_tuple( output ), std::index_sequence<size_t{ 0 }>{} ) {}
-    DataHandleMixin( std::string name, ISvcLocator* locator, std::initializer_list<InputSpec> input,
-                     const OutputSpec& output )
-      requires( N_in == 1 && N_out == 1 && !starts_with_event_context )
-        : DataHandleMixin( std::move( name ), locator, single_spec( input ), output ) {}
-    // 1 -> N
-    DataHandleMixin( std::string name, ISvcLocator* locator, const InputSpec& input, OutputSpecs const& outputs )
-      requires( N_in == 1 && N_out != 0 && !starts_with_event_context )
-        : DataHandleMixin( std::move( name ), locator, std::forward_as_tuple( input ), std::index_sequence_for<In...>{},
-                           outputs, std::index_sequence_for<Out...>{} ) {}
-    DataHandleMixin( std::string name, ISvcLocator* locator, std::initializer_list<InputSpec> input,
-                     OutputSpecs const& outputs )
-      requires( N_in == 1 && N_out > 1 && !starts_with_event_context )
-        : DataHandleMixin( std::move( name ), locator, single_spec( input ), outputs ) {}
-    // N -> 1
-    DataHandleMixin( std::string name, ISvcLocator* locator, InputSpecs const& inputs, const OutputSpec& output )
-      requires( N_in != 0 && N_out == 1 )
-        : DataHandleMixin( std::move( name ), locator, inputs, std::index_sequence_for<In...>{},
-                           std::forward_as_tuple( output ), std::index_sequence<size_t{ 0 }>{} ) {}
-    // N -> 0
-    DataHandleMixin( std::string name, ISvcLocator* pSvcLocator, InputSpecs const& inputs )
-      requires( N_in != 0 && N_out == 0 )
-        : DataHandleMixin( std::move( name ), pSvcLocator, inputs, std::index_sequence_for<In...>{}, std::tuple<>{},
-                           std::index_sequence<>{} ) {}
-    // 0 -> N
-    DataHandleMixin( std::string name, ISvcLocator* pSvcLocator, OutputSpecs const& outputs )
-      requires( N_in == 0 && N_out != 0 )
-        : DataHandleMixin( std::move( name ), pSvcLocator, std::tuple<>{}, std::index_sequence_for<In...>{}, outputs,
-                           std::index_sequence_for<Out...>{} ) {}
-    // 0 -> N, with explicit empty input tuple
-    DataHandleMixin( std::string name, ISvcLocator* pSvcLocator, InputSpecs const& inputs, OutputSpecs const& outputs )
-      requires( N_in == 0 && N_out != 0 )
-        : DataHandleMixin( std::move( name ), pSvcLocator, inputs, std::index_sequence_for<In...>{}, outputs,
-                           std::index_sequence_for<Out...>{} ) {}
-    DataHandleMixin( std::string name, ISvcLocator* pSvcLocator, InputSpecs const& inputs, OutputSpec const& output )
-      requires( N_in == 0 && N_out == 1 )
-        : DataHandleMixin( std::move( name ), pSvcLocator, inputs, std::index_sequence_for<In...>{},
-                           std::forward_as_tuple( output ), std::index_sequence<0>{} ) {}
+        : DataHandleMixin( std::move( name ), locator, std::tuple<>{}, InputSpecs::indices, std::tuple<>{},
+                           OutputSpecs::indices ) {}
 
-    // Backwards compatibility for signatures starting with EventContext: allow the old constructor
-    // shape where the EventContext input did not consume a key slot.
-    DataHandleMixin( std::string name, ISvcLocator* pSvcLocator, LegacyInputSpecs const& inputs,
-                     OutputSpecs const& outputs )
-      requires( starts_with_event_context && N_in > 2 && N_out != 0 )
-        : DataHandleMixin( std::move( name ), pSvcLocator, prepend_event_context_input( inputs ),
-                           std::index_sequence_for<In...>{}, outputs, std::index_sequence_for<Out...>{} ) {}
-
-    // ctx -> 0
+    // EventContext -> 0, where the context has no location argument.
     DataHandleMixin( std::string name, ISvcLocator* locator )
       requires( starts_with_event_context && N_in == 1 && N_out == 0 )
-        : DataHandleMixin( std::move( name ), locator, InputSpecs{ std::tuple<>{} }, std::index_sequence_for<In...>{},
-                           std::tuple<>{}, std::index_sequence<>{} ) {}
-    // ctx -> 1
-    DataHandleMixin( std::string name, ISvcLocator* locator, const OutputSpec& output )
-      requires( starts_with_event_context && N_in == 1 && N_out == 1 )
-        : DataHandleMixin( std::move( name ), locator, InputSpecs{ std::tuple<>{} }, std::index_sequence_for<In...>{},
-                           std::forward_as_tuple( output ), std::index_sequence<0>{} ) {}
-    // ctx -> N
-    DataHandleMixin( std::string name, ISvcLocator* pSvcLocator, OutputSpecs const& outputs )
-      requires( starts_with_event_context && N_in == 1 && N_out != 0 )
-        : DataHandleMixin( std::move( name ), pSvcLocator, InputSpecs{ std::tuple<>{} },
-                           std::index_sequence_for<In...>{}, outputs, std::index_sequence_for<Out...>{} ) {}
-    // ctx + 1 -> 0
-    DataHandleMixin( std::string name, ISvcLocator* locator, const LegacyInputSpec& input )
-      requires( starts_with_event_context && N_in == 2 && N_out == 0 )
-        : DataHandleMixin( std::move( name ), locator, prepend_event_context_input( std::forward_as_tuple( input ) ),
-                           std::index_sequence_for<In...>{}, std::tuple<>{}, std::index_sequence<>{} ) {}
-    DataHandleMixin( std::string name, ISvcLocator* locator, std::initializer_list<LegacyInputSpec> input )
-      requires( starts_with_event_context && N_in == 2 && N_out == 0 )
-        : DataHandleMixin( std::move( name ), locator, single_spec( input ) ) {}
-    // ctx + 1 -> 1
-    DataHandleMixin( std::string name, ISvcLocator* locator, const LegacyInputSpec& input, const OutputSpec& output )
-      requires( starts_with_event_context && N_in == 2 && N_out == 1 )
-        : DataHandleMixin( std::move( name ), locator, prepend_event_context_input( std::forward_as_tuple( input ) ),
-                           std::index_sequence_for<In...>{}, std::forward_as_tuple( output ),
-                           std::index_sequence<size_t{ 0 }>{} ) {}
-    DataHandleMixin( std::string name, ISvcLocator* locator, std::initializer_list<LegacyInputSpec> input,
-                     const OutputSpec& output )
-      requires( starts_with_event_context && N_in == 2 && N_out == 1 )
-        : DataHandleMixin( std::move( name ), locator, single_spec( input ), output ) {}
-    // ctx + 1 -> N
-    DataHandleMixin( std::string name, ISvcLocator* locator, const LegacyInputSpec& input, OutputSpecs const& outputs )
-      requires( starts_with_event_context && N_in == 2 && N_out != 0 )
-        : DataHandleMixin( std::move( name ), locator, prepend_event_context_input( std::forward_as_tuple( input ) ),
-                           std::index_sequence_for<In...>{}, outputs, std::index_sequence_for<Out...>{} ) {}
-    DataHandleMixin( std::string name, ISvcLocator* locator, std::initializer_list<LegacyInputSpec> input,
-                     OutputSpecs const& outputs )
-      requires( starts_with_event_context && N_in == 2 && N_out > 1 )
-        : DataHandleMixin( std::move( name ), locator, single_spec( input ), outputs ) {}
-    // ctx + N -> 0
+        : DataHandleMixin( std::move( name ), locator, no_input_specs(), InputSpecs::indices, std::tuple<>{},
+                           OutputSpecs::indices ) {}
+
+    // N -> 0
+    DataHandleMixin( std::string name, ISvcLocator* locator, InputSpecs const& inputs )
+      requires( N_in != 0 && N_out == 0 && !( starts_with_event_context && N_in == 1 ) )
+        : DataHandleMixin( std::move( name ), locator, inputs.tuple(), inputs.indices, std::tuple<>{},
+                           OutputSpecs::indices ) {}
+
+    // Context-first backwards compatibility: the EventContext slot used to consume no input location argument.
     DataHandleMixin( std::string name, ISvcLocator* locator, LegacyInputSpecs const& inputs )
-      requires( starts_with_event_context && N_in > 2 && N_out == 0 )
-        : DataHandleMixin( std::move( name ), locator, prepend_event_context_input( inputs ),
-                           std::index_sequence_for<In...>{}, std::tuple<>{}, std::index_sequence<>{} ) {}
-    // ctx + N -> 1
-    DataHandleMixin( std::string name, ISvcLocator* locator, LegacyInputSpecs const& inputs, const OutputSpec& output )
-      requires( starts_with_event_context && N_in > 2 && N_out == 1 )
-        : DataHandleMixin( std::move( name ), locator, prepend_event_context_input( inputs ),
-                           std::index_sequence_for<In...>{}, std::forward_as_tuple( output ),
-                           std::index_sequence<size_t{ 0 }>{} ) {}
+      requires( starts_with_event_context && N_in > 1 && N_out == 0 )
+        : DataHandleMixin( std::move( name ), locator, inputs.with_context(), InputSpecs::indices, std::tuple<>{},
+                           OutputSpecs::indices ) {}
+
+    // 0 -> N and EventContext -> N
+    DataHandleMixin( std::string name, ISvcLocator* locator, OutputSpecs const& outputs )
+      requires( N_out != 0 && ( N_in == 0 || ( starts_with_event_context && N_in == 1 ) ) )
+        : DataHandleMixin( std::move( name ), locator, no_input_specs(), InputSpecs::indices, outputs.tuple(),
+                           outputs.indices ) {}
+
+    // N -> M, including EventContext-first legacy input syntax and explicit empty input tuple for 0 -> M.
+    DataHandleMixin( std::string name, ISvcLocator* locator, InputSpecs const& inputs, OutputSpecs const& outputs )
+      requires( N_out != 0 )
+        : DataHandleMixin( std::move( name ), locator, inputs.tuple(), inputs.indices, outputs.tuple(),
+                           outputs.indices ) {}
+
+    DataHandleMixin( std::string name, ISvcLocator* locator, LegacyInputSpecs const& inputs,
+                     OutputSpecs const& outputs )
+      requires( starts_with_event_context && N_in > 1 && N_out != 0 )
+        : DataHandleMixin( std::move( name ), locator, inputs.with_context(), InputSpecs::indices, outputs.tuple(),
+                           outputs.indices ) {}
 
     template <std::size_t N = 0>
     decltype( auto ) inputLocation() const
@@ -900,10 +855,11 @@ namespace Gaudi::Functional::details {
           [&]( const auto&... handle ) -> decltype( auto ) { return algo( get( handle, algo, ctx )... ); }, m_inputs );
     }
 
-  protected:
-    bool isReEntrant() const override { return true; }
+  private:
+    InputHandles m_inputs;
+    bool         isReEntrant() const override { return true; }
 
-    InputHandles  m_inputs;
+  protected:
     OutputHandles m_outputs;
   };
 
@@ -922,6 +878,42 @@ namespace Gaudi::Functional::details {
   void put_results( const OutHandles& out_handles, Outputs&& outputs ) {
     put_results( out_handles, std::forward<Outputs>( outputs ),
                  std::make_index_sequence<std::tuple_size_v<std::remove_reference_t<Outputs>>>{} );
+  }
+
+  template <typename Algorithm, typename OutHandles = std::tuple<>>
+  StatusCode execute_single_output( const Algorithm& algo, const EventContext& ctx, const OutHandles& out_handles = {} )
+    requires( std::tuple_size_v<OutHandles> <= 1 )
+  {
+    return execute( algo, [&] {
+      if constexpr ( std::tuple_size_v<OutHandles> == 0 ) {
+        algo.invoke( algo, ctx );
+      } else {
+        put( std::get<0>( out_handles ), algo.invoke( algo, ctx ) );
+      }
+      return FilterDecision::PASSED;
+    } );
+  }
+
+  template <typename Algorithm, typename OutHandles>
+  StatusCode execute_outputs( const Algorithm& algo, const EventContext& ctx, const OutHandles& out_handles ) {
+    return execute( algo, [&] {
+      put_results( out_handles, algo.invoke( algo, ctx ) );
+      return FilterDecision::PASSED;
+    } );
+  }
+
+  template <typename Algorithm, typename OutHandles>
+  StatusCode execute_filtered_outputs( const Algorithm& algo, const EventContext& ctx, const OutHandles& out_handles ) {
+    return execute( algo, [&] {
+      return std::apply(
+                 [&]( bool passed, auto&&... data ) {
+                   put_results( out_handles, std::forward_as_tuple( std::forward<decltype( data )>( data )... ) );
+                   return passed;
+                 },
+                 algo.invoke( algo, ctx ) )
+                 ? FilterDecision::PASSED
+                 : FilterDecision::FAILED;
+    } );
   }
 
 } // namespace Gaudi::Functional::details

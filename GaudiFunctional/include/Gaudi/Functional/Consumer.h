@@ -16,14 +16,6 @@ namespace Gaudi::Functional {
 
   namespace details {
 
-    template <typename Algorithm>
-    StatusCode execute_consumer( const Algorithm& algo, const EventContext& ctx ) {
-      return details::execute( algo, [&] {
-        algo.invoke( algo, ctx );
-        return FilterDecision::PASSED;
-      } );
-    }
-
     template <typename Signature, typename Traits_, bool isLegacy>
     struct Consumer;
 
@@ -32,7 +24,7 @@ namespace Gaudi::Functional {
       using DataHandleMixin<type_list<>, type_list<In...>, Traits_>::DataHandleMixin;
 
       // derived classes are NOT allowed to implement execute ...
-      StatusCode execute() override final { return execute_consumer( *this, Gaudi::Hive::currentContext() ); }
+      StatusCode execute() override final { return execute_single_output( *this, Gaudi::Hive::currentContext() ); }
 
       // ... instead, they must implement the following operator
       virtual void operator()( const In&... ) const = 0;
@@ -43,7 +35,7 @@ namespace Gaudi::Functional {
       using DataHandleMixin<type_list<>, type_list<In...>, Traits_>::DataHandleMixin;
 
       // derived classes are NOT allowed to implement execute ...
-      StatusCode execute( const EventContext& ctx ) const override final { return execute_consumer( *this, ctx ); }
+      StatusCode execute( const EventContext& ctx ) const override final { return execute_single_output( *this, ctx ); }
 
       // ... instead, they must implement the following operator
       virtual void operator()( const In&... ) const = 0;
