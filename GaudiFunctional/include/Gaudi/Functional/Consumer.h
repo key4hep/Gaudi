@@ -11,45 +11,39 @@
 #pragma once
 #include "details.h"
 #include "utilities.h"
-#include <GaudiKernel/FunctionalFilterDecision.h>
-#include <tuple>
 
 namespace Gaudi::Functional {
 
   namespace details {
 
+    template <typename Algorithm>
+    StatusCode execute_consumer( const Algorithm& algo, const EventContext& ctx ) {
+      return details::execute( algo, [&] {
+        algo.invoke( algo, ctx );
+        return FilterDecision::PASSED;
+      } );
+    }
+
     template <typename Signature, typename Traits_, bool isLegacy>
     struct Consumer;
 
     template <typename... In, typename Traits_>
-    struct Consumer<void( const In&... ), Traits_, true>
-        : DataHandleMixin<std::tuple<>, filter_evtcontext<In...>, Traits_> {
-      using DataHandleMixin<std::tuple<>, filter_evtcontext<In...>, Traits_>::DataHandleMixin;
+    struct Consumer<void( const In&... ), Traits_, true> : DataHandleMixin<type_list<>, type_list<In...>, Traits_> {
+      using DataHandleMixin<type_list<>, type_list<In...>, Traits_>::DataHandleMixin;
 
       // derived classes are NOT allowed to implement execute ...
-      StatusCode execute() override final {
-        return details::execute( *this, [&] {
-          filter_evtcontext_t<In...>::apply( *this, Gaudi::Hive::currentContext(), this->m_inputs );
-          return FilterDecision::PASSED;
-        } );
-      }
+      StatusCode execute() override final { return execute_consumer( *this, Gaudi::Hive::currentContext() ); }
 
       // ... instead, they must implement the following operator
       virtual void operator()( const In&... ) const = 0;
     };
 
     template <typename... In, typename Traits_>
-    struct Consumer<void( const In&... ), Traits_, false>
-        : DataHandleMixin<std::tuple<>, filter_evtcontext<In...>, Traits_> {
-      using DataHandleMixin<std::tuple<>, filter_evtcontext<In...>, Traits_>::DataHandleMixin;
+    struct Consumer<void( const In&... ), Traits_, false> : DataHandleMixin<type_list<>, type_list<In...>, Traits_> {
+      using DataHandleMixin<type_list<>, type_list<In...>, Traits_>::DataHandleMixin;
 
       // derived classes are NOT allowed to implement execute ...
-      StatusCode execute( const EventContext& ctx ) const override final {
-        return details::execute( *this, [&] {
-          filter_evtcontext_t<In...>::apply( *this, ctx, this->m_inputs );
-          return FilterDecision::PASSED;
-        } );
-      }
+      StatusCode execute( const EventContext& ctx ) const override final { return execute_consumer( *this, ctx ); }
 
       // ... instead, they must implement the following operator
       virtual void operator()( const In&... ) const = 0;
