@@ -35,7 +35,6 @@
 
 // TODO: migrate downstream users to include `zip.h` directly, instead of transitively,
 //       and then drop this include here...
-#include "deprecated.h"
 #include "zip.h"
 
 namespace Gaudi::Functional::details {
@@ -926,3 +925,5 @@ namespace Gaudi::Functional::details {
   }
 
 } // namespace Gaudi::Functional::details
+
+#include "deprecated.h"
