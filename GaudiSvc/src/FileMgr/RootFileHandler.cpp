@@ -12,13 +12,10 @@
 #include <TFile.h>
 #include <TROOT.h>
 #include <TSSLSocket.h>
-#include <TWebFile.h>
 
 #include "RootFileHandler.h"
 #include <GaudiKernel/MsgStream.h>
 #include <boost/algorithm/string.hpp>
-
-namespace ba = boost::algorithm;
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
