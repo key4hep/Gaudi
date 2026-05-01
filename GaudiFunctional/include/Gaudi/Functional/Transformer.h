@@ -12,6 +12,7 @@
 
 #include "details.h"
 #include "utilities.h"
+#include <GaudiKernel/ThreadLocalContext.h>
 #include <tuple>
 
 // Adapt an Algorithm (by default, Gaudi::Algorithm) so that derived classes

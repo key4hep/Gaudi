@@ -15,7 +15,6 @@
 #include <GaudiKernel/FunctionalFilterDecision.h>
 #include <GaudiKernel/GaudiException.h>
 #include <GaudiKernel/IBinder.h>
-#include <GaudiKernel/ThreadLocalContext.h>
 #include <algorithm>
 #include <array>
 #include <cassert>
@@ -26,7 +25,6 @@
 #include <memory>
 #include <optional>
 #include <source_location>
-#include <sstream>
 #include <string>
 #include <tuple>
 #include <type_traits>
@@ -584,9 +582,6 @@ namespace Gaudi::Functional::details {
   template <typename KeyValue, typename KeyValues, typename... Args>
   using TailLocationSpecs_t = typename TailLocationSpecs<KeyValue, KeyValues, Args...>::type;
 
-  template <typename KeyValue, typename KeyValues, typename... Args>
-  using InputSpecs_t = LocationSpecs_t<KeyValue, KeyValues, Args...>;
-
   template <typename Tuple>
   struct first_or_empty {
     using type = std::tuple<>;
@@ -607,6 +602,10 @@ namespace Gaudi::Functional::details {
   inline constexpr bool first_is_event_context_v = false;
   template <typename First, typename... Rest>
   inline constexpr bool first_is_event_context_v<First, Rest...> = is_event_context_v<First>;
+
+  template <bool starts_with_event_context, typename InputSpecTuple>
+  inline constexpr auto empty_input_specs =
+      std::conditional_t<starts_with_event_context, InputSpecTuple, std::tuple<>>{};
 
   template <typename Tuple, typename Spec, std::size_t... I>
   Tuple location_specs_tuple( std::initializer_list<Spec> specs, std::index_sequence<I...>, const char* component ) {
@@ -714,18 +713,17 @@ namespace Gaudi::Functional::details {
     using KeyValues = std::pair<std::string, std::vector<std::string>>;
 
   private:
-    using InputHandles                              = std::tuple<details::InputHandle_t<Traits_, In>...>;
-    using OutputHandles                             = std::tuple<details::OutputHandle_t<Traits_, Out>...>;
-    using InputSpecTuple                            = LocationSpecs_t<KeyValue, KeyValues, In...>;
-    using LegacyInputSpecTuple                      = TailLocationSpecs_t<KeyValue, KeyValues, In...>;
-    using InputSpecs                                = details::LocationSpecs<InputSpecTuple>;
-    using LegacyInputSpecs                          = details::LocationSpecs<LegacyInputSpecTuple>;
-    using OutputSpecTuple                           = LocationSpecs_t<KeyValue, KeyValues, Out...>;
-    using OutputSpecs                               = details::LocationSpecs<OutputSpecTuple>;
-    constexpr static bool starts_with_event_context = first_is_event_context_v<In...>;
-    using EmptyInputSpecTuple = std::conditional_t<starts_with_event_context, InputSpecTuple, std::tuple<>>;
-    constexpr static std::size_t input_location_offset = starts_with_event_context ? 1 : 0;
-    constexpr static std::size_t N_input_locations     = N_in - input_location_offset;
+    using InputHandles                                     = std::tuple<details::InputHandle_t<Traits_, In>...>;
+    using OutputHandles                                    = std::tuple<details::OutputHandle_t<Traits_, Out>...>;
+    using InputSpecTuple                                   = LocationSpecs_t<KeyValue, KeyValues, In...>;
+    using LegacyInputSpecTuple                             = TailLocationSpecs_t<KeyValue, KeyValues, In...>;
+    using InputSpecs                                       = details::LocationSpecs<InputSpecTuple>;
+    using LegacyInputSpecs                                 = details::LocationSpecs<LegacyInputSpecTuple>;
+    using OutputSpecTuple                                  = LocationSpecs_t<KeyValue, KeyValues, Out...>;
+    using OutputSpecs                                      = details::LocationSpecs<OutputSpecTuple>;
+    constexpr static bool        starts_with_event_context = first_is_event_context_v<In...>;
+    constexpr static std::size_t input_location_offset     = starts_with_event_context ? 1 : 0;
+    constexpr static std::size_t N_input_locations         = N_in - input_location_offset;
     template <std::size_t N>
     constexpr static std::size_t input_handle_index = N + input_location_offset;
     template <std::size_t N>
@@ -742,8 +740,6 @@ namespace Gaudi::Functional::details {
       return std::forward_as_tuple( std::get<input_handle_index<I>>( m_inputs )... );
     }
 
-    static EmptyInputSpecTuple no_input_specs() { return {}; }
-
   public:
     // 0 -> 0, with the historic optional empty tuple arguments.
     DataHandleMixin( std::string name, ISvcLocator* locator, std::tuple<> = {}, std::tuple<> = {} )
@@ -754,8 +750,8 @@ namespace Gaudi::Functional::details {
     // EventContext -> 0, where the context has no location argument.
     DataHandleMixin( std::string name, ISvcLocator* locator )
       requires( starts_with_event_context && N_in == 1 && N_out == 0 )
-        : DataHandleMixin( std::move( name ), locator, no_input_specs(), InputSpecs::indices, std::tuple<>{},
-                           OutputSpecs::indices ) {}
+        : DataHandleMixin( std::move( name ), locator, empty_input_specs<starts_with_event_context, InputSpecTuple>,
+                           InputSpecs::indices, std::tuple<>{}, OutputSpecs::indices ) {}
 
     // N -> 0
     DataHandleMixin( std::string name, ISvcLocator* locator, InputSpecs const& inputs )
@@ -772,8 +768,8 @@ namespace Gaudi::Functional::details {
     // 0 -> N and EventContext -> N
     DataHandleMixin( std::string name, ISvcLocator* locator, OutputSpecs const& outputs )
       requires( N_out != 0 && ( N_in == 0 || ( starts_with_event_context && N_in == 1 ) ) )
-        : DataHandleMixin( std::move( name ), locator, no_input_specs(), InputSpecs::indices, outputs.tuple(),
-                           outputs.indices ) {}
+        : DataHandleMixin( std::move( name ), locator, empty_input_specs<starts_with_event_context, InputSpecTuple>,
+                           InputSpecs::indices, outputs.tuple(), outputs.indices ) {}
 
     // N -> M, including EventContext-first legacy input syntax and explicit empty input tuple for 0 -> M.
     DataHandleMixin( std::string name, ISvcLocator* locator, InputSpecs const& inputs, OutputSpecs const& outputs )
@@ -869,15 +865,11 @@ namespace Gaudi::Functional::details {
     using DataHandleMixin<type_list<>, InputSpec, Traits_>::DataHandleMixin;
   };
 
-  template <typename OutHandles, typename Outputs, std::size_t... I>
-  void put_results( const OutHandles& out_handles, Outputs&& outputs, std::index_sequence<I...> ) {
-    ( put( std::get<I>( out_handles ), std::get<I>( std::forward<Outputs>( outputs ) ) ), ... );
-  }
-
   template <typename OutHandles, typename Outputs>
   void put_results( const OutHandles& out_handles, Outputs&& outputs ) {
-    put_results( out_handles, std::forward<Outputs>( outputs ),
-                 std::make_index_sequence<std::tuple_size_v<std::remove_reference_t<Outputs>>>{} );
+    [&]<std::size_t... I>( std::index_sequence<I...> ) {
+      ( put( std::get<I>( out_handles ), std::get<I>( std::forward<Outputs>( outputs ) ) ), ... );
+    }( std::make_index_sequence<std::tuple_size_v<std::remove_reference_t<Outputs>>>{} );
   }
 
   template <typename Algorithm, typename OutHandles = std::tuple<>>

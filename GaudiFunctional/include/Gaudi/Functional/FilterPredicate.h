@@ -11,6 +11,7 @@
 #pragma once
 #include "details.h"
 #include "utilities.h"
+#include <GaudiKernel/ThreadLocalContext.h>
 
 namespace Gaudi::Functional {
 

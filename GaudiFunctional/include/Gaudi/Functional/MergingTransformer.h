@@ -12,6 +12,7 @@
 #include "details.h"
 #include "utilities.h"
 #include <Gaudi/Algorithm.h>
+#include <GaudiKernel/ThreadLocalContext.h>
 #include <tuple>
 
 namespace Gaudi::Functional {

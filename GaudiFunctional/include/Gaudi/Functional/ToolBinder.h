@@ -11,6 +11,7 @@
 #pragma once
 #include "details.h"
 #include "utilities.h"
+#include <GaudiKernel/AlgTool.h>
 #include <GaudiKernel/IBinder.h>
 
 namespace Gaudi::Functional {
@@ -26,13 +27,13 @@ namespace Gaudi::Functional {
       constexpr static std::size_t N = sizeof...( Args );
       using KeyValue                 = std::pair<std::string, std::string>;
       using KeyValues                = std::pair<std::string, std::vector<std::string>>;
-      using InputSpecs               = Gaudi::Functional::details::InputSpecs_t<KeyValue, KeyValues, Args...>;
-      using InputSpec                = Gaudi::Functional::details::first_or_empty_t<InputSpecs>;
+      using InputSpecTuple           = Gaudi::Functional::details::LocationSpecs_t<KeyValue, KeyValues, Args...>;
+      using InputSpecs               = Gaudi::Functional::details::LocationSpecs<InputSpecTuple>;
       using Creator                  = Gaudi::Interface::Bind::Box<IFace> ( * )( void const*, Args const&... );
 
       template <size_t... I>
-      ToolBinder( std::string type, std::string name, const IInterface* parent, InputSpecs const& args, Creator creator,
-                  std::index_sequence<I...> )
+      ToolBinder( std::string type, std::string name, const IInterface* parent, InputSpecTuple const& args,
+                  Creator creator, std::index_sequence<I...> )
           : extends<details::BaseClass_t<Traits, AlgTool>, Gaudi::Interface::Bind::IBinder<IFace>>{ std::move( type ),
                                                                                                     std::move( name ),
                                                                                                     parent }
@@ -46,12 +47,8 @@ namespace Gaudi::Functional {
     public:
       ToolBinder( std::string type, std::string name, const IInterface* parent, InputSpecs const& inputs,
                   Creator creator )
-          : ToolBinder{ std::move( type ), std::move( name ), parent, inputs, creator, std::make_index_sequence<N>{} } {
-      }
-      ToolBinder( std::string type, std::string name, const IInterface* parent, InputSpec const& input,
-                  Creator creator )
-        requires( N == 1 )
-          : ToolBinder{ std::move( type ), std::move( name ), parent, InputSpecs{ input }, creator } {}
+          : ToolBinder{ std::move( type ), std::move( name ), parent,
+                        inputs.tuple(),    creator,           std::make_index_sequence<N>{} } {}
 
       Gaudi::Interface::Bind::Box<IFace> bind( EventContext const& ctx ) const final {
         return std::apply(
