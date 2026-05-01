@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -19,8 +19,7 @@ namespace Gaudi {
                                     const Gaudi::Range_<Gaudi::TestSuite::MyTrack::ConstVector>& )> {
 
       SelectTracks( const std::string& name, ISvcLocator* pSvc )
-          : Transformer( name, pSvc, { KeyValue( "InputData", { "MyTracks" } ) },
-                         KeyValue( "OutputData", { "MyOutTracks" } ) ) {}
+          : Transformer( name, pSvc, { "InputData", "MyTracks" }, { "OutputData", "MyOutTracks" } ) {}
 
       Gaudi::TestSuite::MyTrack::Selection
       operator()( const Gaudi::Range_<Gaudi::TestSuite::MyTrack::ConstVector>& in_tracks ) const override {

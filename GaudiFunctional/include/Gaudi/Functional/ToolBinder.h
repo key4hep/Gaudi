@@ -25,10 +25,10 @@ namespace Gaudi::Functional {
 
     public:
       constexpr static std::size_t N = sizeof...( Args );
-      using KeyValue                 = std::pair<std::string, std::string>;
-      using KeyValues                = std::pair<std::string, std::vector<std::string>>;
-      using InputSpecTuple           = Gaudi::Functional::details::LocationSpecs_t<KeyValue, KeyValues, Args...>;
-      using InputSpecs               = Gaudi::Functional::details::LocationSpecs<InputSpecTuple>;
+      using KeyValue                 = LocationSpec::KeyValue;
+      using KeyValues                = LocationSpec::KeyValues;
+      using InputSpecTuple           = LocationSpecs_t<Args...>;
+      using InputSpecs               = LocationSpecs<InputSpecTuple>;
       using Creator                  = Gaudi::Interface::Bind::Box<IFace> ( * )( void const*, Args const&... );
 
       template <size_t... I>

@@ -12,7 +12,6 @@
 #include "details.h"
 #include "utilities.h"
 #include <Gaudi/Algorithm.h>
-#include <GaudiKernel/ThreadLocalContext.h>
 #include <tuple>
 
 namespace Gaudi::Functional {
@@ -29,34 +28,34 @@ namespace Gaudi::Functional {
     template <typename Signature, typename Traits_, bool isLegacy>
     struct MergingTransformer;
 
-    ////// Many of the same -> 1 or 0
-    template <typename Out, typename... Ins, typename Traits_>
-    struct MergingTransformer<Out( const vector_of_const_<Ins>&... ), Traits_, true>
-        : DataHandleMixin<type_list<Out>, type_list<vector_of_input_<Ins>...>, Traits_> {
-
-      using DataHandleMixin<type_list<Out>, type_list<vector_of_input_<Ins>...>, Traits_>::DataHandleMixin;
+    ////// Merging inputs -> 1 or 0
+    template <typename Out, typename... Args, typename Traits_>
+      requires has_handle_vector_input<Args...>
+    struct MergingTransformer<Out( const Args&... ), Traits_, true>
+        : DataHandleVectorMixin<type_list<Out>, Traits_, Args...> {
+      using DataHandleVectorMixin<type_list<Out>, Traits_, Args...>::DataHandleVectorMixin;
 
       // derived classes can NOT implement execute
       StatusCode execute() override final {
-        return execute_single_output( *this, Gaudi::Hive::currentContext(), this->m_outputs );
+        return execute_single_output( *this, this->getContext(), this->m_outputs );
       }
 
-      virtual Out operator()( const vector_of_const_<Ins>&... inputs ) const = 0;
+      virtual Out operator()( const Args&... inputs ) const = 0;
     };
 
-    ////// Many of the same -> 1 or 0
-    template <typename Out, typename... Ins, typename Traits_>
-    struct MergingTransformer<Out( const vector_of_const_<Ins>&... ), Traits_, false>
-        : DataHandleMixin<type_list<Out>, type_list<vector_of_input_<Ins>...>, Traits_> {
-
-      using DataHandleMixin<type_list<Out>, type_list<vector_of_input_<Ins>...>, Traits_>::DataHandleMixin;
+    ////// Merging inputs -> 1 or 0
+    template <typename Out, typename... Args, typename Traits_>
+      requires has_handle_vector_input<Args...>
+    struct MergingTransformer<Out( const Args&... ), Traits_, false>
+        : DataHandleVectorMixin<type_list<Out>, Traits_, Args...> {
+      using DataHandleVectorMixin<type_list<Out>, Traits_, Args...>::DataHandleVectorMixin;
 
       // derived classes can NOT implement execute
       StatusCode execute( const EventContext& ctx ) const override final {
         return execute_single_output( *this, ctx, this->m_outputs );
       }
 
-      virtual Out operator()( const vector_of_const_<Ins>&... inputs ) const = 0;
+      virtual Out operator()( const Args&... inputs ) const = 0;
     };
 
   } // namespace details
@@ -70,44 +69,40 @@ namespace Gaudi::Functional {
 
   using details::vector_of_const_;
 
-  // M vectors of the same -> N
+  // Merging inputs -> N
   template <typename Signature, typename Traits_ = Traits::BaseClass_t<Gaudi::Algorithm>>
   struct MergingMultiTransformer;
 
-  template <typename... Outs, typename... Ins, typename Traits_>
-  struct MergingMultiTransformer<std::tuple<Outs...>( details::vector_of_const_<Ins> const&... ), Traits_>
-      : details::DataHandleMixin<details::type_list<Outs...>, details::type_list<details::vector_of_input_<Ins>...>,
-                                 Traits_> {
-
-    using details::DataHandleMixin<details::type_list<Outs...>, details::type_list<details::vector_of_input_<Ins>...>,
-                                   Traits_>::DataHandleMixin;
+  template <typename... Outs, typename... Args, typename Traits_>
+    requires details::has_handle_vector_input<Args...>
+  struct MergingMultiTransformer<std::tuple<Outs...>( const Args&... ), Traits_>
+      : details::DataHandleVectorMixin<details::type_list<Outs...>, Traits_, Args...> {
+    using details::DataHandleVectorMixin<details::type_list<Outs...>, Traits_, Args...>::DataHandleVectorMixin;
 
     // derived classes can NOT implement execute
     StatusCode execute( EventContext const& ctx ) const override final {
       return details::execute_outputs( *this, ctx, this->m_outputs );
     }
 
-    virtual std::tuple<Outs...> operator()( const vector_of_const_<Ins>&... inputs ) const = 0;
+    virtual std::tuple<Outs...> operator()( const Args&... inputs ) const = 0;
   };
 
-  // Many of the same -> N with filter functionality
+  // Merging inputs -> N with filter functionality
   template <typename Signature, typename Traits_ = Traits::BaseClass_t<Gaudi::Algorithm>>
   struct MergingMultiTransformerFilter;
 
-  template <typename... Outs, typename In, typename Traits_>
-  struct MergingMultiTransformerFilter<std::tuple<Outs...>( vector_of_const_<In> const& ), Traits_>
-      : details::DataHandleMixin<details::type_list<Outs...>, details::type_list<details::vector_of_input_<In>>,
-                                 Traits_> {
-
-    using details::DataHandleMixin<details::type_list<Outs...>, details::type_list<details::vector_of_input_<In>>,
-                                   Traits_>::DataHandleMixin;
+  template <typename... Outs, typename... Args, typename Traits_>
+    requires details::has_handle_vector_input<Args...>
+  struct MergingMultiTransformerFilter<std::tuple<Outs...>( const Args&... ), Traits_>
+      : details::DataHandleVectorMixin<details::type_list<Outs...>, Traits_, Args...> {
+    using details::DataHandleVectorMixin<details::type_list<Outs...>, Traits_, Args...>::DataHandleVectorMixin;
 
     // derived classes can NOT implement execute
     StatusCode execute( EventContext const& ctx ) const override final {
       return details::execute_filtered_outputs( *this, ctx, this->m_outputs );
     }
 
-    virtual std::tuple<bool, Outs...> operator()( const vector_of_const_<In>& inputs ) const = 0;
+    virtual std::tuple<bool, Outs...> operator()( const Args&... inputs ) const = 0;
   };
 
 } // namespace Gaudi::Functional

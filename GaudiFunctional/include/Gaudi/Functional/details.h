@@ -426,6 +426,23 @@ namespace Gaudi::Functional::details {
   template <typename T>
   struct vector_of_input_ {};
 
+  template <typename Arg>
+  struct handle_vector_input {
+    using type                     = Arg;
+    static constexpr bool is_range = false;
+  };
+  template <typename T>
+  struct handle_vector_input<vector_of_const_<T>> {
+    using type                     = vector_of_input_<T>;
+    static constexpr bool is_range = true;
+  };
+  template <typename Arg>
+  using handle_vector_input_t = typename handle_vector_input<Arg>::type;
+  template <typename Arg>
+  inline constexpr bool is_handle_vector_input_v = handle_vector_input<Arg>::is_range;
+  template <typename... Args>
+  concept has_handle_vector_input = ( is_handle_vector_input_v<Args> || ... );
+
   template <typename... T>
   struct type_list {};
 
@@ -549,38 +566,64 @@ namespace Gaudi::Functional::details {
   template <typename T>
   inline constexpr bool is_event_context_v = std::is_same_v<std::remove_cvref_t<T>, EventContext>;
 
-  template <typename Arg, typename KeyValue, typename KeyValues>
-  struct LocationSpecFor {
-    using type = KeyValue;
+  struct LocationSpec {
+    using KeyValue  = std::pair<std::string, std::string>;
+    using KeyValues = std::pair<std::string, std::vector<std::string>>;
+
+    KeyValues value;
+    bool      is_vector = false;
+
+    LocationSpec( std::string name_, std::string location_ )
+        : value{ std::move( name_ ), { std::move( location_ ) } } {}
+    LocationSpec( std::string name_, const char* location_ )
+        : LocationSpec{ std::move( name_ ), std::string{ location_ } } {}
+    LocationSpec( std::string name_, std::vector<std::string> locations_ )
+        : value{ std::move( name_ ), std::move( locations_ ) }, is_vector{ true } {}
+    LocationSpec( std::string name_, std::initializer_list<std::string> locations_ )
+        : LocationSpec{ std::move( name_ ), std::vector<std::string>{ locations_ } } {}
+
+    operator KeyValue() const {
+      if ( is_vector ) {
+        throw GaudiException( "Expected a scalar location specification", "Gaudi::Functional::details::LocationSpec",
+                              StatusCode::FAILURE );
+      }
+      return { value.first, value.second.front() };
+    }
+    operator KeyValues() const { return value; }
   };
-  template <typename KeyValue, typename KeyValues>
-  struct LocationSpecFor<EventContext, KeyValue, KeyValues> {
+
+  template <typename Arg>
+  struct LocationSpecFor {
+    using type = LocationSpec::KeyValue;
+  };
+  template <>
+  struct LocationSpecFor<EventContext> {
     using type = std::tuple<>;
   };
-  template <typename T, typename KeyValue, typename KeyValues>
-  struct LocationSpecFor<vector_of_input_<T>, KeyValue, KeyValues> {
-    using type = KeyValues;
+  template <typename T>
+  struct LocationSpecFor<vector_of_input_<T>> {
+    using type = LocationSpec::KeyValues;
   };
-  template <typename T, typename KeyValue, typename KeyValues>
-  struct LocationSpecFor<vector_of_output_<T>, KeyValue, KeyValues> {
-    using type = KeyValues;
+  template <typename T>
+  struct LocationSpecFor<vector_of_output_<T>> {
+    using type = LocationSpec::KeyValues;
   };
-  template <typename Arg, typename KeyValue, typename KeyValues>
-  using LocationSpec_t = typename LocationSpecFor<std::remove_cvref_t<Arg>, KeyValue, KeyValues>::type;
+  template <typename Arg>
+  using LocationSpec_t = typename LocationSpecFor<std::remove_cvref_t<Arg>>::type;
 
-  template <typename KeyValue, typename KeyValues, typename... Args>
-  using LocationSpecs_t = std::tuple<LocationSpec_t<Args, KeyValue, KeyValues>...>;
+  template <typename... Args>
+  using LocationSpecs_t = std::tuple<LocationSpec_t<Args>...>;
 
-  template <typename KeyValue, typename KeyValues, typename... Args>
+  template <typename... Args>
   struct TailLocationSpecs {
     using type = std::tuple<>;
   };
-  template <typename KeyValue, typename KeyValues, typename First, typename... Rest>
-  struct TailLocationSpecs<KeyValue, KeyValues, First, Rest...> {
-    using type = LocationSpecs_t<KeyValue, KeyValues, Rest...>;
+  template <typename First, typename... Rest>
+  struct TailLocationSpecs<First, Rest...> {
+    using type = LocationSpecs_t<Rest...>;
   };
-  template <typename KeyValue, typename KeyValues, typename... Args>
-  using TailLocationSpecs_t = typename TailLocationSpecs<KeyValue, KeyValues, Args...>::type;
+  template <typename... Args>
+  using TailLocationSpecs_t = typename TailLocationSpecs<Args...>::type;
 
   template <typename Tuple>
   struct first_or_empty {
@@ -597,6 +640,12 @@ namespace Gaudi::Functional::details {
   inline constexpr bool tuple_elements_are_v = false;
   template <typename T, typename... Elements>
   inline constexpr bool tuple_elements_are_v<std::tuple<Elements...>, T> = ( std::same_as<Elements, T> && ... );
+
+  template <typename Tuple, typename T>
+  inline constexpr bool tuple_elements_constructible_from_v = false;
+  template <typename T, typename... Elements>
+  inline constexpr bool tuple_elements_constructible_from_v<std::tuple<Elements...>, T> =
+      ( std::constructible_from<Elements, T> && ... );
 
   template <typename... Args>
   inline constexpr bool first_is_event_context_v = false;
@@ -633,6 +682,10 @@ namespace Gaudi::Functional::details {
     LocationSpecs( Specs&&... specs )
       requires( sizeof...( Specs ) > 0 && std::constructible_from<Tuple, Specs...> )
         : m_specs{ std::forward<Specs>( specs )... } {}
+    template <typename... Args>
+    LocationSpecs( Args&&... args )
+      requires( sizeof...( Args ) > 1 && std::tuple_size_v<Tuple> == 1 && std::constructible_from<First, Args...> )
+        : LocationSpecs{ First{ std::forward<Args>( args )... } } {}
     LocationSpecs( std::string name, std::string loc )
       requires( std::tuple_size_v<Tuple> == 1 && std::constructible_from<First, std::string, std::string> )
         : LocationSpecs{ First{ std::move( name ), std::move( loc ) } } {}
@@ -641,6 +694,10 @@ namespace Gaudi::Functional::details {
         : LocationSpecs{ First{ std::move( name ), std::move( locs ) } } {}
     LocationSpecs( std::initializer_list<First> specs )
       requires( std::tuple_size_v<Tuple> > 0 && tuple_elements_are_v<Tuple, First> )
+        : m_specs{ location_specs_tuple<Tuple>( specs, indices, "Gaudi::Functional::details::LocationSpecs" ) } {}
+    LocationSpecs( std::initializer_list<LocationSpec> specs )
+      requires( std::tuple_size_v<Tuple> > 0 && !tuple_elements_are_v<Tuple, First> &&
+                tuple_elements_constructible_from_v<Tuple, LocationSpec> )
         : m_specs{ location_specs_tuple<Tuple>( specs, indices, "Gaudi::Functional::details::LocationSpecs" ) } {}
 
     Tuple const& tuple() const { return m_specs; }
@@ -691,10 +748,18 @@ namespace Gaudi::Functional::details {
   template <typename OutputSpec, typename InputSpec, typename Traits_>
   class DataHandleMixin;
 
+  template <typename Outputs, typename Traits_, typename... Args>
+  using DataHandleVectorMixin = DataHandleMixin<Outputs, type_list<handle_vector_input_t<Args>...>, Traits_>;
+
   template <typename... Out, typename... In, typename Traits_>
     requires( std::derived_from<BaseClass_t<Traits_>, Algorithm> && !std::disjunction_v<std::is_void<Out>...> )
   class DataHandleMixin<type_list<Out...>, type_list<In...>, Traits_> : public BaseClass_t<Traits_> {
 
+  public:
+    constexpr static std::size_t N_in  = sizeof...( In );
+    constexpr static std::size_t N_out = sizeof...( Out );
+
+  private:
     template <typename IArgs, typename OArgs, std::size_t... I, std::size_t... J>
     DataHandleMixin( std::string name, ISvcLocator* pSvcLocator, const IArgs& inputs, std::index_sequence<I...>,
                      const OArgs& outputs, std::index_sequence<J...> )
@@ -705,21 +770,13 @@ namespace Gaudi::Functional::details {
       this->setProperty( "Cardinality", 0 ).ignore();
     }
 
-  public:
-    constexpr static std::size_t N_in  = sizeof...( In );
-    constexpr static std::size_t N_out = sizeof...( Out );
-
-    using KeyValue  = std::pair<std::string, std::string>;
-    using KeyValues = std::pair<std::string, std::vector<std::string>>;
-
-  private:
     using InputHandles                                     = std::tuple<details::InputHandle_t<Traits_, In>...>;
     using OutputHandles                                    = std::tuple<details::OutputHandle_t<Traits_, Out>...>;
-    using InputSpecTuple                                   = LocationSpecs_t<KeyValue, KeyValues, In...>;
-    using LegacyInputSpecTuple                             = TailLocationSpecs_t<KeyValue, KeyValues, In...>;
+    using InputSpecTuple                                   = LocationSpecs_t<In...>;
+    using LegacyInputSpecTuple                             = TailLocationSpecs_t<In...>;
     using InputSpecs                                       = details::LocationSpecs<InputSpecTuple>;
     using LegacyInputSpecs                                 = details::LocationSpecs<LegacyInputSpecTuple>;
-    using OutputSpecTuple                                  = LocationSpecs_t<KeyValue, KeyValues, Out...>;
+    using OutputSpecTuple                                  = LocationSpecs_t<Out...>;
     using OutputSpecs                                      = details::LocationSpecs<OutputSpecTuple>;
     constexpr static bool        starts_with_event_context = first_is_event_context_v<In...>;
     constexpr static std::size_t input_location_offset     = starts_with_event_context ? 1 : 0;
@@ -741,6 +798,9 @@ namespace Gaudi::Functional::details {
     }
 
   public:
+    using KeyValue  = LocationSpec::KeyValue;
+    using KeyValues = LocationSpec::KeyValues;
+
     // 0 -> 0, with the historic optional empty tuple arguments.
     DataHandleMixin( std::string name, ISvcLocator* locator, std::tuple<> = {}, std::tuple<> = {} )
       requires( N_in == 0 && N_out == 0 )
@@ -806,17 +866,20 @@ namespace Gaudi::Functional::details {
     {
       return getLocations( input_location_handles( std::make_index_sequence<N_input_locations>{} ), i ).at( j ).key();
     }
-    unsigned int inputLocationSize() const {
-      if constexpr ( N_input_locations == 1 && location_vector_handle<InputLocationHandle<0>> ) {
-        return std::get<input_handle_index<0>>( m_inputs ).size();
-      } else {
-        return N_input_locations;
-      }
-    }
+    unsigned int inputLocationSize() const { return N_input_locations; }
     unsigned int inputLocationSize( unsigned int i ) const
-      requires( N_input_locations > 0 && all_input_locations_are_vectors )
+      requires( N_input_locations > 0 )
     {
-      return getLocations( input_location_handles( std::make_index_sequence<N_input_locations>{} ), i ).size();
+      auto size = []( const auto& handle ) {
+        if constexpr ( location_vector_handle<std::decay_t<decltype( handle )>> ) {
+          return static_cast<unsigned int>( handle.size() );
+        } else {
+          return 1U;
+        }
+      };
+      return std::apply( [i = i + input_location_offset,
+                          size]( const auto&... handles ) { return std::array{ size( handles )... }.at( i ); },
+                         m_inputs );
     }
 
     template <std::size_t N = 0>

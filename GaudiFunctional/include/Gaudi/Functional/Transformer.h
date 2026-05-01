@@ -12,7 +12,6 @@
 
 #include "details.h"
 #include "utilities.h"
-#include <GaudiKernel/ThreadLocalContext.h>
 #include <tuple>
 
 // Adapt an Algorithm (by default, Gaudi::Algorithm) so that derived classes
@@ -39,7 +38,7 @@ namespace Gaudi ::Functional {
 
       // derived classes can NOT implement execute
       StatusCode execute() override final {
-        return execute_single_output( *this, Gaudi::Hive::currentContext(), this->m_outputs );
+        return execute_single_output( *this, this->getContext(), this->m_outputs );
       }
 
       // instead they MUST implement this operator
@@ -69,9 +68,7 @@ namespace Gaudi ::Functional {
       using DataHandleMixin<type_list<Out...>, type_list<In...>, Traits_>::DataHandleMixin;
 
       // derived classes can NOT implement execute
-      StatusCode execute() override final {
-        return execute_outputs( *this, Gaudi::Hive::currentContext(), this->m_outputs );
-      }
+      StatusCode execute() override final { return execute_outputs( *this, this->getContext(), this->m_outputs ); }
 
       // instead they MUST implement this operator
       virtual std::tuple<Out...> operator()( const In&... ) const = 0;

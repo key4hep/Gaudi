@@ -68,7 +68,7 @@ stdout: |-
   IntIntToFloatFl...    INFO Storing results into /Event/MyMultiFloat1 and /Event/MyMultiFloat2
   FloatDataConsumer     INFO executing FloatDataConsumer: 7
   ContextConsumer       INFO executing ContextConsumer, got s: 0  e: 0
-  ContextIntConsumer    INFO executing ContextIntConsumer, got context = s: 0  e: 0, int = 7
+  ContextIntConsumer    INFO executing ContextIntConsumer, got context = s: 0  e: 0, int = 7 from /Event/MyInt
   VectorDoublePro...    INFO storing vector<double> into /Event/MyVectorOfDoubles
   VectorDataProdu...    INFO executing VectorDataProducer, storing [3, 3, 3, 3] into /Event/IntVector1
   VectorDataProdu...    INFO executing VectorDataProducer, storing [3, 3, 3, 3] into /Event/IntVector2
@@ -130,8 +130,11 @@ stdout: |-
   IntVectorsToInts      INFO loaded [1, 1, 2, 3, 5, 8, 13] from /Event/Fib7
   IntVectorsToInts      INFO storing 55 in /Event/EvenOddFib
   IntVectorsToInts      INFO storing 49 in /Event/OddFib
-  EvenOddFibConsumer    INFO executing ContextIntConsumer, got context = s: 0  e: 0, int = 55
-  OddFibConsumer        INFO executing ContextIntConsumer, got context = s: 0  e: 0, int = 49
+  EvenOddFibConsumer    INFO executing ContextIntConsumer, got context = s: 0  e: 0, int = 55 from /Event/EvenOddFib
+  OddFibConsumer        INFO executing ContextIntConsumer, got context = s: 0  e: 0, int = 49 from /Event/OddFib
+  IntVectorsToInt...    INFO executing with context s: 0  e: 0, scale 7 from /Event/MyInt
+  ScaledEvenOddFi...    INFO executing ContextIntConsumer, got context = s: 0  e: 0, int = 385 from /Event/ScaledEvenOddFib
+  ScaledOddFibCon...    INFO executing ContextIntConsumer, got context = s: 0  e: 0, int = 343 from /Event/ScaledOddFib
   OpaqueProducer     SUCCESS My Eventually is about to be destroyed
   IntDataProducer       INFO executing IntDataProducer, storing 7 into /Event/MyInt
   OtherIntDataPro...    INFO executing IntDataProducer, storing 7 into /Event/MyOtherInt
@@ -146,7 +149,7 @@ stdout: |-
   IntIntToFloatFl...    INFO Storing results into /Event/MyMultiFloat1 and /Event/MyMultiFloat2
   FloatDataConsumer     INFO executing FloatDataConsumer: 7
   ContextConsumer       INFO executing ContextConsumer, got s: 0  e: 1
-  ContextIntConsumer    INFO executing ContextIntConsumer, got context = s: 0  e: 1, int = 7
+  ContextIntConsumer    INFO executing ContextIntConsumer, got context = s: 0  e: 1, int = 7 from /Event/MyInt
   VectorDoublePro...    INFO storing vector<double> into /Event/MyVectorOfDoubles
   VectorDataProdu...    INFO executing VectorDataProducer, storing [3, 3, 3, 3] into /Event/IntVector1
   VectorDataProdu...    INFO executing VectorDataProducer, storing [3, 3, 3, 3] into /Event/IntVector2
@@ -204,8 +207,11 @@ stdout: |-
   IntVectorsToInts      INFO loaded [1, 1, 2, 3, 5, 8, 13] from /Event/Fib7
   IntVectorsToInts      INFO storing 55 in /Event/EvenOddFib
   IntVectorsToInts      INFO storing 49 in /Event/OddFib
-  EvenOddFibConsumer    INFO executing ContextIntConsumer, got context = s: 0  e: 1, int = 55
-  OddFibConsumer        INFO executing ContextIntConsumer, got context = s: 0  e: 1, int = 49
+  EvenOddFibConsumer    INFO executing ContextIntConsumer, got context = s: 0  e: 1, int = 55 from /Event/EvenOddFib
+  OddFibConsumer        INFO executing ContextIntConsumer, got context = s: 0  e: 1, int = 49 from /Event/OddFib
+  IntVectorsToInt...    INFO executing with context s: 0  e: 1, scale 7 from /Event/MyInt
+  ScaledEvenOddFi...    INFO executing ContextIntConsumer, got context = s: 0  e: 1, int = 385 from /Event/ScaledEvenOddFib
+  ScaledOddFibCon...    INFO executing ContextIntConsumer, got context = s: 0  e: 1, int = 343 from /Event/ScaledOddFib
   OpaqueProducer     SUCCESS My Eventually is about to be destroyed
   CountingConsumer      INFO Number of counters : 3
   ApplicationMgr        INFO Application Manager Stopped successfully

@@ -8,18 +8,34 @@ stdout: |-
   ApplicationMgr        INFO Application Manager Started successfully
   IntAProducer          INFO executing IntDataProducer, storing 2 into /Event/IntA
   IntBProducer          INFO executing IntDataProducer, storing 3 into /Event/IntB
+  ScaleProducer         INFO executing IntDataProducer, storing 4 into /Event/Scale
+  is2f_merger_wit...    INFO input locations: /Event/IntA, /Event/Scale
+  is2f_merger_wit...    INFO input location sizes: 2, 1
+  is2f_merger_wit...    INFO i: 2 i: 3 scale: 4
+  is_merger_consu...    INFO consumed scaled sum: 20 from /Event/IntA and /Event/Scale
+  is2ff_merger_wi...    INFO i: 2 i: 3 scale: 4
   is2ff_merger          INFO i: 2 i: 3
   MergerFilterPas...    INFO i: 2 i: 2 i: 3
   MergerFilterPas...    INFO Filter passed
   MergerFilterFai...    INFO i: 2 i: 3
   MergerFilterFai...    INFO Filter failed
+  is2ff_merger_fi...    INFO i: 2 i: 3 scale: 4
+  is2ff_merger_fi...    INFO Filter passed
   IntAProducer          INFO executing IntDataProducer, storing 2 into /Event/IntA
   IntBProducer          INFO executing IntDataProducer, storing 3 into /Event/IntB
+  ScaleProducer         INFO executing IntDataProducer, storing 4 into /Event/Scale
+  is2f_merger_wit...    INFO input locations: /Event/IntA, /Event/Scale
+  is2f_merger_wit...    INFO input location sizes: 2, 1
+  is2f_merger_wit...    INFO i: 2 i: 3 scale: 4
+  is_merger_consu...    INFO consumed scaled sum: 20 from /Event/IntA and /Event/Scale
+  is2ff_merger_wi...    INFO i: 2 i: 3 scale: 4
   is2ff_merger          INFO i: 2 i: 3
   MergerFilterPas...    INFO i: 2 i: 2 i: 3
   MergerFilterPas...    INFO Filter passed
   MergerFilterFai...    INFO i: 2 i: 3
   MergerFilterFai...    INFO Filter failed
+  is2ff_merger_fi...    INFO i: 2 i: 3 scale: 4
+  is2ff_merger_fi...    INFO Filter passed
   ApplicationMgr        INFO Application Manager Stopped successfully
   ApplicationMgr        INFO Application Manager Finalized successfully
   ApplicationMgr        INFO Application Manager Terminated successfully

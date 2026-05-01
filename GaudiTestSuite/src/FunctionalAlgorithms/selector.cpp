@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -20,7 +20,7 @@ namespace Gaudi {
         : public Functional::FilterPredicate<bool( const Gaudi::Range_<Gaudi::TestSuite::MyTrack::ConstVector>& )> {
     public:
       CountSelectedTracks( const std::string& name, ISvcLocator* pSvc )
-          : FilterPredicate( name, pSvc, { KeyValue{ "InputData", "MyOutTracks" } } ) {}
+          : FilterPredicate( name, pSvc, { "InputData", "MyOutTracks" } ) {}
 
       StatusCode initialize() override {
         StatusCode sc = FilterPredicate::initialize();

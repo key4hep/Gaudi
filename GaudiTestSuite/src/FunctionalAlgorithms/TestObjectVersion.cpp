@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -20,7 +20,7 @@ namespace Gaudi {
 
       struct CreateObject : Gaudi::Functional::Producer<ObjectType()> {
         CreateObject( const std::string& name, ISvcLocator* svcLoc )
-            : Producer( name, svcLoc, KeyValue( "OutputLocation", "/Event/SomeData" ) ) {}
+            : Producer( name, svcLoc, { "OutputLocation", "/Event/SomeData" } ) {}
         ObjectType operator()() const override {
           ObjectType o;
           o.setVersion( 42 );
@@ -32,7 +32,7 @@ namespace Gaudi {
 
       struct UseObject : Gaudi::Functional::Consumer<void( const ObjectType& )> {
         UseObject( const std::string& name, ISvcLocator* svcLoc )
-            : Consumer( name, svcLoc, KeyValue( "InputLocation", "/Event/SomeData" ) ) {}
+            : Consumer( name, svcLoc, { "InputLocation", "/Event/SomeData" } ) {}
         void operator()( const ObjectType& o ) const override {
           info() << "Retrieved object with version " << static_cast<int>( o.version() ) << endmsg;
           if ( o.version() != 42 ) throw GaudiException( "Wrong object version", name(), StatusCode::FAILURE );

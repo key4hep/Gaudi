@@ -11,7 +11,6 @@
 #pragma once
 #include "details.h"
 #include "utilities.h"
-#include <GaudiKernel/ThreadLocalContext.h>
 
 namespace Gaudi::Functional {
 
@@ -25,7 +24,7 @@ namespace Gaudi::Functional {
       using DataHandleMixin<type_list<>, type_list<In...>, Traits_>::DataHandleMixin;
 
       // derived classes are NOT allowed to implement execute ...
-      StatusCode execute() override final { return execute_single_output( *this, Gaudi::Hive::currentContext() ); }
+      StatusCode execute() override final { return execute_single_output( *this, this->getContext() ); }
 
       // ... instead, they must implement the following operator
       virtual void operator()( const In&... ) const = 0;

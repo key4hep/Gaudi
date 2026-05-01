@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 2024 CERN for the benefit of the LHCb and ATLAS collaborations      *
+* (c) Copyright 2024-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -19,7 +19,7 @@ namespace Gaudi::TestSuite::NTuple {
   struct IntVectorDataProducer final
       : Gaudi::Functional::Producer<std::vector<int>(), Gaudi::Functional::Traits::BaseClass_t<Gaudi::Algorithm>> {
     IntVectorDataProducer( const std::string& name, ISvcLocator* svcLoc )
-        : Producer( name, svcLoc, KeyValue( "OutputLocation", "MyVector" ) ) {}
+        : Producer( name, svcLoc, { "OutputLocation", "MyVector" } ) {}
 
     std::vector<int> operator()() const override { return std::vector<int>{ 0, 1, 2, 3, 4 }; }
   };
@@ -29,7 +29,7 @@ namespace Gaudi::TestSuite::NTuple {
   struct FloatDataProducer final
       : Gaudi::Functional::Producer<float(), Gaudi::Functional::Traits::BaseClass_t<Gaudi::Algorithm>> {
     FloatDataProducer( const std::string& name, ISvcLocator* svcLoc )
-        : Producer( name, svcLoc, KeyValue( "OutputLocation", "MyFloat" ) ) {}
+        : Producer( name, svcLoc, { "OutputLocation", "MyFloat" } ) {}
 
     float operator()() const override { return 2.5; }
   };
@@ -39,7 +39,7 @@ namespace Gaudi::TestSuite::NTuple {
   struct StrDataProducer final
       : Gaudi::Functional::Producer<std::string(), Gaudi::Functional::Traits::BaseClass_t<Gaudi::Algorithm>> {
     StrDataProducer( const std::string& name, ISvcLocator* svcLoc )
-        : Producer( name, svcLoc, KeyValue( "OutputLocation", "MyString" ) ) {}
+        : Producer( name, svcLoc, { "OutputLocation", "MyString" } ) {}
 
     std::string operator()() const override { return m_stringValue; }
 
@@ -53,7 +53,7 @@ namespace Gaudi::TestSuite::NTuple {
       : Gaudi::Functional::Producer<Gaudi::TestSuite::NTuple::MyStruct(),
                                     Gaudi::Functional::Traits::BaseClass_t<Gaudi::Algorithm>> {
     StructDataProducer( const std::string& name, ISvcLocator* svcLoc )
-        : Producer( name, svcLoc, KeyValue( "OutputLocation", "MyStruct" ) ) {}
+        : Producer( name, svcLoc, { "OutputLocation", "MyStruct" } ) {}
 
     Gaudi::TestSuite::NTuple::MyStruct operator()() const override {
       Gaudi::TestSuite::NTuple::MyStruct myStruct = { 1, "myStruct" };
@@ -67,7 +67,7 @@ namespace Gaudi::TestSuite::NTuple {
       : Gaudi::Functional::Producer<Gaudi::TestSuite::Counter(),
                                     Gaudi::Functional::Traits::BaseClass_t<Gaudi::Algorithm>> {
     CounterDataProducer( const std::string& name, ISvcLocator* svcLoc )
-        : Producer( name, svcLoc, KeyValue( "OutputLocation", "MyCounter" ) ) {}
+        : Producer( name, svcLoc, { "OutputLocation", "MyCounter" } ) {}
 
     Counter operator()() const override { return Counter(); }
   };

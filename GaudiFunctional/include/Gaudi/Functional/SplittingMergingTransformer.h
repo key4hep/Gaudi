@@ -26,11 +26,11 @@ namespace Gaudi::Functional {
     template <typename Signature, typename Traits_>
     struct SplittingMergingTransformer;
 
-    template <typename Out, typename In, typename Traits_>
-    struct SplittingMergingTransformer<vector_of_<Out>( const vector_of_const_<In>& ), Traits_>
-        : DataHandleMixin<type_list<vector_of_output_<Out>>, type_list<vector_of_input_<In>>, Traits_> {
-      using DataHandleMixin<type_list<vector_of_output_<Out>>, type_list<vector_of_input_<In>>,
-                            Traits_>::DataHandleMixin;
+    template <typename Out, typename... Args, typename Traits_>
+      requires has_handle_vector_input<Args...>
+    struct SplittingMergingTransformer<vector_of_<Out>( const Args&... ), Traits_>
+        : DataHandleVectorMixin<type_list<vector_of_output_<Out>>, Traits_, Args...> {
+      using DataHandleVectorMixin<type_list<vector_of_output_<Out>>, Traits_, Args...>::DataHandleVectorMixin;
 
       // derived classes can NOT implement execute
       StatusCode execute( const EventContext& ctx ) const override final {
@@ -40,7 +40,7 @@ namespace Gaudi::Functional {
       // TODO/FIXME: how does the callee know in which order to produce the outputs?
       //             (note: 'missing' items can be specified by making Out an std::optional<Out>,
       //              and only those entries which contain an Out are stored)
-      virtual vector_of_<Out> operator()( const vector_of_const_<In>& ) const = 0;
+      virtual vector_of_<Out> operator()( const Args&... ) const = 0;
     };
 
   } // namespace details
