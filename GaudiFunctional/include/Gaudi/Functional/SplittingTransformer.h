@@ -13,7 +13,6 @@
 #include "details.h"
 #include "utilities.h"
 #include <GaudiKernel/FunctionalFilterDecision.h>
-#include <functional>
 #include <optional>
 #include <string>
 #include <vector>
@@ -27,75 +26,17 @@ namespace Gaudi::Functional {
 
   namespace details {
 
-    template <typename Signature, typename Traits_, bool isLegacy>
+    template <typename Signature, typename Traits_>
     class SplittingTransformer;
 
-    ////// N -> Many of the same one (value of Many not known at compile time, but known at configuration time)
     template <typename Out, typename... In, typename Traits_>
-    class SplittingTransformer<vector_of_<Out>( const In&... ), Traits_, true>
+    class SplittingTransformer<vector_of_<Out>( const In&... ), Traits_>
         : public details::DataHandleMixin<std::tuple<>, filter_evtcontext<In...>, Traits_> {
       using base_class = details::DataHandleMixin<std::tuple<>, filter_evtcontext<In...>, Traits_>;
 
-    public:
-      constexpr static std::size_t N = base_class::N_in;
-      using KeyValue                 = typename base_class::KeyValue;
-      using KeyValues                = typename base_class::KeyValues;
-
-      SplittingTransformer( std::string name, ISvcLocator* locator, const RepeatValues_<KeyValue, N>& inputs,
-                            const KeyValues& outputs )
-          : base_class( std::move( name ), locator, inputs )
-          , m_outputLocations(
-                this, outputs.first, details::to_DataObjID( outputs.second ),
-                [this]( Gaudi::Details::PropertyBase& ) {
-                  this->m_outputs =
-                      details::make_vector_of_handles<decltype( this->m_outputs )>( this, m_outputLocations );
-                },
-                Gaudi::Details::Property::ImmediatelyInvokeHandler{ true } ) {}
-
-      SplittingTransformer( std::string name, ISvcLocator* locator, const KeyValue& input, const KeyValues& output )
-          : SplittingTransformer( std::move( name ), locator, std::forward_as_tuple( input ), output ) {
-        static_assert( N == 1, "single input argument requires single input signature" );
-      }
-
-      // accessor to output Locations
-      const std::string& outputLocation( unsigned int n ) const { return m_outputLocations.value()[n].key(); }
-      unsigned int       outputLocationSize() const { return m_outputLocations.value().size(); }
-
-      // derived classes can NOT implement execute
-      StatusCode execute() override final {
-        try {
-          // TODO:FIXME: how does operator() know the number and order of expected outputs?
-          auto out = details::filter_evtcontext_t<In...>::apply( *this, this->m_inputs );
-          if ( out.size() != m_outputs.size() ) {
-            throw GaudiException( "Error during transform: expected " + std::to_string( m_outputs.size() ) +
-                                      " containers, got " + std::to_string( out.size() ) + " instead",
-                                  this->name(), StatusCode::FAILURE );
-          }
-          for ( unsigned i = 0; i != out.size(); ++i ) details::put( m_outputs[i], std::move( out[i] ) );
-          return FilterDecision::PASSED;
-        } catch ( GaudiException& e ) {
-          if ( e.code().isFailure() ) this->error() << e.tag() << " : " << e.message() << endmsg;
-          return e.code();
-        }
-      }
-
-      // TODO/FIXME: how does the callee know in which order to produce the outputs?
-      //             (note: 'missing' items can be specified by making Out an std::optional<Out>,
-      //              and only those entries which contain an Out are stored)
-      virtual vector_of_<Out> operator()( const In&... ) const = 0;
-
-    private:
       template <typename T>
       using OutputHandle = details::OutputHandle_t<Traits_, details::remove_optional_t<T>>;
-      std::vector<OutputHandle<Out>>          m_outputs;
-      Gaudi::Property<std::vector<DataObjID>> m_outputLocations; // TODO/FIXME  for now: use a call-back to update the
-                                                                 // actual handles!
-    };
-
-    template <typename Out, typename... In, typename Traits_>
-    class SplittingTransformer<vector_of_<Out>( const In&... ), Traits_, false>
-        : public details::DataHandleMixin<std::tuple<>, filter_evtcontext<In...>, Traits_> {
-      using base_class = details::DataHandleMixin<std::tuple<>, filter_evtcontext<In...>, Traits_>;
+      details::HandleVector<OutputHandle, Out> m_outs;
 
     public:
       constexpr static std::size_t N = base_class::N_in;
@@ -104,58 +45,34 @@ namespace Gaudi::Functional {
 
       SplittingTransformer( std::string name, ISvcLocator* locator, const RepeatValues_<KeyValue, N>& inputs,
                             const KeyValues& outputs )
-          : base_class( std::move( name ), locator, inputs )
-          , m_outputLocations(
-                this, outputs.first, details::to_DataObjID( outputs.second ),
-                [this]( Gaudi::Details::PropertyBase& ) {
-                  this->m_outputs =
-                      details::make_vector_of_handles<decltype( this->m_outputs )>( this, m_outputLocations );
-                },
-                Gaudi::Details::Property::ImmediatelyInvokeHandler{ true } ) {}
+          : base_class{ std::move( name ), locator, inputs }, m_outs{ this, outputs } {}
 
       SplittingTransformer( std::string name, ISvcLocator* locator, const KeyValue& input, const KeyValues& output )
-          : SplittingTransformer( std::move( name ), locator, std::forward_as_tuple( input ), output ) {
-        static_assert( N == 1, "single input argument requires single input signature" );
-      }
+        requires( N == 1 )
+          : SplittingTransformer( std::move( name ), locator, std::forward_as_tuple( input ), output ) {}
 
       // accessor to output Locations
-      const std::string& outputLocation( unsigned int n ) const { return m_outputLocations.value()[n].key(); }
-      unsigned int       outputLocationSize() const { return m_outputLocations.value().size(); }
+      const std::string& outputLocation( unsigned int n ) const { return m_outs.at( n ).key(); }
+      unsigned int       outputLocationSize() const { return m_outs.size(); }
 
       // derived classes can NOT implement execute
       StatusCode execute( const EventContext& ctx ) const override final {
-        try {
+        return details::execute( *this, [&] {
           // TODO:FIXME: how does operator() know the number and order of expected outputs?
-          auto out = details::filter_evtcontext_t<In...>::apply( *this, ctx, this->m_inputs );
-          if ( out.size() != m_outputs.size() ) {
-            throw GaudiException( "Error during transform: expected " + std::to_string( m_outputs.size() ) +
-                                      " containers, got " + std::to_string( out.size() ) + " instead",
-                                  this->name(), StatusCode::FAILURE );
-          }
-          for ( unsigned i = 0; i != out.size(); ++i ) details::put( m_outputs[i], std::move( out[i] ) );
+          m_outs.put( details::filter_evtcontext_t<In...>::apply( *this, ctx, this->m_inputs ) );
           return FilterDecision::PASSED;
-        } catch ( GaudiException& e ) {
-          if ( e.code().isFailure() ) this->error() << e.tag() << " : " << e.message() << endmsg;
-          return e.code();
-        }
+        } );
       }
 
       // TODO/FIXME: how does the callee know in which order to produce the outputs?
       //             (note: 'missing' items can be specified by making Out an std::optional<Out>,
       //              and only those entries which contain an Out are stored)
       virtual vector_of_<Out> operator()( const In&... ) const = 0;
-
-    private:
-      template <typename T>
-      using OutputHandle = details::OutputHandle_t<Traits_, details::remove_optional_t<T>>;
-      std::vector<OutputHandle<Out>>          m_outputs;
-      Gaudi::Property<std::vector<DataObjID>> m_outputLocations; // TODO/FIXME  for now: use a call-back to update the
-                                                                 // actual handles!
     };
 
   } // namespace details
 
   template <typename Signature, typename Traits_ = Traits::useDefaults>
-  using SplittingTransformer = details::SplittingTransformer<Signature, Traits_, details::isLegacy<Traits_>>;
+  using SplittingTransformer = details::SplittingTransformer<Signature, Traits_>;
 
 } // namespace Gaudi::Functional

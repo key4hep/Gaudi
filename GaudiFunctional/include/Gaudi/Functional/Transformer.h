@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -38,19 +38,11 @@ namespace Gaudi ::Functional {
 
       // derived classes can NOT implement execute
       StatusCode execute() override final {
-        try {
-          if constexpr ( sizeof...( In ) == 0 ) {
-            put( std::get<0>( this->m_outputs ), ( *this )() );
-          } else if constexpr ( std::tuple_size_v<filter_evtcontext<In...>> == 0 ) {
-            put( std::get<0>( this->m_outputs ), ( *this )( Gaudi::Hive::currentContext() ) );
-          } else {
-            put( std::get<0>( this->m_outputs ), filter_evtcontext_t<In...>::apply( *this, this->m_inputs ) );
-          }
+        return details::execute( *this, [&] {
+          put( std::get<0>( this->m_outputs ),
+               filter_evtcontext_t<In...>::apply( *this, Gaudi::Hive::currentContext(), this->m_inputs ) );
           return FilterDecision::PASSED;
-        } catch ( GaudiException& e ) {
-          if ( e.code().isFailure() ) this->error() << e.tag() << " : " << e.message() << endmsg;
-          return e.code();
-        }
+        } );
       }
 
       // instead they MUST implement this operator
@@ -64,19 +56,10 @@ namespace Gaudi ::Functional {
 
       // derived classes can NOT implement execute
       StatusCode execute( const EventContext& ctx ) const override final {
-        try {
-          if constexpr ( sizeof...( In ) == 0 ) {
-            put( std::get<0>( this->m_outputs ), ( *this )() );
-          } else if constexpr ( std::tuple_size_v<filter_evtcontext<In...>> == 0 ) {
-            put( std::get<0>( this->m_outputs ), ( *this )( ctx ) );
-          } else {
-            put( std::get<0>( this->m_outputs ), filter_evtcontext_t<In...>::apply( *this, ctx, this->m_inputs ) );
-          }
+        return details::execute( *this, [&] {
+          put( std::get<0>( this->m_outputs ), filter_evtcontext_t<In...>::apply( *this, ctx, this->m_inputs ) );
           return FilterDecision::PASSED;
-        } catch ( GaudiException& e ) {
-          if ( e.code().isFailure() ) this->error() << e.tag() << " : " << e.message() << endmsg;
-          return e.code();
-        }
+        } );
       }
 
       // instead they MUST implement this operator
@@ -96,25 +79,16 @@ namespace Gaudi ::Functional {
 
       // derived classes can NOT implement execute
       StatusCode execute() override final {
-        try {
+        return details::execute( *this, [&] {
           std::apply(
               [this]( auto&... ohandle ) {
-                if constexpr ( sizeof...( In ) == 0 ) {
-                  std::apply( [&ohandle...](
-                                  auto&&... data ) { ( put( ohandle, std::forward<decltype( data )>( data ) ), ... ); },
-                              std::as_const( *this )() );
-                } else {
-                  std::apply( [&ohandle...](
-                                  auto&&... data ) { ( put( ohandle, std::forward<decltype( data )>( data ) ), ... ); },
-                              filter_evtcontext_t<In...>::apply( std::as_const( *this ), this->m_inputs ) );
-                }
+                std::apply( [&ohandle...](
+                                auto&&... data ) { ( put( ohandle, std::forward<decltype( data )>( data ) ), ... ); },
+                            filter_evtcontext_t<In...>::apply( *this, Gaudi::Hive::currentContext(), this->m_inputs ) );
               },
               this->m_outputs );
           return FilterDecision::PASSED;
-        } catch ( GaudiException& e ) {
-          if ( e.code().isFailure() ) this->error() << e.tag() << " : " << e.message() << endmsg;
-          return e.code();
-        }
+        } );
       }
 
       // instead they MUST implement this operator
@@ -128,29 +102,16 @@ namespace Gaudi ::Functional {
 
       // derived classes can NOT implement execute
       StatusCode execute( const EventContext& ctx ) const override final {
-        try {
+        return details::execute( *this, [&] {
           std::apply(
               [this, &ctx]( auto&... ohandle ) {
-                if constexpr ( sizeof...( In ) == 0 ) {
-                  std::apply( [&ohandle...](
-                                  auto&&... data ) { ( put( ohandle, std::forward<decltype( data )>( data ) ), ... ); },
-                              ( *this )() );
-                } else if constexpr ( std::tuple_size_v<filter_evtcontext<In...>> == 0 ) {
-                  std::apply( [&ohandle...](
-                                  auto&&... data ) { ( put( ohandle, std::forward<decltype( data )>( data ) ), ... ); },
-                              ( *this )( ctx ) );
-                } else {
-                  std::apply( [&ohandle...](
-                                  auto&&... data ) { ( put( ohandle, std::forward<decltype( data )>( data ) ), ... ); },
-                              filter_evtcontext_t<In...>::apply( *this, ctx, this->m_inputs ) );
-                }
+                std::apply( [&ohandle...](
+                                auto&&... data ) { ( put( ohandle, std::forward<decltype( data )>( data ) ), ... ); },
+                            filter_evtcontext_t<In...>::apply( *this, ctx, this->m_inputs ) );
               },
               this->m_outputs );
           return FilterDecision::PASSED;
-        } catch ( GaudiException& e ) {
-          if ( e.code().isFailure() ) this->error() << e.tag() << " : " << e.message() << endmsg;
-          return e.code();
-        }
+        } );
       }
 
       // instead they MUST implement this operator
@@ -160,47 +121,17 @@ namespace Gaudi ::Functional {
     //
     // general N -> M algorithms with filter functionality
     //
-    template <typename Signature, typename Traits_, bool isLegacy>
+    template <typename Signature, typename Traits_>
     struct MultiTransformerFilter;
 
     template <typename... Out, typename... In, typename Traits_>
-    struct MultiTransformerFilter<std::tuple<Out...>( const In&... ), Traits_, true>
-        : DataHandleMixin<std::tuple<Out...>, filter_evtcontext<In...>, Traits_> {
-      using DataHandleMixin<std::tuple<Out...>, filter_evtcontext<In...>, Traits_>::DataHandleMixin;
-
-      // derived classes can NOT implement execute
-      StatusCode execute() override final {
-        try {
-          return std::apply(
-                     [&]( auto&... ohandle ) {
-                       return std::apply(
-                           [&ohandle...]( bool passed, auto&&... data ) {
-                             ( put( ohandle, std::forward<decltype( data )>( data ) ), ... );
-                             return passed;
-                           },
-                           filter_evtcontext_t<In...>::apply( *this, this->m_inputs ) );
-                     },
-                     this->m_outputs )
-                     ? FilterDecision::PASSED
-                     : FilterDecision::FAILED;
-        } catch ( GaudiException& e ) {
-          if ( e.code().isFailure() ) this->error() << e.tag() << " : " << e.message() << endmsg;
-          return e.code();
-        }
-      }
-
-      // instead they MUST implement this operator
-      virtual std::tuple<bool, Out...> operator()( const In&... ) const = 0;
-    };
-
-    template <typename... Out, typename... In, typename Traits_>
-    struct MultiTransformerFilter<std::tuple<Out...>( const In&... ), Traits_, false>
+    struct MultiTransformerFilter<std::tuple<Out...>( const In&... ), Traits_>
         : DataHandleMixin<std::tuple<Out...>, filter_evtcontext<In...>, Traits_> {
       using DataHandleMixin<std::tuple<Out...>, filter_evtcontext<In...>, Traits_>::DataHandleMixin;
 
       // derived classes can NOT implement execute
       StatusCode execute( const EventContext& ctx ) const override final {
-        try {
+        return details::execute( *this, [&] {
           return std::apply(
                      [&]( auto&... ohandle ) {
                        return std::apply(
@@ -213,10 +144,7 @@ namespace Gaudi ::Functional {
                      this->m_outputs )
                      ? FilterDecision::PASSED
                      : FilterDecision::FAILED;
-        } catch ( GaudiException& e ) {
-          if ( e.code().isFailure() ) this->error() << e.tag() << " : " << e.message() << endmsg;
-          return e.code();
-        }
+        } );
       }
 
       // instead they MUST implement this operator
@@ -231,6 +159,6 @@ namespace Gaudi ::Functional {
   using MultiTransformer = details::MultiTransformer<Signature, Traits_, details::isLegacy<Traits_>>;
 
   template <typename Signature, typename Traits_ = Traits::useDefaults>
-  using MultiTransformerFilter = details::MultiTransformerFilter<Signature, Traits_, details::isLegacy<Traits_>>;
+  using MultiTransformerFilter = details::MultiTransformerFilter<Signature, Traits_>;
 
 } // namespace Gaudi::Functional

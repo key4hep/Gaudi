@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -9,10 +9,16 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 #pragma once
-
 #include "Transformer.h"
+#include "zip.h"
 
 namespace Gaudi::Functional {
+  namespace details {
+    template <typename Fun, typename Container>
+    void applyPostProcessing( const Fun& fun, Container& c ) {
+      if constexpr ( requires { fun.postprocess( c ); } ) { fun.postprocess( c ); }
+    }
+  } // namespace details
 
   // Scalar->Vector adapted N->1 algorithm
   template <typename ScalarOp, typename TransformerSignature, typename Traits_ = Traits::useDefaults>
@@ -32,7 +38,7 @@ namespace Gaudi::Functional {
       Out        out;
       out.reserve( inrange.size() );
       auto& scalar = scalarOp();
-      for ( const auto&& tuple : inrange ) {
+      for ( const auto& tuple : inrange ) {
         /// Call the scalar operator with the objects obtained from the given tuple as arguments
         details::invoke_optionally(
             [&out]( auto&& arg ) { details::insert( out, std::forward<decltype( arg )>( arg ) ); },
@@ -62,7 +68,7 @@ namespace Gaudi::Functional {
       std::tuple<Out...> out;
       std::apply( [sz = inrange.size()]( auto&&... o ) { ( o.reserve( sz ), ... ); }, out );
       auto& scalar = scalarOp();
-      for ( const auto&& indata : inrange ) {
+      for ( const auto& indata : inrange ) {
         std::apply(
             [&scalar, &indata]( auto&... out ) {
               /// Call the scalar operator with the objects obtained from the given indata,

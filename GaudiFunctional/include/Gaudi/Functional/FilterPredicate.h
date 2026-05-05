@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -9,7 +9,6 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 #pragma once
-
 #include "details.h"
 #include "utilities.h"
 #include <GaudiKernel/FunctionalFilterDecision.h>
@@ -29,15 +28,12 @@ namespace Gaudi::Functional {
 
       // derived classes are NOT allowed to implement execute ...
       StatusCode execute() override final {
-        try {
-          return filter_evtcontext_t<In...>::apply( *this, this->m_inputs ) ? FilterDecision::PASSED
-                                                                            : FilterDecision::FAILED;
-        } catch ( GaudiException& e ) {
-          if ( e.code().isFailure() ) this->error() << e.tag() << " : " << e.message() << endmsg;
-          return e.code();
-        }
+        return details::execute( *this, [&] {
+          return filter_evtcontext_t<In...>::apply( *this, Gaudi::Hive::currentContext(), this->m_inputs )
+                     ? FilterDecision::PASSED
+                     : FilterDecision::FAILED;
+        } );
       }
-
       // ... instead, they must implement the following operator
       virtual bool operator()( const In&... ) const = 0;
     };
@@ -49,13 +45,10 @@ namespace Gaudi::Functional {
 
       // derived classes are NOT allowed to implement execute ...
       StatusCode execute( const EventContext& ctx ) const override final {
-        try {
+        return details::execute( *this, [&] {
           return filter_evtcontext_t<In...>::apply( *this, ctx, this->m_inputs ) ? FilterDecision::PASSED
                                                                                  : FilterDecision::FAILED;
-        } catch ( GaudiException& e ) {
-          if ( e.code().isFailure() ) this->error() << e.tag() << " : " << e.message() << endmsg;
-          return e.code();
-        }
+        } );
       }
 
       // ... instead, they must implement the following operator
