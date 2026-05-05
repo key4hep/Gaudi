@@ -1,5 +1,5 @@
 /*****************************************************************************\
-* (c) Copyright 2021-2023 CERN for the benefit of the LHCb Collaboration      *
+* (c) Copyright 2021-2026 CERN for the benefit of the LHCb Collaboration      *
 *                                                                             *
 * This software is distributed under the terms of the GNU General Public      *
 * Licence version 3 (GPL Version 3), copied verbatim in the file "COPYING".   *
@@ -31,8 +31,9 @@ namespace Gaudi::Functional {
       ToolBinder( std::string type, std::string name, const IInterface* parent, IArgs&& args,
                   Gaudi::Interface::Bind::Box<IFace> ( *creator )( void const*, Args const&... ),
                   std::index_sequence<I...> )
-          : extends<details::BaseClass_t<Traits>, Gaudi::Interface::Bind::IBinder<IFace>>{ std::move( type ),
-                                                                                           std::move( name ), parent }
+          : extends<details::BaseClass_t<Traits, AlgTool>, Gaudi::Interface::Bind::IBinder<IFace>>{ std::move( type ),
+                                                                                                    std::move( name ),
+                                                                                                    parent }
           , m_handles{ std::tuple_cat( std::forward_as_tuple( this ), std::get<I>( args ) )... }
           , m_creator{ creator } {}
 
