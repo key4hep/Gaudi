@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 2013-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 2013-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -118,7 +118,7 @@ int main( int argc, char* argv[] ) {
 
   // loop over the list of libraries passed on the command line
   for ( const char* lib : libs ) {
-    if ( dlopen( lib, RTLD_LAZY | RTLD_LOCAL ) ) {
+    if ( reg2.loadPluginLibrary( lib ) ) {
       dump_from( reg2, lib, "v2" );
       dump_from( reg1, lib, "v1" );
     } else {
