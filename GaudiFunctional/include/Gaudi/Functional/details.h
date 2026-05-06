@@ -866,7 +866,6 @@ namespace Gaudi::Functional::details {
     {
       return getLocations( input_location_handles( std::make_index_sequence<N_input_locations>{} ), i ).at( j ).key();
     }
-    unsigned int inputLocationSize() const { return N_input_locations; }
     unsigned int inputLocationSize( unsigned int i ) const
       requires( N_input_locations > 0 )
     {
@@ -880,6 +879,20 @@ namespace Gaudi::Functional::details {
       return std::apply( [i = i + input_location_offset,
                           size]( const auto&... handles ) { return std::array{ size( handles )... }.at( i ); },
                          m_inputs );
+    }
+    // to remain backwards compatible (!), this has to return
+    //  -- for non-merging transformers, the # of input _arguments_...
+    //  -- for merging transformers, which only had _one_ input argument, which was not EventContext, the number of
+    //  inputs of the first argument...
+    // FIXME: to be(come) unambiguous, this should be deprecated at some point, and replaced with a better named
+    // alternatives...
+    unsigned int inputLocationSize() const {
+      if constexpr ( !starts_with_event_context && N_input_locations == 1 &&
+                     location_vector_handle<InputLocationHandle<0>> ) {
+        return inputLocationSize( 0 );
+      } else {
+        return N_input_locations;
+      }
     }
 
     template <std::size_t N = 0>
