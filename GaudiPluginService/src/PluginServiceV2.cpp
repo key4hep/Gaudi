@@ -78,6 +78,9 @@ namespace {
   std::string old_style_name( const std::string& name ) {
     return std::for_each( name.begin(), name.end(), OldStyleCnv() ).name;
   }
+
+  // helper to locate the current DSO
+  int _dso_marker() { return 0; }
 } // namespace
 
 namespace Gaudi {
@@ -281,6 +284,15 @@ namespace Gaudi {
           // and if not found then we fall back to dlopen without full paths
           // that will look in LD_LIBRARY_PATH
           std::stringstream ss;
+#ifdef PLUGIN_PATH_RELATIVE
+#  define stringify( x ) stringify_( x )
+#  define stringify_( x ) #x
+          Dl_info info;
+          if ( dladdr( (void*)_dso_marker, &info ) != 0 ) {
+            auto plugin_path = fs::path( info.dli_fname ).parent_path() / stringify( PLUGIN_PATH_RELATIVE );
+            ss << plugin_path.string() << ':';
+          }
+#endif
           if ( auto ptr = std::getenv( "GAUDI_PLUGIN_PATH" ) ) ss << ptr;
           std::string dir;
           while ( std::getline( ss, dir, ':' ) ) {
