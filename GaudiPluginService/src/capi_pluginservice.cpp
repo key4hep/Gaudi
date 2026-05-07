@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 2013-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 2013-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -77,4 +77,9 @@ const char* cgaudi_property_get_value( cgaudi_property_t self ) {
   const Registry::FactoryInfo& fi   = reg.getInfo( self.id );
   auto                         prop = fi.properties.find( self.key );
   return prop != fi.properties.end() ? prop->second.c_str() : nullptr;
+}
+
+const char* cgaudi_pluginsvc_default_plugin_path() {
+  static std::string cache = Gaudi::PluginService::Details::getDefaultPluginPath();
+  return cache.c_str();
 }

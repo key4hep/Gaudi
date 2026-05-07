@@ -284,15 +284,7 @@ namespace Gaudi {
           // and if not found then we fall back to dlopen without full paths
           // that will look in LD_LIBRARY_PATH
           std::stringstream ss;
-#ifdef PLUGIN_PATH_RELATIVE
-#  define stringify( x ) stringify_( x )
-#  define stringify_( x ) #x
-          Dl_info info;
-          if ( dladdr( (void*)_dso_marker, &info ) != 0 ) {
-            auto plugin_path = fs::path( info.dli_fname ).parent_path() / stringify( PLUGIN_PATH_RELATIVE );
-            ss << plugin_path.string() << ':';
-          }
-#endif
+          ss << getDefaultPluginPath() << ':';
           if ( auto ptr = std::getenv( "GAUDI_PLUGIN_PATH" ) ) ss << ptr;
           std::string dir;
           while ( std::getline( ss, dir, ':' ) ) {
@@ -342,6 +334,23 @@ namespace Gaudi {
 #else
           return "";
 #endif
+        }
+
+        std::string getDefaultPluginPath() {
+#ifdef PLUGIN_PATH_RELATIVE
+#  define stringify( x ) stringify_( x )
+#  define stringify_( x ) #x
+          std::string relative_path = stringify( PLUGIN_PATH_RELATIVE );
+#else
+          std::string relative_path = ".";
+#endif
+          Dl_info info;
+          if ( dladdr( (void*)_dso_marker, &info ) != 0 ) {
+            auto plugin_path = fs::path( info.dli_fname ).parent_path() / relative_path;
+            return plugin_path.string();
+          } else {
+            return relative_path;
+          }
         }
       } // namespace Details
 
