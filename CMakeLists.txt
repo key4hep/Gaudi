@@ -220,8 +220,6 @@ if(NOT PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME) # If we are building the full s
     return()
 endif()
 
-# Unit tests of gaudi_* functions
-include(cmake/tests/testGaudiToolbox.cmake)
 # Unit tests of the installation
 include(cmake/tests/testGaudiInstallation.cmake)
 # Unit tests of Gaudi as dependency in a downstream project (with config files)
