@@ -132,9 +132,17 @@ variables:
     # Install Gaudi to local prefix and set the environment
     - echo "=== Installing Gaudi ==="
     - cmake --install build
-    - export PATH=$PWD/install/bin:$PATH
-    - export LD_LIBRARY_PATH=$PWD/install/lib:$LD_LIBRARY_PATH
-    - export PYTHONPATH=$PWD/install/python:$PWD/install/lib/python3.*/site-packages:$PYTHONPATH
+    # (convert relative install paths to absolute)
+    - source build/install_dirs.sh
+    - for var in CMAKE_INSTALL_BINDIR CMAKE_INSTALL_LIBDIR GAUDI_INSTALL_PYTHONDIR GAUDI_INSTALL_CONFIGDIR ; do
+    -     value=$(eval echo '$'${var})
+    -     if [ "${value:0:1}" != "/" ] ; then
+    -         eval $var=$PWD/install/${value}
+    -     fi
+    - done
+    - export PATH=$CMAKE_INSTALL_BINDIR:$PATH
+    - export LD_LIBRARY_PATH=$CMAKE_INSTALL_LIBDIR:$LD_LIBRARY_PATH
+    - export PYTHONPATH=$GAUDI_INSTALL_PYTHONDIR:$PYTHONPATH
     - export CMAKE_PREFIX_PATH=$PWD/install:$CMAKE_PREFIX_PATH
     # Build k4FWCore
     - echo "=== Building k4FWCore ==="
@@ -421,19 +429,27 @@ cmake-toolbox:105c:x86_64-el9-gcc13-opt:
     # install
     - cmake --install $BUILD_DIR --prefix $INSTALL_PREFIX
     # test install layout
+    - source $BUILD_DIR/install_dirs.sh
+    # (convert relative install paths to absolute)
+    - for var in CMAKE_INSTALL_BINDIR CMAKE_INSTALL_LIBDIR CMAKE_INSTALL_INCLUDEDIR GAUDI_INSTALL_PLUGINDIR GAUDI_INSTALL_PYTHONDIR GAUDI_INSTALL_CONFIGDIR ; do
+    -     value=$(eval echo '$'${var})
+    -     if [ "${value:0:1}" != "/" ] ; then
+    -         eval $var=$INSTALL_PREFIX/${value}
+    -     fi
+    - done
     - test -d $INSTALL_PREFIX
-    - test -e $INSTALL_PREFIX/lib/libfoo.so
-    - test -e $INSTALL_PREFIX/lib/libbar.so
-    - test -e $INSTALL_PREFIX/lib/FooBar.components
-    - test -e $INSTALL_PREFIX/lib/libbaz.so
-    - test -x $INSTALL_PREFIX/bin/qux
-    - test -e $INSTALL_PREFIX/include/baz.hpp
-    - test -e $INSTALL_PREFIX/include/FOOBAR_VERSION.h
-    - test -e $INSTALL_PREFIX/python/dummyProject/dummyModule.py
-    - test -x $INSTALL_PREFIX/bin/dummyRun.py
-    - export PATH=$INSTALL_PREFIX/bin:$PATH
-    - export LD_LIBRARY_PATH=$INSTALL_PREFIX/lib:$LD_LIBRARY_PATH
-    - export PYTHONPATH=$INSTALL_PREFIX/python:$PYTHONPATH
+    - test -e $CMAKE_INSTALL_LIBDIR/libfoo.so
+    - test -e $GAUDI_INSTALL_PLUGINDIR/libbar.so
+    - test -e $GAUDI_INSTALL_PLUGINDIR/FooBar.components
+    - test -e $CMAKE_INSTALL_LIBDIR/libbaz.so
+    - test -x $CMAKE_INSTALL_BINDIR/qux
+    - test -e $CMAKE_INSTALL_INCLUDEDIR/baz.hpp
+    - test -e $CMAKE_INSTALL_INCLUDEDIR/FOOBAR_VERSION.h
+    - test -e $GAUDI_INSTALL_PYTHONDIR/dummyProject/dummyModule.py
+    - test -x $CMAKE_INSTALL_BINDIR/dummyRun.py
+    - export PATH=$CMAKE_INSTALL_BINDIR:$PATH
+    - export LD_LIBRARY_PATH=$CMAKE_INSTALL_LIBDIR:$GAUDI_INSTALL_PLUGINDIR:$LD_LIBRARY_PATH
+    - export PYTHONPATH=$GAUDI_INSTALL_PYTHONDIR:$PYTHONPATH
     - rm -rf $BUILD_DIR
     - qux
     - dummyRun.py
