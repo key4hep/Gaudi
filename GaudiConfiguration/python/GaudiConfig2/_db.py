@@ -17,7 +17,10 @@ import sys
 class ConfDB2(object):
     def __init__(self):
         import shelve
+        from itertools import chain
         from pathlib import Path
+
+        from GaudiPluginService.cpluginsvc import GAUDI_DEFAULT_PLUGIN_PATH
 
         self._dbs = {}
         pathvars = (
@@ -26,19 +29,21 @@ class ConfDB2(object):
             else ["GAUDI_PLUGIN_PATH", "LD_LIBRARY_PATH"]
         )
         ignored_files = set(os.environ.get("CONFIGURABLE_DB_IGNORE", "").split(","))
-        for pathvar in pathvars:
-            for path in os.getenv(pathvar, "").split(os.pathsep):
-                if not path:
-                    continue
-                dbfiles = [
-                    f.absolute().as_posix()
-                    for f in Path(path).glob("*.confdb2")
-                    if f.absolute().as_posix() not in ignored_files
-                ]
-                dbfiles.sort()
-                for db in [shelve.open(f, "r") for f in dbfiles]:
-                    for key in db:
-                        self._dbs.setdefault(key, db)
+        for path in chain(
+            [GAUDI_DEFAULT_PLUGIN_PATH],
+            *[os.getenv(pv, "").split(os.pathsep) for pv in pathvars],
+        ):
+            if not path or not os.path.isdir(path):
+                continue
+            dbfiles = [
+                f.absolute().as_posix()
+                for f in Path(path).glob("*.confdb2")
+                if f.absolute().as_posix() not in ignored_files
+            ]
+            dbfiles.sort()
+            for db in [shelve.open(f, "r") for f in dbfiles]:
+                for key in db:
+                    self._dbs.setdefault(key, db)
 
     def __getitem__(self, key):
         return self._dbs[key][key]
