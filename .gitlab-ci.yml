@@ -447,6 +447,7 @@ cmake-toolbox:105c:x86_64-el9-gcc13-opt:
     - test -e $CMAKE_INSTALL_INCLUDEDIR/FOOBAR_VERSION.h
     - test -e $GAUDI_INSTALL_PYTHONDIR/dummyProject/dummyModule.py
     - test -x $CMAKE_INSTALL_BINDIR/dummyRun.py
+    - test -e $GAUDI_INSTALL_CONFIGDIR/SomeCustomModule.cmake
     - export PATH=$CMAKE_INSTALL_BINDIR:$PATH
     - export LD_LIBRARY_PATH=$CMAKE_INSTALL_LIBDIR:$GAUDI_INSTALL_PLUGINDIR:$LD_LIBRARY_PATH
     - export PYTHONPATH=$GAUDI_INSTALL_PYTHONDIR:$PYTHONPATH
