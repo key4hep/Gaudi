@@ -138,7 +138,8 @@ variables:
     - export CMAKE_PREFIX_PATH=$PWD/install:$CMAKE_PREFIX_PATH
     # Build k4FWCore
     - echo "=== Building k4FWCore ==="
-    - git clone --depth 1 --branch main https://github.com/key4hep/k4FWCore
+    - git clone --depth 1 https://github.com/key4hep/k4FWCore
+    - "echo k4FWCore commit: $(cd k4FWCore && git rev-parse HEAD)"
     - cmake -S k4FWCore -B k4fwcore_build -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=$PWD/install -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_SCAN_FOR_MODULES=NO 2>&1 | tee -a build.log
     - cmake --build k4fwcore_build 2>&1 | tee -a build.log
     # Run k4FWCore tests
