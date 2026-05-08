@@ -93,7 +93,7 @@ Default value: ``python``
 
 CMake will install cmake files in ``<prefix>/${GAUDI_INSTALL_CONFIGDIR}``
 
-Default value: ``lib/cmake/${PROJECT_NAME}``
+Default value: ``${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}``
 
 
 Functions
@@ -136,7 +136,7 @@ set(CMAKE_INSTALL_LIBDIR "lib" CACHE STRING "Install libraries in <prefix>/\${CM
 set(CMAKE_INSTALL_INCLUDEDIR "include" CACHE STRING "Install public headers in <prefix>/\${CMAKE_INSTALL_INCLUDEDIR}")
 set(GAUDI_INSTALL_PLUGINDIR "${CMAKE_INSTALL_LIBDIR}" CACHE STRING "Install plugins in <prefix>/\${GAUDI_INSTALL_PLUGINDIR}")
 set(GAUDI_INSTALL_PYTHONDIR "python" CACHE STRING "Install python packages in <prefix>/\${GAUDI_INSTALL_PYTHONDIR}")
-set(GAUDI_INSTALL_CONFIGDIR "lib/cmake/${PROJECT_NAME}" CACHE STRING "Install cmake files in <prefix>/\${GAUDI_INSTALL_CONFIGDIR}")
+set(GAUDI_INSTALL_CONFIGDIR "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}" CACHE STRING "Install cmake files in <prefix>/\${GAUDI_INSTALL_CONFIGDIR}")
 
 # generate a shell script with the configured values of the install directories
 file(CONFIGURE OUTPUT install_dirs.sh
