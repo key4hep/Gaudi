@@ -515,11 +515,11 @@ cmake-install:105c:x86_64-el9-gcc13-opt:
   artifacts: {}
   cache: {}
 
-cmake-downstream:105c:x86_64-el9-gcc13-opt:
+cmake-downstream:105c:x86_64-el9-gcc13-opt:minimal:
   <<: *template_build
   image: gitlab-registry.cern.ch/lhcb-docker/os-base/alma9-devel:latest
   needs:
-    - job: "lcg:105c:x86_64-el9-gcc13-opt"
+    - job: "lcg:105c:x86_64-el9-gcc13-opt:minimal"
       artifacts: true
   script:
     - export PROJECT=dummyGaudiDownstreamProject
