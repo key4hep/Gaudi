@@ -1430,7 +1430,12 @@ endfunction()
 #   dependency: a target on which ${merge_target} depends
 #   file_to_merge: the absolute path to the file to be merged in ${output_file}
 #   message: a message to display while building ${merge_target}
-function(_merge_files merge_target output_file dependency file_to_merge message target)
+function(_merge_files merge_target output_file dependency file_to_merge message)
+    if(ARGC GREATER 5)
+        set(target ${ARGV5})
+    else()
+        set(target "LIB")
+    endif()
     if(NOT TARGET ${merge_target})
         add_custom_command(OUTPUT "${output_file}"
             COMMAND $<TARGET_PROPERTY:${merge_target},command> $<TARGET_PROPERTY:${merge_target},fragments>
