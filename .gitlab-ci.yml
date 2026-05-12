@@ -425,19 +425,6 @@ cmake-downstream:105c:x86_64-el9-gcc13-opt:minimal:
     - job: "lcg:105c:x86_64-el9-gcc13-opt:minimal"
       artifacts: true
   script:
-    - export PROJECT=dummyGaudiDownstreamProject
-    - export SOURCE_DIR=$PWD/cmake/tests/$PROJECT
-    - export BUILD_DIR=$PWD/build-$PROJECT
-    - git clone https://gitlab.cern.ch/lhcb-core/lcg-toolchains.git
-    - filename=$(ls Gaudi-*.tar.zst)
-    - tar xfv $filename
-    - export CMAKE_PREFIX_PATH=$PWD/${filename%.tar.zst}:$CMAKE_PREFIX_PATH
-    - cmake --version
-    - cmake -S $SOURCE_DIR -B $BUILD_DIR -Wno-dev -DCMAKE_TOOLCHAIN_FILE=$PWD/lcg-toolchains/LCG_${LCG_VERSION}/${platform}.cmake -DGAUDI_TEST_PUBLIC_HEADERS_BUILD=yes
-    - ccache -z
-    # build
-    - cmake --build $BUILD_DIR
-    # test built executable
-    - $BUILD_DIR/run mainexe
+    - ci-utils/test-cmake-downstream $LCG_VERSION $platform
   artifacts: {}
   cache: {}
