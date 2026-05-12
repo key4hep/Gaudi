@@ -1,0 +1,74 @@
+#/bin/bash -ex
+export LCG_VERSION=$1
+export platform=$2
+export CMAKE_GENERATOR=${CMAKE_GENERATOR:-Ninja}
+
+export PROJECT=dummyProject
+export SOURCE_DIR=$PWD/cmake/tests/$PROJECT
+export BUILD_DIR=$PWD/build-$PROJECT
+export INSTALL_PREFIX=$PWD/opt/$PROJECT
+# ensure pytest extensions are available
+export PYTHONPATH=$PWD/GaudiPolicy/python
+
+if ! command -v ninja > /dev/null 2>&1 ; then
+    export PATH="/cvmfs/sft.cern.ch/lcg/contrib/ninja/1.12.1/Linux-$(uname -m)/bin:$PATH"
+    export CMAKE_GENERATOR=Ninja
+fi
+if ! command -v cmake > /dev/null 2>&1 ; then
+    export PATH="/cvmfs/sft.cern.ch/lcg/contrib/cmake/3.29.0/Linux-$(uname -m)/bin:$PATH"
+fi
+
+if [ ! -d $PWD/lcg-toolchains ] ; then
+    # Get LHCb toolchain helpers
+    git clone https://gitlab.cern.ch/lhcb-core/lcg-toolchains.git
+fi
+
+rm -rf $BUILD_DIR $INSTALL_PREFIX
+
+cmake --version
+# configure
+cmake -S $SOURCE_DIR -B $BUILD_DIR -Wno-dev -DCMAKE_TOOLCHAIN_FILE=$PWD/lcg-toolchains/LCG_${LCG_VERSION}/${platform}.cmake -DGAUDI_TEST_PUBLIC_HEADERS_BUILD=yes -DBUILD_TESTING=yes
+# build
+cmake --build $BUILD_DIR
+# run tests
+cmake --build $BUILD_DIR --target test ARGS=-j$(nproc)
+# test build products
+test -x $BUILD_DIR/qux
+$BUILD_DIR/qux
+test -x $BUILD_DIR/run
+$BUILD_DIR/run $BUILD_DIR/qux
+# test build/test environment
+$BUILD_DIR/run printenv PATH | tr : \\n | grep -F $BUILD_DIR
+$BUILD_DIR/run printenv LD_LIBRARY_PATH | tr : \\n | grep -F $BUILD_DIR
+$BUILD_DIR/run printenv PYTHONPATH | tr : \\n | grep -F $SOURCE_DIR/python
+$BUILD_DIR/run printenv PATH | tr : \\n | grep -F $SOURCE_DIR/scripts
+test $($BUILD_DIR/run printenv ENV_PROJECT_SOURCE_DIR) == $SOURCE_DIR
+test $($BUILD_DIR/run printenv ENV_PROJECT_BINARY_DIR) == $BUILD_DIR
+# install
+cmake --install $BUILD_DIR --prefix $INSTALL_PREFIX
+# test install layout
+source $BUILD_DIR/install_dirs.sh
+# (convert relative install paths to absolute)
+for var in CMAKE_INSTALL_BINDIR CMAKE_INSTALL_LIBDIR CMAKE_INSTALL_INCLUDEDIR GAUDI_INSTALL_PLUGINDIR GAUDI_INSTALL_PYTHONDIR GAUDI_INSTALL_CONFIGDIR ; do
+    value=$(eval echo '$'${var})
+    if [ "${value:0:1}" != "/" ] ; then
+        eval $var=$INSTALL_PREFIX/${value}
+    fi
+done
+test -d $INSTALL_PREFIX
+test -e $CMAKE_INSTALL_LIBDIR/libfoo.so
+test -e $GAUDI_INSTALL_PLUGINDIR/libbar.so
+test -e $GAUDI_INSTALL_PLUGINDIR/FooBar.components
+test -e $CMAKE_INSTALL_LIBDIR/libbaz.so
+test -x $CMAKE_INSTALL_BINDIR/qux
+test -e $CMAKE_INSTALL_INCLUDEDIR/baz.hpp
+test -e $CMAKE_INSTALL_INCLUDEDIR/FOOBAR_VERSION.h
+test -e $GAUDI_INSTALL_PYTHONDIR/dummyProject/dummyModule.py
+test -x $CMAKE_INSTALL_BINDIR/dummyRun.py
+test -e $GAUDI_INSTALL_CONFIGDIR/SomeCustomModule.cmake
+export PATH=$CMAKE_INSTALL_BINDIR:$PATH
+export LD_LIBRARY_PATH=$CMAKE_INSTALL_LIBDIR:$GAUDI_INSTALL_PLUGINDIR:$LD_LIBRARY_PATH
+export PYTHONPATH=$GAUDI_INSTALL_PYTHONDIR:$PYTHONPATH
+rm -rf $BUILD_DIR
+qux
+dummyRun.py
