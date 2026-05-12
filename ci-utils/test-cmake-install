@@ -1,0 +1,50 @@
+#/bin/bash -ex
+if [ ! -e install_dirs.sh -o ! -e Gaudi-*.tar.zst ] ; then
+    echo "this script must be run from gitlab-ci"
+    exit 1
+fi
+
+source install_dirs.sh
+filename=$(ls Gaudi-*.tar.zst)
+tar xfv $filename
+cd ${filename%.tar.zst}
+# check that a sample of files are in the right place
+test -e $CMAKE_INSTALL_BINDIR/listcomponents
+test -e $CMAKE_INSTALL_BINDIR/genconf
+test -e $CMAKE_INSTALL_BINDIR/make_patch.py
+test -e $CMAKE_INSTALL_BINDIR/gaudirun.py
+test -e $CMAKE_INSTALL_BINDIR/hivetimeline.py
+test -e $CMAKE_INSTALL_BINDIR/compareRootHistos.py
+test -e $CMAKE_INSTALL_BINDIR/dumpMetaData
+test -e $CMAKE_INSTALL_BINDIR/IOTest.py
+test -e $CMAKE_INSTALL_BINDIR/ExtendedProperties.py
+test -e $CMAKE_INSTALL_BINDIR/quick-merge
+test -e $CMAKE_INSTALL_BINDIR/merge_confdb2_parts
+test -e $CMAKE_INSTALL_INCLUDEDIR/Gaudi/Algorithm.h
+test -e $CMAKE_INSTALL_INCLUDEDIR/Gaudi/Details/PluginServiceCommon.h
+test -e $CMAKE_INSTALL_INCLUDEDIR/GaudiKernel/Algorithm.h
+test -e $CMAKE_INSTALL_INCLUDEDIR/GaudiUtils/Aida2ROOT.h
+test -e $CMAKE_INSTALL_INCLUDEDIR/GaudiCommonSvc/Axis.h
+test -e $CMAKE_INSTALL_INCLUDEDIR/GaudiMP/TESSerializer.h
+test -e $CMAKE_INSTALL_INCLUDEDIR/RootCnv/RootAddress.h
+test -e $CMAKE_INSTALL_INCLUDEDIR/GaudiTestSuite/Event.h
+test -e $CMAKE_INSTALL_INCLUDEDIR/GAUDI_VERSION.h
+test -e $CMAKE_INSTALL_LIBDIR/libGaudiPluginService.so
+test -e $GAUDI_INSTALL_PLUGINDIR/Gaudi.components
+test -e $GAUDI_INSTALL_PLUGINDIR/Gaudi.confdb
+test -e $GAUDI_INSTALL_PLUGINDIR/Gaudi.confdb2
+test -e $GAUDI_INSTALL_PYTHONDIR/GaudiUtils/GaudiUtilsConf.py
+test -e $CMAKE_INSTALL_LIBDIR/GaudiDict.rootmap
+test -e $CMAKE_INSTALL_LIBDIR/GaudiKernelDict_rdict.pcm
+test -e $GAUDI_INSTALL_PYTHONDIR/GaudiKernel/ConfigurableDb.py
+test -e $GAUDI_INSTALL_PYTHONDIR/Gaudi/Main.py
+test -e $GAUDI_INSTALL_PYTHONDIR/GaudiHive/precedence.py
+test -e $GAUDI_INSTALL_PYTHONDIR/GaudiMP/GMPBase.py
+test -e $GAUDI_INSTALL_PYTHONDIR/GaudiSvc/ExtraModules.py
+test -e $GAUDI_INSTALL_PYTHONDIR/GaudiTesting/GaudiExeTest.py
+test -e $GAUDI_INSTALL_PYTHONDIR/GaudiTestSuite/PyExample.so
+test -e $GAUDI_INSTALL_CONFIGDIR/GaudiConfig.cmake
+test -e $GAUDI_INSTALL_CONFIGDIR/GaudiConfigVersion.cmake
+test -e $GAUDI_INSTALL_CONFIGDIR/GaudiTargets.cmake
+test -e $GAUDI_INSTALL_CONFIGDIR/GaudiToolbox.cmake
+test -e $GAUDI_INSTALL_CONFIGDIR/GaudiDependencies.cmake
