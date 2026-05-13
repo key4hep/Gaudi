@@ -138,6 +138,17 @@ set(GAUDI_INSTALL_PLUGINDIR "${CMAKE_INSTALL_LIBDIR}" CACHE STRING "Install plug
 set(GAUDI_INSTALL_PYTHONDIR "python" CACHE STRING "Install python packages in <prefix>/\${GAUDI_INSTALL_PYTHONDIR}")
 set(GAUDI_INSTALL_CONFIGDIR "lib/cmake/${PROJECT_NAME}" CACHE STRING "Install cmake files in <prefix>/\${GAUDI_INSTALL_CONFIGDIR}")
 
+# generate a shell script with the configured values of the install directories
+file(CONFIGURE OUTPUT install_dirs.sh
+    CONTENT "# Generated file, do not edit
+CMAKE_INSTALL_BINDIR=\"${CMAKE_INSTALL_BINDIR}\"
+CMAKE_INSTALL_LIBDIR=\"${CMAKE_INSTALL_LIBDIR}\"
+CMAKE_INSTALL_INCLUDEDIR=\"${CMAKE_INSTALL_INCLUDEDIR}\"
+GAUDI_INSTALL_PLUGINDIR=\"${GAUDI_INSTALL_PLUGINDIR}\"
+GAUDI_INSTALL_PYTHONDIR=\"${GAUDI_INSTALL_PYTHONDIR}\"
+GAUDI_INSTALL_CONFIGDIR=\"${GAUDI_INSTALL_CONFIGDIR}\"
+")
+
 set(scan_dict_deps_command ${GAUDI_TOOLBOX_DIR}/scan_dict_deps.py
     CACHE INTERNAL "command to use to scan dependencies of dictionary headers")
 

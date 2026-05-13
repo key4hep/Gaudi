@@ -42,11 +42,15 @@ variables:
     - xsltproc ci-utils/CTest2JUnit.xslt Test.xml > results.xml
     - echo "Test results can be browsed at https://lhcb-nightlies.web.cern.ch/utils/test_report?url=${CI_PROJECT_URL}/-/jobs/${CI_JOB_ID}/artifacts/raw/Test.xml"
     - test "$result" = "success"
+    - ( cd build && cpack -G TZST )
+    - mv build/Gaudi-*.tar.zst build/install_dirs.sh .
   artifacts:
     paths:
       - build.log
       - compile_commands.json
       - Test.xml
+      - Gaudi-*.tar.zst
+      - install_dirs.sh
     reports:
       junit:
         - results.xml
@@ -132,9 +136,17 @@ variables:
     # Install Gaudi to local prefix and set the environment
     - echo "=== Installing Gaudi ==="
     - cmake --install build
-    - export PATH=$PWD/install/bin:$PATH
-    - export LD_LIBRARY_PATH=$PWD/install/lib:$LD_LIBRARY_PATH
-    - export PYTHONPATH=$PWD/install/python:$PWD/install/lib/python3.*/site-packages:$PYTHONPATH
+    # (convert relative install paths to absolute)
+    - source build/install_dirs.sh
+    - for var in CMAKE_INSTALL_BINDIR CMAKE_INSTALL_LIBDIR GAUDI_INSTALL_PYTHONDIR GAUDI_INSTALL_CONFIGDIR ; do
+    -     value=$(eval echo '$'${var})
+    -     if [ "${value:0:1}" != "/" ] ; then
+    -         eval $var=$PWD/install/${value}
+    -     fi
+    - done
+    - export PATH=$CMAKE_INSTALL_BINDIR:$PATH
+    - export LD_LIBRARY_PATH=$CMAKE_INSTALL_LIBDIR:$LD_LIBRARY_PATH
+    - export PYTHONPATH=$GAUDI_INSTALL_PYTHONDIR:$PYTHONPATH
     - export CMAKE_PREFIX_PATH=$PWD/install:$CMAKE_PREFIX_PATH
     # Build k4FWCore
     - echo "=== Building k4FWCore ==="
@@ -384,3 +396,36 @@ deploy-website:
   # do not run any globally defined before_script or after_script for this step
   before_script: []
   after_script: []
+
+
+### Tests for CMake configuration
+
+cmake-toolbox:105c:x86_64-el9-gcc13-opt:
+  <<: *template_build
+  image: gitlab-registry.cern.ch/lhcb-docker/os-base/alma9-devel:latest
+  script:
+    - ci-utils/test-cmake-toolbox $LCG_VERSION $platform
+  artifacts: {}
+  cache: {}
+
+cmake-install:105c:x86_64-el9-gcc13-opt:
+  <<: *template_build
+  image: gitlab-registry.cern.ch/lhcb-docker/os-base/alma9-devel:latest
+  needs:
+    - job: "lcg:105c:x86_64-el9-gcc13-opt"
+      artifacts: true
+  script:
+    - ci-utils/test-cmake-install
+  artifacts: {}
+  cache: {}
+
+cmake-downstream:105c:x86_64-el9-gcc13-opt:minimal:
+  <<: *template_build
+  image: gitlab-registry.cern.ch/lhcb-docker/os-base/alma9-devel:latest
+  needs:
+    - job: "lcg:105c:x86_64-el9-gcc13-opt:minimal"
+      artifacts: true
+  script:
+    - ci-utils/test-cmake-downstream $LCG_VERSION $platform
+  artifacts: {}
+  cache: {}

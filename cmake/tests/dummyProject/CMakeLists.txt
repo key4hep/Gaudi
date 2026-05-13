@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 2020 CERN for the benefit of the LHCb and ATLAS collaborations      #
+# (c) Copyright 2020-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -73,3 +73,6 @@ gaudi_add_pytest(python OPTIONS --doctest-modules)
 gaudi_install(PYTHON)
 # Install other scripts
 gaudi_install(SCRIPTS)
+
+# Install cmake files
+gaudi_install(CMAKE cmake/SomeCustomModule.cmake)
