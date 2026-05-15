@@ -6,6 +6,57 @@ Project Coordinators: Marco Clemencic @clemenci, Charles Leggett @leggett, Frank
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 
+## [v40r4](https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v40r4) - 2026-05-15
+This release brings a mix of modernisation, improvements to the build and test infrastructure,
+and a large number of bug fixes. Notable changes include the migration of CMake configuration tests
+to gitlab-ci, better Conda support, and the drop of support for legacy algorithms in Gaudi::Functional.
+
+A special thanks to all the people that contributed to this release:
+@ahennequ,
+@cburr,
+@clemenci,
+@fwinkl,
+@graven,
+@jcarcell,
+@pmunozpa,
+@sponce,
+@thmadlen.
+
+### Changed
+- Migrate tests of CMake configuration to gitlab-ci jobs (gaudi/Gaudi!1926)
+- Gaudi::Functional: drop support for legacy algorithms (except for Consumer,FilterPredicate,{Merging,Multi,}Transformer) , simplify and streamline implementation (gaudi/Gaudi!1916)
+- Prevent usage of operator++ for "complex" counters (gaudi/Gaudi!1906)
+- Move msgLevel into CommonMessagingBase class. (gaudi/Gaudi!1909)
+- Dropped m_optional in DataObjectHandleBase as it is not used in practice (gaudi/Gaudi!1903)
+- Bump version to 40.4 (gaudi/Gaudi!1894)
+
+### Added
+- Better Conda support: plugin path discovery relative to `GaudiPluginService` (gaudi/Gaudi!1925)
+- Log k4FWCore commit in CI (gaudi/Gaudi!1927)
+- Add support for CMAKE_UNITY_BUILD (gaudi/Gaudi!1887)
+- GaudiConfig2: cache name lookup in Property getter (gaudi/Gaudi!1912)
+- Iterating graph dumping tools in AvalancheSchedulerSvc and HiveDataBroker (gaudi/Gaudi!1847)
+- CUDA: allow overriding CUDA C++ standard (gaudi/Gaudi!1900)
+- Add interruptible to some jobs to cancel old pipelines (gaudi/Gaudi!1897)
+
+### Fixed
+- Minor fixes to GaudiToolbox.cmake (gaudi/Gaudi!1929)
+- Improve use of plugins path (gaudi/Gaudi!1886)
+- Fix a data race in the BaseSink unit test (gaudi/Gaudi!1919)
+- Remove #include TWebFile, removed in ROOT (gaudi/Gaudi#394, gaudi/Gaudi!1921)
+- Fix data races in MessageSvc and InertMessageSvc (gaudi/Gaudi!1915)
+- more modern implementation of SynchronizedValue (gaudi/Gaudi!1917)
+- Avoid a double unordered_map lookup in EventSlot.h (gaudi/Gaudi!1914)
+- Make comparison of uuids case insensitive as it should be (gaudi/Gaudi!1911)
+- Fix undefined behavior in StaticHistogram.h (gaudi/Gaudi!1910)
+- Handle properly directories in Ntuple::Writer (gaudi/Gaudi!1907)
+- Fix pointer to address of popped object (gaudi/Gaudi!1904)
+- Make gaudiComponentHelp.py -n work again with python3 (gaudi/Gaudi!1908)
+- fix: Remove std::_Bit_reference from GaudiPython dictionary selection (gaudi/Gaudi!1901)
+- Fix a few leaks obtained with the Leak sanitizer (gaudi/Gaudi!1896)
+- Fix leak in THistSvc.cpp (gaudi/Gaudi!1898)
+
+
 ## [v40r3](https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v40r3) - 2026-02-12
 Only a few bugfixes and some minor improvements for this release.
 
