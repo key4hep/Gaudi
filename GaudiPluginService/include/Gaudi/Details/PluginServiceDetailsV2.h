@@ -224,6 +224,9 @@ namespace Gaudi {
         ///
         /// Implementation borrowed from `DsoUtils.h` (genconf).
         std::string getDSONameFor( void* fptr );
+
+        /// Returns the default plugin path.
+        std::string getDefaultPluginPath();
       } // namespace Details
 
       /// Backward compatibility with Reflex.

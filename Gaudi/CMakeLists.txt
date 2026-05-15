@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -21,7 +21,7 @@ file(CREATE_LINK Gaudi ${CMAKE_CURRENT_BINARY_DIR}/Gaudi.exe SYMBOLIC)
 gaudi_generate_confuserdb(Gaudi.ConfUser)
 
 # Python tests
-gaudi_add_pytest(tests/pytest)
+gaudi_add_pytest(tests/pytest DEPENDS GaudiPluginService)
 
 # Record project version in a Python module
 set(GIT_DESCRIBE_TAG "unknown")

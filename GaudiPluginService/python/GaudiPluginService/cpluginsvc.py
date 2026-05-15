@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -228,6 +228,11 @@ _functions_list = [
         [Property],
         ctypes.c_char_p,
     ),
+    (
+        "cgaudi_pluginsvc_default_plugin_path",
+        [],
+        ctypes.c_char_p,
+    ),
 ]
 
 for f in _functions_list:
@@ -238,6 +243,10 @@ for f in _functions_list:
     if len(f) == 4:
         func.errcheck = f[3]
     pass
+
+
+GAUDI_DEFAULT_PLUGIN_PATH = _lib.cgaudi_pluginsvc_default_plugin_path().decode()
+
 
 if __name__ == "__main__":
     print("instance: %s" % registry())

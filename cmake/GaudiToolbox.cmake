@@ -1310,6 +1310,11 @@ function(gaudi_generate_confuserdb)
         COMMENT "Generating ConfigurableUser DB for ${package_name}"
         COMMAND_EXPAND_LISTS)
     add_custom_target(${package_name}_confuserdb ALL DEPENDS "${output_file}")
+    if(TARGET GaudiPluginService)
+        # this is to ensure that GaudiPluginService is built before we use Python to load modules
+        # containing ConfigurableUser instances, so that we can use it's location to find plugin libraries
+        add_dependencies(${package_name}_confuserdb GaudiPluginService)
+    endif()
     # Merge ${package_name}_user.confdb with the others in ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.confdb
     _merge_files_confdb(${package_name}_confuserdb "${output_file}") # see private functions at the end
     # Add the path to the merged confdb file to LD_LIBRARY_PATH

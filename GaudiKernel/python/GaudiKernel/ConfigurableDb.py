@@ -123,16 +123,25 @@ def loadConfigurableDb():
     informations about Configurables
     """
     import os
+    import sys
+    from itertools import chain
     from os.path import join as path_join
+
+    from GaudiPluginService.cpluginsvc import GAUDI_DEFAULT_PLUGIN_PATH
 
     log.debug("loading confDb files...")
     nFiles = 0  # counter of imported files
-    pathlist = os.getenv("GAUDI_PLUGIN_PATH", "").split(os.pathsep) + os.getenv(
-        "LD_LIBRARY_PATH", ""
-    ).split(os.pathsep)
+    pathvars = (
+        ["GAUDI_PLUGIN_PATH", "DYLD_LIBRARY_PATH"]
+        if sys.platform == "darwin"
+        else ["GAUDI_PLUGIN_PATH", "LD_LIBRARY_PATH"]
+    )
     ignored_files = set(os.environ.get("CONFIGURABLE_DB_IGNORE", "").split(","))
-    for path in pathlist:
-        if not os.path.isdir(path):
+    for path in chain(
+        [GAUDI_DEFAULT_PLUGIN_PATH],
+        *[os.getenv(pv, "").split(os.pathsep) for pv in pathvars],
+    ):
+        if not path or not os.path.isdir(path):
             continue
         log.debug("walking in [%s]...", path)
         confDbFiles = [

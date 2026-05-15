@@ -59,6 +59,16 @@ if(NOT GAUDI_USE_STD_FILESYSTEM)
     USE_BOOST_FILESYSTEM)
 endif()
 
+# compute the relative path between CMAKE_INSTALL_LIBDIR and GAUDI_INSTALL_PLUGINDIR
+cmake_path(ABSOLUTE_PATH GAUDI_INSTALL_PLUGINDIR OUTPUT_VARIABLE PLUGIN_PATH_RELATIVE)
+cmake_path(ABSOLUTE_PATH CMAKE_INSTALL_LIBDIR OUTPUT_VARIABLE ABSOLUTE_CMAKE_INSTALL_LIBDIR)
+cmake_path(RELATIVE_PATH PLUGIN_PATH_RELATIVE BASE_DIRECTORY "${ABSOLUTE_CMAKE_INSTALL_LIBDIR}")
+target_compile_definitions(GaudiPluginService PRIVATE PLUGIN_PATH_RELATIVE=${PLUGIN_PATH_RELATIVE})
+
+# GaudiPluginService is located from RPATH in the build tree, but we need to locate it also with
+# plain dlopen (from Python runtime)
+_gaudi_runtime_prepend(ld_library_path $<TARGET_FILE_DIR:GaudiPluginService>)
+
 # Build runtime
 gaudi_add_executable(listcomponents
                      SOURCES src/listcomponents.cpp
