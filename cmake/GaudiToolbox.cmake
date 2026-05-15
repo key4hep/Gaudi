@@ -93,7 +93,7 @@ Default value: ``python``
 
 CMake will install cmake files in ``<prefix>/${GAUDI_INSTALL_CONFIGDIR}``
 
-Default value: ``lib/cmake/${PROJECT_NAME}``
+Default value: ``${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}``
 
 
 Functions
@@ -136,7 +136,7 @@ set(CMAKE_INSTALL_LIBDIR "lib" CACHE STRING "Install libraries in <prefix>/\${CM
 set(CMAKE_INSTALL_INCLUDEDIR "include" CACHE STRING "Install public headers in <prefix>/\${CMAKE_INSTALL_INCLUDEDIR}")
 set(GAUDI_INSTALL_PLUGINDIR "${CMAKE_INSTALL_LIBDIR}" CACHE STRING "Install plugins in <prefix>/\${GAUDI_INSTALL_PLUGINDIR}")
 set(GAUDI_INSTALL_PYTHONDIR "python" CACHE STRING "Install python packages in <prefix>/\${GAUDI_INSTALL_PYTHONDIR}")
-set(GAUDI_INSTALL_CONFIGDIR "lib/cmake/${PROJECT_NAME}" CACHE STRING "Install cmake files in <prefix>/\${GAUDI_INSTALL_CONFIGDIR}")
+set(GAUDI_INSTALL_CONFIGDIR "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}" CACHE STRING "Install cmake files in <prefix>/\${GAUDI_INSTALL_CONFIGDIR}")
 
 # generate a shell script with the configured values of the install directories
 file(CONFIGURE OUTPUT install_dirs.sh
@@ -1562,12 +1562,12 @@ if(NOT CMAKE_SCRIPT_MODE_FILE AND NOT TARGET target_runtime_paths)
     file(GENERATE OUTPUT ${CMAKE_BINARY_DIR}/${_env_file}
                   CONTENT "#!/usr/bin/env bash
 # Auto-generated script to set environment variables
-export PATH=\"$<SHELL_PATH:$<FILTER:$<REMOVE_DUPLICATES:$<GENEX_EVAL:$<TARGET_PROPERTY:target_runtime_paths,runtime_path>>;${_ENV_PATH}>,EXCLUDE,^[^/]>>\${PATH:+:\${PATH}}\"
-export LD_LIBRARY_PATH=\"$<SHELL_PATH:$<FILTER:$<REMOVE_DUPLICATES:$<GENEX_EVAL:$<TARGET_PROPERTY:target_runtime_paths,runtime_ld_library_path>>;${_ENV_LD_LIBRARY_PATH}>,EXCLUDE,^[^/]>>\${LD_LIBRARY_PATH:+:\${LD_LIBRARY_PATH}}\"
-export PYTHONPATH=\"$<SHELL_PATH:$<FILTER:$<REMOVE_DUPLICATES:$<GENEX_EVAL:$<TARGET_PROPERTY:target_runtime_paths,runtime_pythonpath>>;${_ENV_PYTHONPATH}>,EXCLUDE,^[^/]>>\${PYTHONPATH:+:\${PYTHONPATH}}\"
+export PATH=\"$<$<BOOL:$<FILTER:$<REMOVE_DUPLICATES:$<GENEX_EVAL:$<TARGET_PROPERTY:target_runtime_paths,runtime_path>>;${_ENV_PATH}>,INCLUDE,^/>>:$<SHELL_PATH:$<FILTER:$<REMOVE_DUPLICATES:$<GENEX_EVAL:$<TARGET_PROPERTY:target_runtime_paths,runtime_path>>;${_ENV_PATH}>,INCLUDE,^/>>>\${PATH:+:\${PATH}}\"
+export LD_LIBRARY_PATH=\"$<$<BOOL:$<FILTER:$<REMOVE_DUPLICATES:$<GENEX_EVAL:$<TARGET_PROPERTY:target_runtime_paths,runtime_ld_library_path>>;${_ENV_LD_LIBRARY_PATH}>,INCLUDE,^/>>:$<SHELL_PATH:$<FILTER:$<REMOVE_DUPLICATES:$<GENEX_EVAL:$<TARGET_PROPERTY:target_runtime_paths,runtime_ld_library_path>>;${_ENV_LD_LIBRARY_PATH}>,INCLUDE,^/>>>\${LD_LIBRARY_PATH:+:\${LD_LIBRARY_PATH}}\"
+export PYTHONPATH=\"$<$<BOOL:$<FILTER:$<REMOVE_DUPLICATES:$<GENEX_EVAL:$<TARGET_PROPERTY:target_runtime_paths,runtime_pythonpath>>;${_ENV_PYTHONPATH}>,INCLUDE,^/>>:$<SHELL_PATH:$<FILTER:$<REMOVE_DUPLICATES:$<GENEX_EVAL:$<TARGET_PROPERTY:target_runtime_paths,runtime_pythonpath>>;${_ENV_PYTHONPATH}>,INCLUDE,^/>>>\${PYTHONPATH:+:\${PYTHONPATH}}\"
 $<$<NOT:$<STREQUAL:$ENV{PYTHONHOME},>>:export PYTHONHOME=\"$ENV{PYTHONHOME}\">
-export ROOT_INCLUDE_PATH=\"$<SHELL_PATH:$<FILTER:$<REMOVE_DUPLICATES:$<GENEX_EVAL:$<TARGET_PROPERTY:target_runtime_paths,runtime_root_include_path>>;${_ENV_ROOT_INCLUDE_PATH}>,EXCLUDE,^[^/]>>\${ROOT_INCLUDE_PATH:+:\${ROOT_INCLUDE_PATH}}\"
-export GAUDI_PLUGIN_PATH=\"$<SHELL_PATH:$<FILTER:$<REMOVE_DUPLICATES:$<GENEX_EVAL:$<TARGET_PROPERTY:target_runtime_paths,runtime_plugin_path>>;${_ENV_GAUDI_PLUGIN_PATH}>,EXCLUDE,^[^/]>>\${GAUDI_PLUGIN_PATH:+:\${GAUDI_PLUGIN_PATH}}\"
+export ROOT_INCLUDE_PATH=\"$<$<BOOL:$<FILTER:$<REMOVE_DUPLICATES:$<GENEX_EVAL:$<TARGET_PROPERTY:target_runtime_paths,runtime_root_include_path>>;${_ENV_ROOT_INCLUDE_PATH}>,INCLUDE,^/>>:$<SHELL_PATH:$<FILTER:$<REMOVE_DUPLICATES:$<GENEX_EVAL:$<TARGET_PROPERTY:target_runtime_paths,runtime_root_include_path>>;${_ENV_ROOT_INCLUDE_PATH}>,INCLUDE,^/>>>\${ROOT_INCLUDE_PATH:+:\${ROOT_INCLUDE_PATH}}\"
+export GAUDI_PLUGIN_PATH=\"$<$<BOOL:$<FILTER:$<REMOVE_DUPLICATES:$<GENEX_EVAL:$<TARGET_PROPERTY:target_runtime_paths,runtime_plugin_path>>;${_ENV_GAUDI_PLUGIN_PATH}>,INCLUDE,^/>>:$<SHELL_PATH:$<FILTER:$<REMOVE_DUPLICATES:$<GENEX_EVAL:$<TARGET_PROPERTY:target_runtime_paths,runtime_plugin_path>>;${_ENV_GAUDI_PLUGIN_PATH}>,INCLUDE,^/>>>:\${GAUDI_PLUGIN_PATH:+:\${GAUDI_PLUGIN_PATH}}\"
 export ENV_PROJECT_SOURCE_DIR=\"${PROJECT_SOURCE_DIR}\"
 export ENV_PROJECT_BINARY_DIR=\"${PROJECT_BINARY_DIR}\"
 export ENV_CMAKE_BUILD_TYPE=\"$<CONFIG>\"
