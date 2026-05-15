@@ -39,7 +39,7 @@ test -x $BUILD_DIR/run
 $BUILD_DIR/run $BUILD_DIR/qux
 # test build/test environment
 $BUILD_DIR/run printenv PATH | tr : \\n | grep -F $BUILD_DIR
-$BUILD_DIR/run printenv LD_LIBRARY_PATH | tr : \\n | grep -F $BUILD_DIR
+$BUILD_DIR/run printenv GAUDI_PLUGIN_PATH | tr : \\n | grep -F $BUILD_DIR
 $BUILD_DIR/run printenv PYTHONPATH | tr : \\n | grep -F $SOURCE_DIR/python
 $BUILD_DIR/run printenv PATH | tr : \\n | grep -F $SOURCE_DIR/scripts
 test $($BUILD_DIR/run printenv ENV_PROJECT_SOURCE_DIR) == $SOURCE_DIR
@@ -49,7 +49,7 @@ cmake --install $BUILD_DIR --prefix $INSTALL_PREFIX
 # test install layout
 source $BUILD_DIR/install_dirs.sh
 # (convert relative install paths to absolute)
-for var in CMAKE_INSTALL_BINDIR CMAKE_INSTALL_LIBDIR CMAKE_INSTALL_INCLUDEDIR GAUDI_INSTALL_PLUGINDIR GAUDI_INSTALL_PYTHONDIR GAUDI_INSTALL_CONFIGDIR ; do
+for var in CMAKE_INSTALL_BINDIR CMAKE_INSTALL_LIBDIR CMAKE_INSTALL_INCLUDEDIR GAUDI_INSTALL_PLUGINDIR GAUDI_INSTALL_PYTHONDIR GAUDI_INSTALL_PLUGINDIR GAUDI_INSTALL_CONFIGDIR ; do
     value=$(eval echo '$'${var})
     if [ "${value:0:1}" != "/" ] ; then
         eval $var=$INSTALL_PREFIX/${value}

@@ -492,9 +492,7 @@ int configGenerator::genConfig( const Strings_t& libs, const string& userModule 
     m_db2Buf.str( "" );
 
     //--- Load component library ----------------------------------------------
-    System::ImageHandle handle;
-    unsigned long       err = System::loadDynamicLib( iLib, &handle );
-    if ( err != 1 ) {
+    if ( !registry.loadPluginLibrary( iLib ) ) {
       LOG_ERROR << System::getLastErrorString();
       allGood = false;
       continue;

@@ -65,8 +65,8 @@ target_link_libraries(GaudiCommonParsers
         ROOT::Core
 )
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    # workaround for a warning in a Boost spirit header (see 77ed99477)
-    target_compile_options(GaudiCommonParsers PRIVATE -Wno-maybe-uninitialized)
+  # workaround for a warning in a Boost spirit header (see 77ed99477)
+  target_compile_options(GaudiCommonParsers PRIVATE -Wno-maybe-uninitialized)
 endif()
 set_target_properties(GaudiCommonParsers PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
 target_precompile_headers(GaudiCommonParsers
@@ -437,6 +437,6 @@ if(BUILD_TESTING)
     COMMAND run $<TARGET_FILE:genconf>
             -o ${CMAKE_CURRENT_BINARY_DIR}/custom_factory_testdir
             -p CustomFactoryTest
-            -i test_CustomFactory
+            -i $<TARGET_FILE:test_CustomFactory>
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/custom_factory_testdir)
 endif()

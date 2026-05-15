@@ -174,6 +174,12 @@ namespace Gaudi {
           /// ".components" files in the `LD_LIBRARY_PATH`.
           const FactoryMap& factories() const;
 
+          /// Try to load the given plugin library.
+          ///
+          /// Search in GAUDI_PLUGIN_PATH and LD_LIBRARY_PATH.
+          /// Return `true` if the library was found and loaded.
+          bool loadPluginLibrary( std::string_view library ) const;
+
         private:
           /// Private constructor for the singleton pattern.
           Registry();
@@ -187,8 +193,6 @@ namespace Gaudi {
           /// Initialize the registry loading the list of factories from the
           /// .component files in the library search path.
           void initialize();
-
-          bool tryDLOpen( const std::string_view& ) const;
 
           /// Flag recording if the registry has been initialized or not.
           mutable std::once_flag m_initialized;

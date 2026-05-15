@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -94,11 +94,10 @@ class Application(object):
             #       API must be protected acquiring the GIL
             #
             if sys.platform == "darwin":
-                # LD_LIBRARY_PATH cannot be used for dlopen on macos;
-                # use custom variable GAUDI_PLUGIN_PATH instead
-                _libpaths = os.environ.get("GAUDI_PLUGIN_PATH")
+                # DYLD_LIBRARY_PATH cannot be used for dlopen on macos
+                _libpaths = os.environ.get("DYLD_LIBRARY_PATH")
                 if not _libpaths:
-                    print("WARNING: GAUDI_PLUGIN_PATH is empty!")
+                    print("WARNING: DYLD_LIBRARY_PATH is empty!")
                 for _path in _libpaths.split(":"):
                     _lib = os.path.join(_path, "libGaudiKernel.dylib")
                     if os.path.isfile(_lib):

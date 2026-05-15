@@ -481,17 +481,14 @@ function(gaudi_add_module plugin_name)
         TARGETS ${plugin_name}
         LIBRARY DESTINATION "${GAUDI_INSTALL_PLUGINDIR}"
         ${_gaudi_install_optional})
-    # Create a symlink to the module in a directory that is added to the rpath of every target of the build
-    add_custom_command(TARGET ${plugin_name} POST_BUILD
-        BYPRODUCTS ${CMAKE_BINARY_DIR}/.plugins/${CMAKE_SHARED_MODULE_PREFIX}${plugin_name}${CMAKE_SHARED_MODULE_SUFFIX}
-        COMMAND ${CMAKE_COMMAND} -E create_symlink $<TARGET_FILE:${plugin_name}> ${CMAKE_BINARY_DIR}/.plugins/$<TARGET_FILE_NAME:${plugin_name}>)
     # generate the list of components for all the plugins of the project
     add_custom_command(TARGET ${plugin_name} POST_BUILD
         BYPRODUCTS ${plugin_name}.components
         COMMAND run $<TARGET_FILE:Gaudi::listcomponents> --output ${plugin_name}.components $<TARGET_FILE_NAME:${plugin_name}>)
     _merge_files(${PROJECT_NAME}_MergeComponents "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.components" # see private functions at the end
         ${plugin_name} "${CMAKE_CURRENT_BINARY_DIR}/${plugin_name}.components"
-        "Merging .components files for ${PROJECT_NAME}")
+        "Merging .components files for ${PROJECT_NAME}"
+        PLUGIN)
     # genconf
     get_filename_component(package_name ${CMAKE_CURRENT_SOURCE_DIR} NAME)
     file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/genConfDir/${package_name})
@@ -521,12 +518,12 @@ function(gaudi_add_module plugin_name)
     # Merge the .confdb files
     _merge_files_confdb(${plugin_name} "${CMAKE_CURRENT_BINARY_DIR}/genConfDir/${package_name}/${plugin_name}.confdb") # see private functions at the end
     _merge_files_confdb2(${plugin_name} "${CMAKE_CURRENT_BINARY_DIR}/genConfDir/${package_name}/${plugin_name}.confdb2_part")
-    # To append the path to the generated library to LD_LIBRARY_PATH with run
-    _gaudi_runtime_prepend(ld_library_path $<TARGET_FILE_DIR:${plugin_name}>)
+    # To append the path to the generated library to GAUDI_PLUGIN_PATH with run
+    _gaudi_runtime_prepend(plugin_path $<TARGET_FILE_DIR:${plugin_name}>)
     # To append the path to the generated Conf.py file to PYTHONPATH
     _gaudi_runtime_prepend(pythonpath ${CMAKE_CURRENT_BINARY_DIR}/genConfDir)
-    # Add the path to the merged confdb and components files to LD_LIBRARY_PATH
-    _gaudi_runtime_prepend(ld_library_path ${CMAKE_BINARY_DIR})
+    # Add the path to the merged confdb and components files to GAUDI_PLUGIN_PATH
+    _gaudi_runtime_prepend(plugin_path ${CMAKE_BINARY_DIR})
 endfunction()
 
 
@@ -1112,15 +1109,16 @@ function(gaudi_add_dictionary dictionary)
     # Install the dictionary
     install(
         TARGETS ${dictionary}
-        LIBRARY DESTINATION "${GAUDI_INSTALL_PLUGINDIR}"
+        LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
         ${_gaudi_install_optional})
     install(FILES ${pcmfile}
-        DESTINATION "${GAUDI_INSTALL_PLUGINDIR}"
+        DESTINATION "${CMAKE_INSTALL_LIBDIR}"
         ${_gaudi_install_optional})
     # Merge all the .rootmap files
     _merge_files(${PROJECT_NAME}_MergeRootmaps "${CMAKE_BINARY_DIR}/${PROJECT_NAME}Dict.rootmap" # see private functions at the end
         ${dictionary}-gen "${CMAKE_CURRENT_BINARY_DIR}/${dictionary}.rootmap"
-        "Merging .rootmap files for ${PROJECT_NAME}")
+        "Merging .rootmap files for ${PROJECT_NAME}"
+        LIB)
     # The merged rootmap should also depend on the library (runtime dependency)
     add_dependencies(${PROJECT_NAME}_MergeRootmaps ${dictionary})
     # To append the path to the generated library to LD_LIBRARY_PATH with run
@@ -1433,6 +1431,11 @@ endfunction()
 #   file_to_merge: the absolute path to the file to be merged in ${output_file}
 #   message: a message to display while building ${merge_target}
 function(_merge_files merge_target output_file dependency file_to_merge message)
+    if(ARGC GREATER 5)
+        set(target ${ARGV5})
+    else()
+        set(target "LIB")
+    endif()
     if(NOT TARGET ${merge_target})
         add_custom_command(OUTPUT "${output_file}"
             COMMAND $<TARGET_PROPERTY:${merge_target},command> $<TARGET_PROPERTY:${merge_target},fragments>
@@ -1443,9 +1446,15 @@ function(_merge_files merge_target output_file dependency file_to_merge message)
         add_custom_target(${merge_target} ALL DEPENDS "${output_file}")
         set_property(TARGET ${merge_target} PROPERTY command cat)
         set_property(TARGET ${merge_target} PROPERTY output_option >)
-        install(FILES "${output_file}"
-            TYPE LIB
-            ${_gaudi_install_optional})
+        if(target STREQUAL "PLUGIN")
+            install(FILES "${output_file}"
+                DESTINATION "${GAUDI_INSTALL_PLUGINDIR}"
+                ${_gaudi_install_optional})
+        else()
+            install(FILES "${output_file}"
+                TYPE LIB
+                ${_gaudi_install_optional})
+        endif()
     endif()
     add_dependencies(${merge_target} ${dependency})
     set_property(TARGET ${merge_target} APPEND PROPERTY fragments "${file_to_merge}")
@@ -1454,7 +1463,8 @@ endfunction()
 function(_merge_files_confdb dependency file_to_merge)
     _merge_files(${PROJECT_NAME}_MergeConfdb "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.confdb"
         ${dependency} "${file_to_merge}"
-        "Merging .confdb files for ${PROJECT_NAME}")
+        "Merging .confdb files for ${PROJECT_NAME}"
+        PLUGIN)
 endfunction()
 # special merge function for .confdb2 as a workaround for https://gitlab.cern.ch/gaudi/Gaudi/-/issues/258
 function(_merge_files_confdb2 dependency file_to_merge)
@@ -1473,7 +1483,7 @@ function(_merge_files_confdb2 dependency file_to_merge)
             COMMAND_EXPAND_LISTS)
         add_custom_target(${merge_target} ALL DEPENDS ${output_files})
         install(FILES ${output_files}
-            TYPE LIB
+            DESTINATION "${GAUDI_INSTALL_PLUGINDIR}"
             ${_gaudi_install_optional})
     endif()
     add_dependencies(${merge_target} ${dependency})
@@ -1537,7 +1547,7 @@ endmacro()
 # To generate the script run and make it executable
 if(NOT CMAKE_SCRIPT_MODE_FILE AND NOT TARGET target_runtime_paths)
     add_custom_target(target_runtime_paths)
-    foreach(env_var IN ITEMS PATH LD_LIBRARY_PATH PYTHONPATH ROOT_INCLUDE_PATH)
+    foreach(env_var IN ITEMS PATH LD_LIBRARY_PATH PYTHONPATH ROOT_INCLUDE_PATH GAUDI_PLUGIN_PATH)
         # Clean the paths
         string(REGEX REPLACE "(^:|:$)" "" _ENV_${env_var} "$ENV{${env_var}}")
         string(REGEX REPLACE "::+" ":" _ENV_${env_var} "${_ENV_${env_var}}")
@@ -1552,6 +1562,7 @@ export LD_LIBRARY_PATH=\"$<SHELL_PATH:$<FILTER:$<REMOVE_DUPLICATES:$<GENEX_EVAL:
 export PYTHONPATH=\"$<SHELL_PATH:$<FILTER:$<REMOVE_DUPLICATES:$<GENEX_EVAL:$<TARGET_PROPERTY:target_runtime_paths,runtime_pythonpath>>;${_ENV_PYTHONPATH}>,EXCLUDE,^[^/]>>\${PYTHONPATH:+:\${PYTHONPATH}}\"
 $<$<NOT:$<STREQUAL:$ENV{PYTHONHOME},>>:export PYTHONHOME=\"$ENV{PYTHONHOME}\">
 export ROOT_INCLUDE_PATH=\"$<SHELL_PATH:$<FILTER:$<REMOVE_DUPLICATES:$<GENEX_EVAL:$<TARGET_PROPERTY:target_runtime_paths,runtime_root_include_path>>;${_ENV_ROOT_INCLUDE_PATH}>,EXCLUDE,^[^/]>>\${ROOT_INCLUDE_PATH:+:\${ROOT_INCLUDE_PATH}}\"
+export GAUDI_PLUGIN_PATH=\"$<SHELL_PATH:$<FILTER:$<REMOVE_DUPLICATES:$<GENEX_EVAL:$<TARGET_PROPERTY:target_runtime_paths,runtime_plugin_path>>;${_ENV_GAUDI_PLUGIN_PATH}>,EXCLUDE,^[^/]>>\${GAUDI_PLUGIN_PATH:+:\${GAUDI_PLUGIN_PATH}}\"
 export ENV_PROJECT_SOURCE_DIR=\"${PROJECT_SOURCE_DIR}\"
 export ENV_PROJECT_BINARY_DIR=\"${PROJECT_BINARY_DIR}\"
 export ENV_CMAKE_BUILD_TYPE=\"$<CONFIG>\"
@@ -1568,9 +1579,6 @@ ${RUN_SCRIPT_EXTRA_COMMANDS}
     # Add a executable target for convenience
     add_executable(run IMPORTED GLOBAL)
     set_target_properties(run PROPERTIES IMPORTED_LOCATION ${CMAKE_BINARY_DIR}/run)
-    # Prepend the rpath of every target with the folder containing the symlinks to the plugins
-    file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/.plugins)
-    link_directories(BEFORE ${CMAKE_BINARY_DIR}/.plugins)
 endif()
 
 # deprecate variables if a target exist

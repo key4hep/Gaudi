@@ -108,17 +108,6 @@ namespace Gaudi {
         }
         std::string demangle( const std::type_info& id ) { return demangle( id.name() ); }
 
-        bool Registry::tryDLOpen( const std::string_view& libName ) const {
-          const void* handle = dlopen( libName.data(), RTLD_LAZY | RTLD_GLOBAL );
-          if ( !handle ) {
-            std::cout << "dlopen failed for " << libName << std::endl;
-            logger().warning( "cannot load " + std::string( libName ) );
-            if ( char* dlmsg = dlerror() ) { logger().warning( dlmsg ); }
-            return false;
-          }
-          return true;
-        }
-
         Registry& Registry::instance() {
           auto            _guard = std::scoped_lock{ ::registrySingletonMutex };
           static Registry r;
@@ -148,7 +137,7 @@ namespace Gaudi {
         void Registry::initialize() {
           auto _guard = std::scoped_lock{ m_mutex };
 #if defined( __APPLE__ )
-          const auto envVars = { "GAUDI_PLUGIN_PATH" };
+          const auto envVars = { "GAUDI_PLUGIN_PATH", "DYLD_LIBRARY_PATH" };
           const char sep     = ':';
 #else
           const auto envVars = { "GAUDI_PLUGIN_PATH", "LD_LIBRARY_PATH" };
@@ -258,28 +247,9 @@ namespace Gaudi {
 
           if ( f == facts.end() ) { return unknown; }
           if ( !load || f->second.is_set() ) { return f->second; }
-          const std::string_view library = f->second.library;
 
-          // dlopen can not look into GAUDI_PLUGIN_PATH so a search is reimplemented here
-          // and if not found then we fall back to dlopen without full paths
-          // that will look in LD_LIBRARY_PATH
-          std::stringstream ss;
-          if ( auto ptr = std::getenv( "GAUDI_PLUGIN_PATH" ) ) ss << ptr;
-          std::string dir;
-          bool        found = false;
-          while ( std::getline( ss, dir, ':' ) && !found ) {
-            if ( !fs::exists( dir ) ) { continue; }
-            if ( is_regular_file( dir / fs::path( library ) ) ) {
-              // logger().debug( "found " + dirName.string() + "/" + library.c_str() + " for factory " + id );
-              if ( !tryDLOpen( ( dir / fs::path( library ) ).string() ) ) {
-                return unknown;
-              } else {
-                found = true;
-                break;
-              }
-            }
-          }
-          if ( !found && !tryDLOpen( library ) ) return unknown;
+          if ( !loadPluginLibrary( f->second.library ) ) { return unknown; }
+
           f = facts.find( id ); // ensure that the iterator is valid
           return f->second;
         }
@@ -304,6 +274,36 @@ namespace Gaudi {
             if ( f.second.is_set() ) l.insert( f.first );
           }
           return l;
+        }
+
+        bool Registry::loadPluginLibrary( std::string_view library ) const {
+          // dlopen can not look into GAUDI_PLUGIN_PATH so a search is reimplemented here
+          // and if not found then we fall back to dlopen without full paths
+          // that will look in LD_LIBRARY_PATH
+          std::stringstream ss;
+          if ( auto ptr = std::getenv( "GAUDI_PLUGIN_PATH" ) ) ss << ptr;
+          std::string dir;
+          while ( std::getline( ss, dir, ':' ) ) {
+            if ( !fs::exists( dir ) ) { continue; }
+            const auto path = dir / fs::path( library );
+            if ( is_regular_file( path ) ) {
+              if ( dlopen( path.c_str(), RTLD_LAZY | RTLD_GLOBAL ) ) {
+                return true;
+              } else {
+                logger().warning( "cannot load " + path.string() );
+                if ( char* dlmsg = dlerror() ) { logger().warning( dlmsg ); }
+              }
+            }
+          }
+          // not found yet, let's see if dlopen can find it
+          if ( dlopen( std::string{ library }.c_str(), RTLD_LAZY | RTLD_GLOBAL ) ) {
+            return true;
+          } else {
+            // still no luck
+            logger().warning( "cannot load " + std::string{ library } );
+            if ( char* dlmsg = dlerror() ) { logger().warning( dlmsg ); }
+          }
+          return false;
         }
 
         void Logger::report( Level lvl, const std::string& msg ) {
