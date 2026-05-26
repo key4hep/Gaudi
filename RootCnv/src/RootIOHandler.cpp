@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -21,7 +21,6 @@
 #include <GaudiKernel/ObjectContainerBase.h>
 #include <GaudiKernel/SmartRef.h>
 #include <GaudiKernel/System.h>
-#include <RootCnv/PoolClasses.h>
 #include <RootCnv/RootRefs.h>
 #include <TClass.h>
 #include <TClassStreamer.h>
@@ -182,20 +181,6 @@ namespace GaudiRoot {
     m_root->WriteBuffer( b, obj );
   }
 
-  template <>
-  void IOHandler<pool::Token>::get( TBuffer& b, void* obj ) {
-    UInt_t       start, count;
-    pool::Token* t = (pool::Token*)obj;
-    b.ReadVersion( &start, &count, m_root );
-    b.ReadFastArray( &t->m_oid.first, 2 );
-    b.CheckByteCount( start, count, m_root );
-  }
-
-  template <>
-  void IOHandler<pool::Token>::put( TBuffer&, void* ) {
-    throw runtime_error( "Writing POOL files is not implemented!" );
-  }
-
   template <class T>
   static bool makeStreamer( MsgStream& log ) {
     string  cl_name = System::typeinfoName( typeid( T ) );
@@ -215,12 +200,10 @@ namespace GaudiRoot {
       first = false;
       gInterpreter->LoadLibraryMap();
       gInterpreter->AutoLoad( "DataObject" );
-      gInterpreter->AutoLoad( "PoolDbLinkManager" );
 
       bool b1 = makeStreamer<SmartRefBase>( s );
       bool b2 = makeStreamer<ContainedObject>( s );
-      bool b3 = makeStreamer<pool::Token>( s );
-      return b1 && b2 && b3;
+      return b1 && b2;
     }
     return true;
   }

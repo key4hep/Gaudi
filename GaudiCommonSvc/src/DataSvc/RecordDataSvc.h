@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -19,7 +19,7 @@
  *   A RecordDataSvc is the base class for event services
  *
  *   When a new datafile is opened the data service retrieves an incident
- *   from the persistency area (currently only from POOL) together with an opaque
+ *   from the persistency area together with an opaque
  *   address describing the record. These history records are put onto the
  *   run-records datastore under the name of the logical file (FID):
  *   /Records/<FID>/.....

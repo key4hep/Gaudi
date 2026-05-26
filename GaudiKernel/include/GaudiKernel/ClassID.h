@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -56,32 +56,26 @@ static const CLID CLID_ColumnWiseTuple = 43; // Column-wise N-tuple
 // Data storage technique identifiers
 const long TEST_StorageType = 0x00;
 
-const long SICB_StorageType          = 0x01;
-const long ROOT_StorageType          = 0x02;
-const long OBJY_StorageType          = 0x03;
-const long ESC_StorageType           = 0x04;
-const long CDF_StorageType           = 0x05;
-const long HBOOK_StorageType         = 0x06;
-const long XML_StorageType           = 0x07;
-const long DBOOMS_StorageType        = 0x08;
-const long CONDDB_StorageType        = 0x09;
-const long ACCESS_StorageType        = 0x0a;
-const long EXCEL_StorageType         = 0x0b;
-const long TEXTJET_StorageType       = 0x0c;
-const long SQLSERVER_StorageType     = 0x0d;
-const long MYSQL_StorageType         = 0x0e;
-const long ORACLE_StorageType        = 0x0f;
-const long XMLSTRING_StorageType     = 0x10;
-const long POOL_StorageType          = 0x100;
-const long POOL_ROOT_StorageType     = 0x200;
-const long POOL_ROOTKEY_StorageType  = 0x201;
-const long POOL_ROOTTREE_StorageType = 0x202;
-const long POOL_ACCESS_StorageType   = 0x400;
-const long POOL_MYSQL_StorageType    = 0x800;
-const long POOL_ORACLE_StorageType   = 0x900;
-const long RAWDATA_StorageType       = 0xA000000;
-const long RAWDESC_StorageType       = 0xC000000;
-const long MBM_StorageType           = 0xB000000;
+const long SICB_StorageType      = 0x01;
+const long ROOT_StorageType      = 0x02;
+const long OBJY_StorageType      = 0x03;
+const long ESC_StorageType       = 0x04;
+const long CDF_StorageType       = 0x05;
+const long HBOOK_StorageType     = 0x06;
+const long XML_StorageType       = 0x07;
+const long DBOOMS_StorageType    = 0x08;
+const long CONDDB_StorageType    = 0x09;
+const long ACCESS_StorageType    = 0x0a;
+const long EXCEL_StorageType     = 0x0b;
+const long TEXTJET_StorageType   = 0x0c;
+const long SQLSERVER_StorageType = 0x0d;
+const long MYSQL_StorageType     = 0x0e;
+const long ORACLE_StorageType    = 0x0f;
+const long XMLSTRING_StorageType = 0x10;
+const long POOL_StorageType      = 0x100;
+const long RAWDATA_StorageType   = 0xA000000;
+const long RAWDESC_StorageType   = 0xC000000;
+const long MBM_StorageType       = 0xB000000;
 
 // define pseudo-storages for GiGa Conversion Services
 const long GiGaKine_StorageType = 0x32; // = 50 (DEC)

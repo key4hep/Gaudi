@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -200,11 +200,9 @@ namespace Gaudi {
     StatusCode saveRefs();
 
   public:
-    /** @class Tool RootDataConnection.h src/RootDataConnection.h
-     *
-     * Helper class to facilitate an abstraction layer for reading
-     * POOL style files with this package.
-     * YES: This class obsoletes POOL.
+    /**
+     * abstraction layer probably not needed anymore as the only
+     * implementation if RootTool
      *
      * @author  M.Frank
      * @version 1.0
@@ -239,8 +237,6 @@ namespace Gaudi {
       virtual ~Tool() = default;
       /// Access data branch by name: Get existing branch in read only mode
       virtual TBranch* getBranch( std::string_view section, std::string_view n ) = 0;
-      /// Internal overload to facilitate the access to POOL files
-      virtual RootRef poolRef( size_t /* which */ ) const { return RootRef(); }
 
       /// Read references section when opening data file
       virtual StatusCode readRefs() = 0;
@@ -253,7 +249,7 @@ namespace Gaudi {
     std::unique_ptr<Tool> m_tool;
     friend class Tool;
 
-    /// Create file access tool to encapsulate POOL compatibiliy
+    /// Create file access tool
     Tool* makeTool();
 
   public:

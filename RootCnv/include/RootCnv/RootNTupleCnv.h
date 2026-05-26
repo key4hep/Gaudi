@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -45,11 +45,6 @@ namespace Gaudi {
   protected:
     /// Update the transient object: NTuples end here when reading records
     StatusCode i__updateObjRoot( RootAddress* rpA, INTuple* tupl, TTree* tree, RootDataConnection* con );
-
-#ifdef __POOL_COMPATIBILITY
-    /// Update the transient object: NTuples end here when reading records
-    StatusCode i__updateObjPool( RootAddress* rpA, INTuple* tupl, TTree* tree, RootDataConnection* con );
-#endif
 
   public:
     /// Standard constructor

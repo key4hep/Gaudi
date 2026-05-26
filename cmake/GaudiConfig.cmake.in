@@ -35,8 +35,6 @@ The following targets will be imported:
   * ``Gaudi::Test_GaudiPluginService_LegacyUseCasesLib``
   * ``Gaudi::Test_GaudiPluginService_UseCasesLib``
   * ``Gaudi::testAppMgrStateMachine``
-  * ``Gaudi::testXMLFileCatalogRead``
-  * ``Gaudi::testXMLFileCatalogWrite``
 
 Imported functions, options and variables
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

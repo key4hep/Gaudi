@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -138,8 +138,6 @@ StatusCode EventSelectorDataStream::initialize() {
   if ( !isData ) { // Unfortunately options do not come in order...
     m_selectorType = "EventCollectionSelector";
     svc            = "EvtTupleSvc";
-  } else if ( dbtyp.compare( 0, 4, "POOL" ) == 0 ) {
-    m_selectorType = "PoolDbEvtSelector";
   } else if ( svc.empty() ) {
     m_selectorType = "DbEvtSelector";
   } else {

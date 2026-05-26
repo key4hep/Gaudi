@@ -1,5 +1,5 @@
 <!--
-    (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations
+    (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations
 
     This software is distributed under the terms of the Apache version 2 licence,
     copied verbatim in the file "LICENSE".
@@ -17,12 +17,4 @@
   <class name="Gaudi::RootNTupleDescriptor"/>
   <class name="std::vector<Gaudi::RootRef>"/>
 
-  <!-- POOL interface dictionary classes      -->
-  <class name="UCharDbArray"/>
-  <class name="pool::Guid"/>
-  <class name="pool::Token"/>
-  <class name="std::vector<pool::Token*>"/>
-  <class name="PoolDbLinkManager"/>
-  <class name="PoolDbTokenWrap"/>
-  <!-- <class name="PoolDbNTupleDescriptor"/> -->
 </lcgdict>
