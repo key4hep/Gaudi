@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -435,20 +435,6 @@ StatusCode PersistencySvc::getService( const std::string& service_type, IConvers
     return getService( OBJY_StorageType, refpSvc );
   else if ( ::strncasecmp( imp, "OBJYECTI", 7 ) == 0 )
     return getService( OBJY_StorageType, refpSvc );
-  else if ( ::strncasecmp( imp, "POOL_ROOTKEY", 12 ) == 0 )
-    return getService( POOL_ROOTKEY_StorageType, refpSvc );
-  else if ( ::strncasecmp( imp, "POOL_ROOTTREE", 12 ) == 0 )
-    return getService( POOL_ROOTTREE_StorageType, refpSvc );
-  else if ( ::strncasecmp( imp, "POOL_ROOT", 9 ) == 0 )
-    return getService( POOL_ROOT_StorageType, refpSvc );
-  else if ( ::strncasecmp( imp, "POOL_MySQL", 8 ) == 0 )
-    return getService( POOL_MYSQL_StorageType, refpSvc );
-  else if ( ::strncasecmp( imp, "POOL_ORACLE", 8 ) == 0 )
-    return getService( POOL_ORACLE_StorageType, refpSvc );
-  else if ( ::strncasecmp( imp, "POOL_ACCESS", 8 ) == 0 )
-    return getService( POOL_ACCESS_StorageType, refpSvc );
-  else if ( ::strncasecmp( imp, "POOL", 4 ) == 0 )
-    return getService( POOL_StorageType, refpSvc );
 
   std::scoped_lock _{ m_servicesMutex };
   for ( const auto& i : m_cnvServices ) {

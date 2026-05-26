@@ -11,14 +11,6 @@ vptr:boost/smart_ptr/detail/shared_count.hpp
 # /cvmfs/lhcb.cern.ch/lib/lcg/releases/Boost/1.70.0-cc8f0/x86_64-centos7-gcc8-dbg/include/boost/any.hpp:249:17: runtime error: downcast of address 0x000001169570 which does not point to an object of type 'holder'
 vptr:boost/any.hpp
 
-# Xerces / XMLFileCatalog
-# /workspace/build/GAUDI/GAUDI_HEAD/GaudiUtils/src/component/XMLFileCatalog.cpp:84:67: runtime error: downcast of address 0x000001927a58 which does not point to an object of type 'DOMElement'
-# 0x000001927a58: note: object is of type 'xercesc_3_1::DOMTextImpl'
-#  00 00 00 00  a0 64 36 8c 0c 7f 00 00  38 78 92 01 00 00 00 00  58 04 00 00 00 00 00 00  c8 80 92 01
-#               ^~~~~~~~~~~~~~~~~~~~~~~
-#               vptr for 'xercesc_3_1::DOMTextImpl'
-vptr:GaudiUtils/src/component/XMLFileCatalog.cpp
-
 # STL or ROOT or CLANG ?
 # /cvmfs/lhcb.cern.ch/lib/lcg/releases/gcc/8.1.0/x86_64-centos7/include/c++/8.1.0/bits/shared_ptr_base.h:161:6: runtime error: member call on address 0x000001e78d80 which does not point to an object of type '_Sp_counted_base'
 # 0x000001e78d80: note: object has invalid vptr

@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -52,9 +52,6 @@ gaudi_add_dictionary(RootCnvDict
                      HEADERFILES dict/RootCnv_dict.h
                      SELECTION dict/RootCnv_dict.xml
                      LINK RootCnvLib)
-
-set_property(TARGET RootCnvLib RootCnv RootCnvDict
-             APPEND PROPERTY COMPILE_DEFINITIONS __POOL_COMPATIBILITY)
 
 # Install other scripts
 gaudi_install(SCRIPTS)

@@ -54,9 +54,6 @@ typedef const string& CSTR;
 static const string s_empty;
 static const string s_local = "<localDB>";
 
-#ifdef __POOL_COMPATIBILITY
-#  include "PoolTool.h"
-#endif
 #include "RootTool.h"
 
 namespace {
@@ -220,14 +217,10 @@ void RootDataConnection::enableStatistics( std::string_view section ) {
   msgSvc() << MSG::INFO << "Perfstats are ALREADY ENABLED." << endmsg;
 }
 
-/// Create file access tool to encapsulate POOL compatibility
 RootDataConnection::Tool* RootDataConnection::makeTool() {
   if ( !m_refs ) m_refs = (TTree*)m_file->Get( "Refs" );
-  if ( m_refs ) m_tool.reset( new RootTool( this ) );
-#ifdef __POOL_COMPATIBILITY
-  else if ( m_file->Get( "##Links" ) != nullptr )
-    m_tool.reset( new PoolTool( this ) );
-#endif
+  if ( m_refs )
+    m_tool.reset( new RootTool( this ) );
   else
     m_tool.reset();
   return m_tool.get();
@@ -664,8 +657,4 @@ void RootDataConnection::makeRef( std::string_view name, long clid, int tech, st
   ref.link      = clnk;
   ref.clid      = clid;
   ref.svc       = tech;
-  if ( ref.svc == POOL_ROOT_StorageType || ref.svc == POOL_ROOTKEY_StorageType ||
-       ref.svc == POOL_ROOTTREE_StorageType ) {
-    ref.svc = ROOT_StorageType;
-  }
 }
