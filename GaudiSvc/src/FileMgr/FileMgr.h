@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -38,7 +38,6 @@ using Io::IoFlag;
 using Io::IoFlags;
 using Io::IoTech;
 
-class RootFileHandler;
 class POSIXFileHandler;
 
 class FileMgr : public extends<Service, IFileMgr, IIncidentListener> {
@@ -123,9 +122,6 @@ private:
   Gaudi::Property<bool>        m_printSummary{ this, "PrintSummary", false };
   Gaudi::Property<bool>        m_loadRootHandler{ this, "LoadROOTHandler", true };
   Gaudi::Property<bool>        m_loadPosixHandler{ this, "LoadPOSIXHandler", true };
-
-  Gaudi::Property<std::string> m_ssl_proxy{ this, "TSSL_UserProxy", "X509" };
-  Gaudi::Property<std::string> m_ssl_cert{ this, "TSSL_CertDir", "X509" };
 
   virtual Io::open_t open( const IoTech&, const std::string& caller, const std::string& fname, const std::string& desc,
                            const IoFlags&, Fd&, void*&,

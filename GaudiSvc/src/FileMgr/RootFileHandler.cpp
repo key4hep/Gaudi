@@ -8,19 +8,15 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
+#include "RootFileHandler.h"
 #include <GaudiKernel/IFileMgr.h>
+#include <GaudiKernel/MsgStream.h>
 #include <TFile.h>
 #include <TROOT.h>
-#include <TSSLSocket.h>
-
-#include "RootFileHandler.h"
-#include <GaudiKernel/MsgStream.h>
-#include <boost/algorithm/string.hpp>
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-RootFileHandler::RootFileHandler( IMessageSvc* msg, const std::string& p, const std::string& c )
-    : m_log( msg, "RootFileHandler" ), m_userProxy( p ), m_certDir( c ) {
+RootFileHandler::RootFileHandler( IMessageSvc* msg ) : m_log( msg, "RootFileHandler" ) {
   // Protect against multiple instances of TROOT
   if ( !gROOT ) { static TROOT root( "root", "ROOT I/O" ); }
   m_level = msg->outputLevel( "RootFileHandler" );
@@ -117,41 +113,4 @@ Io::reopen_t RootFileHandler::reopenRootFile( void*, const Io::IoFlags& ) {
 
   m_log << MSG::ERROR << "reopen not implemented" << endmsg;
   return -1;
-}
-
-//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
-
-bool RootFileHandler::setupSSL() {
-
-  if ( m_log.level() <= MSG::DEBUG ) m_log << MSG::DEBUG << "setupSSL" << endmsg;
-
-  // don't set anything up
-  if ( m_userProxy == "NONE" || m_certDir == "NONE" ) {
-    m_ssl_setup = true;
-    return true;
-  }
-
-  // get stuff from $X509_USER_PROXY and $X509_CERT_DIR env vars
-  if ( m_userProxy == "X509" ) {
-    if ( !System::getEnv( "X509_USER_PROXY", m_userProxy ) ) {
-      m_log << MSG::ERROR << "env var X509_USER_PROXY not set" << endmsg;
-      return false;
-    }
-  }
-
-  if ( m_certDir == "X509" ) {
-    if ( !System::getEnv( "X509_CERT_DIR", m_certDir ) ) {
-      m_log << MSG::ERROR << "env var X509_CERT_DIR not set" << endmsg;
-      return false;
-    }
-  }
-
-  if ( m_log.level() <= MSG::DEBUG )
-    m_log << MSG::DEBUG << "userProxy: " << m_userProxy << "  certDir: " << m_certDir << endmsg;
-
-  TSSLSocket::SetUpSSL( m_userProxy.c_str(), m_certDir.c_str(), m_userProxy.c_str(), m_userProxy.c_str() );
-
-  m_ssl_setup = true;
-
-  return true;
 }

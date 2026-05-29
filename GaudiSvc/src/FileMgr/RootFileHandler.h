@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -26,7 +26,7 @@
 class RootFileHandler {
 
 public:
-  RootFileHandler( IMessageSvc*, const std::string& userProxy, const std::string& certDir );
+  RootFileHandler( IMessageSvc* );
 
   Io::open_t openRootFile( const std::string& n, const Io::IoFlags& f, const std::string& desc, Io::Fd& fd,
                            void*& ptr );
@@ -34,12 +34,7 @@ public:
   Io::close_t  closeRootFile( void* ptr );
   Io::reopen_t reopenRootFile( void*, const Io::IoFlags& );
 
-  bool setupSSL();
-
 private:
   MsgStream m_log;
   int       m_level;
-
-  std::string m_userProxy, m_certDir;
-  bool        m_ssl_setup = false;
 };
