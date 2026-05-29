@@ -12,10 +12,7 @@
 
 #include "details.h"
 #include "utilities.h"
-#include <GaudiKernel/FunctionalFilterDecision.h>
-#include <GaudiKernel/GaudiException.h>
 #include <tuple>
-#include <utility>
 
 // Adapt an Algorithm (by default, Gaudi::Algorithm) so that derived classes
 //   a) do not need to access the event store, and have to explicitly
@@ -30,19 +27,18 @@ namespace Gaudi ::Functional {
     template <typename Signature, typename Traits_, bool isLegacy>
     struct Transformer;
 
+    template <typename Signature, typename Traits_, bool isLegacy>
+    struct MultiTransformer;
+
     // general N -> 1 algorithms
     template <typename Out, typename... In, typename Traits_>
     struct Transformer<Out( const In&... ), Traits_, true>
-        : DataHandleMixin<std::tuple<Out>, filter_evtcontext<In...>, Traits_> {
-      using DataHandleMixin<std::tuple<Out>, filter_evtcontext<In...>, Traits_>::DataHandleMixin;
+        : DataHandleMixin<type_list<Out>, type_list<In...>, Traits_> {
+      using DataHandleMixin<type_list<Out>, type_list<In...>, Traits_>::DataHandleMixin;
 
       // derived classes can NOT implement execute
       StatusCode execute() override final {
-        return details::execute( *this, [&] {
-          put( std::get<0>( this->m_outputs ),
-               filter_evtcontext_t<In...>::apply( *this, Gaudi::Hive::currentContext(), this->m_inputs ) );
-          return FilterDecision::PASSED;
-        } );
+        return execute_single_output( *this, this->getContext(), this->m_outputs );
       }
 
       // instead they MUST implement this operator
@@ -51,15 +47,12 @@ namespace Gaudi ::Functional {
 
     template <typename Out, typename... In, typename Traits_>
     struct Transformer<Out( const In&... ), Traits_, false>
-        : DataHandleMixin<std::tuple<Out>, filter_evtcontext<In...>, Traits_> {
-      using DataHandleMixin<std::tuple<Out>, filter_evtcontext<In...>, Traits_>::DataHandleMixin;
+        : DataHandleMixin<type_list<Out>, type_list<In...>, Traits_> {
+      using DataHandleMixin<type_list<Out>, type_list<In...>, Traits_>::DataHandleMixin;
 
       // derived classes can NOT implement execute
       StatusCode execute( const EventContext& ctx ) const override final {
-        return details::execute( *this, [&] {
-          put( std::get<0>( this->m_outputs ), filter_evtcontext_t<In...>::apply( *this, ctx, this->m_inputs ) );
-          return FilterDecision::PASSED;
-        } );
+        return execute_single_output( *this, ctx, this->m_outputs );
       }
 
       // instead they MUST implement this operator
@@ -69,27 +62,13 @@ namespace Gaudi ::Functional {
     //
     // general N -> M algorithms
     //
-    template <typename Signature, typename Traits_, bool isLegacy>
-    struct MultiTransformer;
-
     template <typename... Out, typename... In, typename Traits_>
     struct MultiTransformer<std::tuple<Out...>( const In&... ), Traits_, true>
-        : DataHandleMixin<std::tuple<Out...>, filter_evtcontext<In...>, Traits_> {
-      using DataHandleMixin<std::tuple<Out...>, filter_evtcontext<In...>, Traits_>::DataHandleMixin;
+        : DataHandleMixin<type_list<Out...>, type_list<In...>, Traits_> {
+      using DataHandleMixin<type_list<Out...>, type_list<In...>, Traits_>::DataHandleMixin;
 
       // derived classes can NOT implement execute
-      StatusCode execute() override final {
-        return details::execute( *this, [&] {
-          std::apply(
-              [this]( auto&... ohandle ) {
-                std::apply( [&ohandle...](
-                                auto&&... data ) { ( put( ohandle, std::forward<decltype( data )>( data ) ), ... ); },
-                            filter_evtcontext_t<In...>::apply( *this, Gaudi::Hive::currentContext(), this->m_inputs ) );
-              },
-              this->m_outputs );
-          return FilterDecision::PASSED;
-        } );
-      }
+      StatusCode execute() override final { return execute_outputs( *this, this->getContext(), this->m_outputs ); }
 
       // instead they MUST implement this operator
       virtual std::tuple<Out...> operator()( const In&... ) const = 0;
@@ -97,21 +76,12 @@ namespace Gaudi ::Functional {
 
     template <typename... Out, typename... In, typename Traits_>
     struct MultiTransformer<std::tuple<Out...>( const In&... ), Traits_, false>
-        : DataHandleMixin<std::tuple<Out...>, filter_evtcontext<In...>, Traits_> {
-      using DataHandleMixin<std::tuple<Out...>, filter_evtcontext<In...>, Traits_>::DataHandleMixin;
+        : DataHandleMixin<type_list<Out...>, type_list<In...>, Traits_> {
+      using DataHandleMixin<type_list<Out...>, type_list<In...>, Traits_>::DataHandleMixin;
 
       // derived classes can NOT implement execute
       StatusCode execute( const EventContext& ctx ) const override final {
-        return details::execute( *this, [&] {
-          std::apply(
-              [this, &ctx]( auto&... ohandle ) {
-                std::apply( [&ohandle...](
-                                auto&&... data ) { ( put( ohandle, std::forward<decltype( data )>( data ) ), ... ); },
-                            filter_evtcontext_t<In...>::apply( *this, ctx, this->m_inputs ) );
-              },
-              this->m_outputs );
-          return FilterDecision::PASSED;
-        } );
+        return execute_outputs( *this, ctx, this->m_outputs );
       }
 
       // instead they MUST implement this operator
@@ -126,25 +96,12 @@ namespace Gaudi ::Functional {
 
     template <typename... Out, typename... In, typename Traits_>
     struct MultiTransformerFilter<std::tuple<Out...>( const In&... ), Traits_>
-        : DataHandleMixin<std::tuple<Out...>, filter_evtcontext<In...>, Traits_> {
-      using DataHandleMixin<std::tuple<Out...>, filter_evtcontext<In...>, Traits_>::DataHandleMixin;
+        : DataHandleMixin<type_list<Out...>, type_list<In...>, Traits_> {
+      using DataHandleMixin<type_list<Out...>, type_list<In...>, Traits_>::DataHandleMixin;
 
       // derived classes can NOT implement execute
       StatusCode execute( const EventContext& ctx ) const override final {
-        return details::execute( *this, [&] {
-          return std::apply(
-                     [&]( auto&... ohandle ) {
-                       return std::apply(
-                           [&ohandle...]( bool passed, auto&&... data ) {
-                             ( put( ohandle, std::forward<decltype( data )>( data ) ), ... );
-                             return passed;
-                           },
-                           filter_evtcontext_t<In...>::apply( *this, ctx, this->m_inputs ) );
-                     },
-                     this->m_outputs )
-                     ? FilterDecision::PASSED
-                     : FilterDecision::FAILED;
-        } );
+        return execute_filtered_outputs( *this, ctx, this->m_outputs );
       }
 
       // instead they MUST implement this operator

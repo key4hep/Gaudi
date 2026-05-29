@@ -12,9 +12,7 @@
 
 #include "details.h"
 #include "utilities.h"
-#include <GaudiKernel/FunctionalFilterDecision.h>
 #include <optional>
-#include <string>
 #include <vector>
 
 namespace Gaudi::Functional {
@@ -27,41 +25,17 @@ namespace Gaudi::Functional {
   namespace details {
 
     template <typename Signature, typename Traits_>
-    class SplittingTransformer;
+    struct SplittingTransformer;
 
     template <typename Out, typename... In, typename Traits_>
-    class SplittingTransformer<vector_of_<Out>( const In&... ), Traits_>
-        : public details::DataHandleMixin<std::tuple<>, filter_evtcontext<In...>, Traits_> {
-      using base_class = details::DataHandleMixin<std::tuple<>, filter_evtcontext<In...>, Traits_>;
-
-      template <typename T>
-      using OutputHandle = details::OutputHandle_t<Traits_, details::remove_optional_t<T>>;
-      details::HandleVector<OutputHandle, Out> m_outs;
-
-    public:
-      constexpr static std::size_t N = base_class::N_in;
-      using KeyValue                 = typename base_class::KeyValue;
-      using KeyValues                = typename base_class::KeyValues;
-
-      SplittingTransformer( std::string name, ISvcLocator* locator, const RepeatValues_<KeyValue, N>& inputs,
-                            const KeyValues& outputs )
-          : base_class{ std::move( name ), locator, inputs }, m_outs{ this, outputs } {}
-
-      SplittingTransformer( std::string name, ISvcLocator* locator, const KeyValue& input, const KeyValues& output )
-        requires( N == 1 )
-          : SplittingTransformer( std::move( name ), locator, std::forward_as_tuple( input ), output ) {}
-
-      // accessor to output Locations
-      const std::string& outputLocation( unsigned int n ) const { return m_outs.at( n ).key(); }
-      unsigned int       outputLocationSize() const { return m_outs.size(); }
+    struct SplittingTransformer<vector_of_<Out>( const In&... ), Traits_>
+        : details::DataHandleMixin<type_list<details::vector_of_output_<Out>>, type_list<In...>, Traits_> {
+      using details::DataHandleMixin<type_list<details::vector_of_output_<Out>>, type_list<In...>,
+                                     Traits_>::DataHandleMixin;
 
       // derived classes can NOT implement execute
       StatusCode execute( const EventContext& ctx ) const override final {
-        return details::execute( *this, [&] {
-          // TODO:FIXME: how does operator() know the number and order of expected outputs?
-          m_outs.put( details::filter_evtcontext_t<In...>::apply( *this, ctx, this->m_inputs ) );
-          return FilterDecision::PASSED;
-        } );
+        return details::execute_single_output( *this, ctx, this->m_outputs );
       }
 
       // TODO/FIXME: how does the callee know in which order to produce the outputs?

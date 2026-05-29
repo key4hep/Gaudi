@@ -10,15 +10,21 @@
 \***********************************************************************************/
 #pragma once
 #include <GaudiKernel/DataObjID.h>
+#include <GaudiKernel/EventContext.h>
 #include <GaudiKernel/IDataHandleHolder.h>
 #include <GaudiKernel/SerializeSTL.h>
 #include <algorithm>
 #include <iterator>
 #include <sstream>
 #include <string>
+#include <tuple>
+#include <type_traits>
 #include <vector>
 
 namespace Gaudi::Functional::details {
+  template <typename... T>
+  struct type_list;
+
   template <typename Handles>
   [[deprecated]] Handles make_vector_of_handles( IDataHandleHolder* owner, const std::vector<DataObjID>& init ) {
     Handles handles;
@@ -48,4 +54,46 @@ namespace Gaudi::Functional::details {
     } ) << ']';
     parent.setProperty( prop, ss.str() ).orThrow( "Could not set Property", prop + " -> " + ss.str() );
   }
+
+  template <typename... In>
+  struct /*[[deprecated( "use EventContextHandle in DataHandleMixin inputs instead" )]]*/ filter_evtcontext_t {
+    using type = std::tuple<In...>;
+
+    static_assert( !std::disjunction_v<std::is_same<EventContext, In>...>,
+                   "EventContext can only appear as first argument" );
+
+    template <typename Algorithm, typename Handles>
+    static auto apply( const Algorithm& algo, const EventContext& ctx, Handles& handles ) {
+      return std::apply( [&]( const auto&... handle ) { return algo( get( handle, algo, ctx )... ); }, handles );
+    }
+  };
+
+  template <typename... In>
+  struct /*[[deprecated(
+      "use EventContextHandle in DataHandleMixin inputs instead" )]]*/
+      filter_evtcontext_t<EventContext, In...> {
+    using type = std::tuple<In...>;
+
+    static_assert( !std::disjunction_v<std::is_same<EventContext, In>...>,
+                   "EventContext can only appear as first argument" );
+
+    template <typename Algorithm, typename Handles>
+    static auto apply( const Algorithm& algo, const EventContext& ctx, Handles& handles ) {
+      return std::apply( [&]( const auto&... handle ) { return algo( ctx, get( handle, algo, ctx )... ); }, handles );
+    }
+  };
+
+  template <typename... In>
+  using filter_evtcontext /*[[deprecated( "use EventContextHandle in DataHandleMixin inputs instead" )]]*/ =
+      typename filter_evtcontext_t<In...>::type;
+
+  template <typename... Out, typename... In, typename Traits_>
+  class [[deprecated( "use DataHandleMixin<type_list<...>, type_list<...>, Traits> instead" )]] DataHandleMixin<
+      std::tuple<Out...>, std::tuple<In...>, Traits_>
+      : public DataHandleMixin<type_list<Out...>, type_list<In...>, Traits_> {
+    using base_class = DataHandleMixin<type_list<Out...>, type_list<In...>, Traits_>;
+
+  public:
+    using base_class::base_class;
+  };
 } // namespace Gaudi::Functional::details

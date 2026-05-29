@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -31,6 +31,9 @@ from Configurables import (
     Gaudi__TestSuite__IntVectorsMergingConsumer as IntVectorsMergingConsumer,
 )
 from Configurables import Gaudi__TestSuite__IntVectorsToInts as IntVectorsToInts
+from Configurables import (
+    Gaudi__TestSuite__IntVectorsToIntsWithContextAndScale as IntVectorsToIntsWithContextAndScale,
+)
 from Configurables import (
     Gaudi__TestSuite__IntVectorsToIntVector as IntVectorsToIntVector,
 )
@@ -205,6 +208,17 @@ app.TopAlg = [
     ),
     ContextIntConsumer("EvenOddFibConsumer", InputLocation="/Event/EvenOddFib"),
     ContextIntConsumer("OddFibConsumer", InputLocation="/Event/OddFib"),
+    IntVectorsToIntsWithContextAndScale(
+        "IntVectorsToIntsWithContextAndScale",
+        Mapping=[[0, 0], [0, 1], [0, 2], [1, 1], [1, 2]],
+        InputLocations=["/Event/EventInts", "/Event/OddInt", "/Event/Fib7"],
+        Scale="/Event/MyInt",
+        OutputLocations=["/Event/ScaledEvenOddFib", "/Event/ScaledOddFib"],
+    ),
+    ContextIntConsumer(
+        "ScaledEvenOddFibConsumer", InputLocation="/Event/ScaledEvenOddFib"
+    ),
+    ContextIntConsumer("ScaledOddFibConsumer", InputLocation="/Event/ScaledOddFib"),
 ]
 # - Events
 app.EvtMax = 2

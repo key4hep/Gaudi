@@ -9,12 +9,10 @@
 * or submit itself to any jurisdiction.                                       *
 \*****************************************************************************/
 #pragma once
-
 #include "details.h"
 #include "utilities.h"
+#include <GaudiKernel/AlgTool.h>
 #include <GaudiKernel/IBinder.h>
-
-#define GAUDI_FUNCTIONAL_TOOL_BINDER_USES_CREATE
 
 namespace Gaudi::Functional {
   namespace details {
@@ -25,28 +23,32 @@ namespace Gaudi::Functional {
     class ToolBinder<Gaudi::Interface::Bind::Box<IFace>( Args const&... ), Traits>
         : public extends<details::BaseClass_t<Traits, AlgTool>, Gaudi::Interface::Bind::IBinder<IFace>> {
 
+    public:
       constexpr static std::size_t N = sizeof...( Args );
+      using KeyValue                 = LocationSpec::KeyValue;
+      using KeyValues                = LocationSpec::KeyValues;
+      using InputSpecTuple           = LocationSpecs_t<Args...>;
+      using InputSpecs               = LocationSpecs<InputSpecTuple>;
+      using Creator                  = Gaudi::Interface::Bind::Box<IFace> ( * )( void const*, Args const&... );
 
-      template <typename IArgs, std::size_t... I>
-      ToolBinder( std::string type, std::string name, const IInterface* parent, IArgs&& args,
-                  Gaudi::Interface::Bind::Box<IFace> ( *creator )( void const*, Args const&... ),
-                  std::index_sequence<I...> )
+      template <size_t... I>
+      ToolBinder( std::string type, std::string name, const IInterface* parent, InputSpecTuple const& args,
+                  Creator creator, std::index_sequence<I...> )
           : extends<details::BaseClass_t<Traits, AlgTool>, Gaudi::Interface::Bind::IBinder<IFace>>{ std::move( type ),
                                                                                                     std::move( name ),
                                                                                                     parent }
           , m_handles{ std::tuple_cat( std::forward_as_tuple( this ), std::get<I>( args ) )... }
           , m_creator{ creator } {}
 
+    private:
       std::tuple<details::InputHandle_t<Traits, Args>...> m_handles;
-      Gaudi::Interface::Bind::Box<IFace> ( *m_creator )( void const*, Args const&... );
+      Creator                                             m_creator;
 
     public:
-      using KeyValue = std::pair<std::string, std::string>;
-      ToolBinder( std::string type, std::string name, const IInterface* parent,
-                  Gaudi::Functional::details::RepeatValues_<KeyValue, N> const& inputs,
-                  Gaudi::Interface::Bind::Box<IFace> ( *creator )( void const*, Args const&... ) )
-          : ToolBinder{ std::move( type ), std::move( name ), parent, inputs, creator, std::make_index_sequence<N>{} } {
-      }
+      ToolBinder( std::string type, std::string name, const IInterface* parent, InputSpecs const& inputs,
+                  Creator creator )
+          : ToolBinder{ std::move( type ), std::move( name ), parent,
+                        inputs.tuple(),    creator,           std::make_index_sequence<N>{} } {}
 
       Gaudi::Interface::Bind::Box<IFace> bind( EventContext const& ctx ) const final {
         return std::apply(

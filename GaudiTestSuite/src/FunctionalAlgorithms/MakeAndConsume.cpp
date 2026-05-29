@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -41,7 +41,10 @@ namespace Gaudi::TestSuite {
 
   struct MyConsumerTool final : Gaudi::Functional::ToolBinder<Gaudi::Interface::Bind::Box<IMyTool>( const int& )> {
     MyConsumerTool( std::string type, std::string name, const IInterface* parent )
-        : ToolBinder{ std::move( type ), std::move( name ), parent, KeyValue{ "MyInt", "/Event/MyInt" },
+        : ToolBinder{ std::move( type ),
+                      std::move( name ),
+                      parent,
+                      { "MyInt", "/Event/MyInt" },
                       construct<BoundInstance>( this ) } {}
 
     class BoundInstance final : public Gaudi::Interface::Bind::Stub<IMyTool> {
@@ -61,7 +64,7 @@ namespace Gaudi::TestSuite {
 
   struct ToolConsumer final : Gaudi::Functional::Consumer<void( IMyTool const& ), BaseClass_t> {
     ToolConsumer( const std::string& name, ISvcLocator* svcLoc )
-        : Consumer( name, svcLoc, KeyValue{ "MyTool", "MyExampleTool" } ) {}
+        : Consumer( name, svcLoc, { "MyTool", "MyExampleTool" } ) {}
 
     void operator()( IMyTool const& tool ) const override { tool(); }
   };
@@ -93,7 +96,7 @@ namespace Gaudi::TestSuite {
   struct IntDataProducer final : Gaudi::Functional::Producer<int(), BaseClass_t> {
 
     IntDataProducer( const std::string& name, ISvcLocator* svcLoc )
-        : Producer( name, svcLoc, KeyValue( "OutputLocation", "/Event/MyInt" ) ) {}
+        : Producer( name, svcLoc, { "OutputLocation", "/Event/MyInt" } ) {}
 
     int operator()() const override {
       info() << "executing IntDataProducer, storing " << m_value.value() << " into " << outputLocation() << endmsg;
@@ -108,7 +111,7 @@ namespace Gaudi::TestSuite {
   struct StringDataProducer final : Gaudi::Functional::Producer<std::string(), BaseClass_t> {
 
     StringDataProducer( const std::string& name, ISvcLocator* svcLoc )
-        : Producer( name, svcLoc, KeyValue( "OutputLocation", "/Event/MyString" ) ) {}
+        : Producer( name, svcLoc, { "OutputLocation", "/Event/MyString" } ) {}
 
     std::string operator()() const override {
       info() << "executing StringDataProducer, storing " << m_value.value() << " into " << outputLocation() << endmsg;
@@ -125,7 +128,7 @@ namespace Gaudi::TestSuite {
     Gaudi::Property<std::vector<int>> m_data{ this, "Data", { 3, 3, 3, 3 } };
 
     VectorDataProducer( const std::string& name, ISvcLocator* svcLoc )
-        : Producer( name, svcLoc, KeyValue( "OutputLocation", "/Event/MyVector" ) ) {}
+        : Producer( name, svcLoc, { "OutputLocation", "/Event/MyVector" } ) {}
 
     std::vector<int> operator()() const override {
       info() << "executing VectorDataProducer, storing " << m_data.value() << " into " << outputLocation() << endmsg;
@@ -139,7 +142,7 @@ namespace Gaudi::TestSuite {
   struct KeyedDataProducer final : Gaudi::Functional::Producer<int_container(), BaseClass_t> {
 
     KeyedDataProducer( const std::string& name, ISvcLocator* svcLoc )
-        : Producer( name, svcLoc, KeyValue( "OutputLocation", "/Event/MyKeyed" ) ) {}
+        : Producer( name, svcLoc, { "OutputLocation", "/Event/MyKeyed" } ) {}
 
     int_container operator()() const override {
       int_container container;
@@ -157,7 +160,7 @@ namespace Gaudi::TestSuite {
   struct IntDataConsumer final : Gaudi::Functional::Consumer<void( const int& ), BaseClass_t> {
 
     IntDataConsumer( const std::string& name, ISvcLocator* svcLoc )
-        : Consumer( name, svcLoc, KeyValue( "InputLocation", "/Event/MyInt" ) ) {}
+        : Consumer( name, svcLoc, { "InputLocation", "/Event/MyInt" } ) {}
 
     void operator()( const int& input ) const override {
       info() << "executing IntDataConsumer, consuming " << input << " from " << inputLocation() << endmsg;
@@ -169,7 +172,7 @@ namespace Gaudi::TestSuite {
   struct StringDataConsumer final : Gaudi::Functional::Consumer<void( const std::string& ), BaseClass_t> {
 
     StringDataConsumer( const std::string& name, ISvcLocator* svcLoc )
-        : Consumer( name, svcLoc, KeyValue( "InputLocation", "/Event/MyString" ) ) {}
+        : Consumer( name, svcLoc, { "InputLocation", "/Event/MyString" } ) {}
 
     void operator()( const std::string& input ) const override {
       info() << "executing StringDataConsumer, consuming " << input << " from " << inputLocation() << endmsg;
@@ -181,8 +184,7 @@ namespace Gaudi::TestSuite {
   struct IntToFloatData final : Gaudi::Functional::Transformer<float( const int& ), BaseClass_t> {
 
     IntToFloatData( const std::string& name, ISvcLocator* svcLoc )
-        : Transformer( name, svcLoc, KeyValue( "InputLocation", "/Event/MyInt" ),
-                       KeyValue( "OutputLocation", "/Event/MyFloat" ) ) {}
+        : Transformer( name, svcLoc, { "InputLocation", "/Event/MyInt" }, { "OutputLocation", "/Event/MyFloat" } ) {}
 
     float operator()( const int& input ) const override {
       info() << "Converting: " << input << " from " << inputLocation() << " and storing it into " << outputLocation()
@@ -196,9 +198,8 @@ namespace Gaudi::TestSuite {
   struct IntFloatToFloatData final : Gaudi::Functional::Transformer<float( const int&, const float& ), BaseClass_t> {
 
     IntFloatToFloatData( const std::string& name, ISvcLocator* svcLoc )
-        : Transformer( name, svcLoc,
-                       { KeyValue( "InputLocation", "/Event/MyInt" ), KeyValue{ "OtherInput", "/Event/MyOtherFloat" } },
-                       KeyValue( "OutputLocation", "/Event/OtherFloat" ) ) {}
+        : Transformer( name, svcLoc, { { "InputLocation", "/Event/MyInt" }, { "OtherInput", "/Event/MyOtherFloat" } },
+                       { "OutputLocation", "/Event/OtherFloat" } ) {}
 
     float operator()( const int& in1, const float& in2 ) const override {
       info() << "Converting: " << in1 << " from " << inputLocation<int>() << " and " << in2 << " from "
@@ -212,11 +213,9 @@ namespace Gaudi::TestSuite {
   struct IntIntToFloatFloatData final
       : Gaudi::Functional::MultiTransformer<std::tuple<float, float>( const int&, const int& ), BaseClass_t> {
     IntIntToFloatFloatData( const std::string& name, ISvcLocator* svcLoc )
-        : MultiTransformer( name, svcLoc,
-                            { KeyValue( "InputLocation1", { "/Event/MyInt" } ),
-                              KeyValue( "InputLocation2", { "/Event/MyOtherInt" } ) },
-                            { KeyValue( "OutputLocation1", { "/Event/MyMultiFloat1" } ),
-                              KeyValue( "OutputLocation2", { "/Event/MyMultiFloat2" } ) } ) {}
+        : MultiTransformer(
+              name, svcLoc, { { "InputLocation1", "/Event/MyInt" }, { "InputLocation2", "/Event/MyOtherInt" } },
+              { { "OutputLocation1", "/Event/MyMultiFloat1" }, { "OutputLocation2", "/Event/MyMultiFloat2" } } ) {}
 
     std::tuple<float, float> operator()( const int& input1, const int& input2 ) const override {
       info() << "Number of inputs : " << inputLocationSize() << ", number of outputs : " << outputLocationSize()
@@ -293,7 +292,7 @@ namespace Gaudi::TestSuite {
   struct FloatDataConsumer final : Gaudi::Functional::Consumer<void( const float& ), BaseClass_t> {
 
     FloatDataConsumer( const std::string& name, ISvcLocator* svcLoc )
-        : Consumer( name, svcLoc, KeyValue( "InputLocation", "/Event/MyFloat" ) ) {}
+        : Consumer( name, svcLoc, { "InputLocation", "/Event/MyFloat" } ) {}
 
     void operator()( const float& input ) const override {
       info() << "executing FloatDataConsumer: " << input << endmsg;
@@ -316,7 +315,7 @@ namespace Gaudi::TestSuite {
   struct ContextTransformer final : Gaudi::Functional::Transformer<int( const EventContext& ), BaseClass_t> {
 
     ContextTransformer( const std::string& name, ISvcLocator* svcLoc )
-        : Transformer( name, svcLoc, KeyValue{ "OutputLoc", "/Event/SomeOtherInt" } ) {}
+        : Transformer( name, svcLoc, { "OutputLoc", "/Event/SomeOtherInt" } ) {}
 
     int operator()( const EventContext& ctx ) const override {
       info() << "executing ContextConsumer, got " << ctx << endmsg;
@@ -329,10 +328,11 @@ namespace Gaudi::TestSuite {
   struct ContextIntConsumer final : Gaudi::Functional::Consumer<void( const EventContext&, const int& ), BaseClass_t> {
 
     ContextIntConsumer( const std::string& name, ISvcLocator* svcLoc )
-        : Consumer( name, svcLoc, KeyValue( "InputLocation", "/Event/MyInt" ) ) {}
+        : Consumer( name, svcLoc, { "InputLocation", "/Event/MyInt" } ) {}
 
     void operator()( const EventContext& ctx, const int& i ) const override {
-      info() << "executing ContextIntConsumer, got context = " << ctx << ", int = " << i << endmsg;
+      info() << "executing ContextIntConsumer, got context = " << ctx << ", int = " << i << " from " << inputLocation()
+             << endmsg;
     }
   };
 
@@ -341,7 +341,7 @@ namespace Gaudi::TestSuite {
   struct VectorDoubleProducer final : Gaudi::Functional::Producer<std::vector<double>(), BaseClass_t> {
 
     VectorDoubleProducer( const std::string& name, ISvcLocator* svcLoc )
-        : Producer( name, svcLoc, KeyValue( "OutputLocation", "/Event/MyVectorOfDoubles" ) ) {}
+        : Producer( name, svcLoc, { "OutputLocation", "/Event/MyVectorOfDoubles" } ) {}
 
     std::vector<double> operator()() const override {
       info() << "storing vector<double> into " << outputLocation() << endmsg;
@@ -356,9 +356,9 @@ namespace Gaudi::TestSuite {
             FrExpTransformer, std::tuple<std::vector<double>, std::vector<int>>( const std::vector<double>& ),
             BaseClass_t> {
     FrExpTransformer( const std::string& name, ISvcLocator* svcLoc )
-        : MultiScalarTransformer( name, svcLoc, KeyValue{ "InputDoubles", { "/Event/MyVectorOfDoubles" } },
-                                  { KeyValue{ "OutputFractions", { "/Event/MyVectorOfFractions" } },
-                                    KeyValue{ "OutputIntegers", { "/Event/MyVectorOfIntegers" } } } ) {}
+        : MultiScalarTransformer( name, svcLoc, { "InputDoubles", "/Event/MyVectorOfDoubles" },
+                                  { { "OutputFractions", "/Event/MyVectorOfFractions" },
+                                    { "OutputIntegers", "/Event/MyVectorOfIntegers" } } ) {}
 
     using MultiScalarTransformer::operator();
 
@@ -376,9 +376,9 @@ namespace Gaudi::TestSuite {
             OptFrExpTransformer, std::tuple<std::vector<double>, std::vector<int>>( const std::vector<double>& ),
             BaseClass_t> {
     OptFrExpTransformer( const std::string& name, ISvcLocator* svcLoc )
-        : MultiScalarTransformer( name, svcLoc, KeyValue{ "InputDoubles", { "/Event/MyVectorOfDoubles" } },
-                                  { KeyValue{ "OutputFractions", { "/Event/OptMyVectorOfFractions" } },
-                                    KeyValue{ "OutputIntegers", { "/Event/OptMyVectorOfIntegers" } } } ) {}
+        : MultiScalarTransformer( name, svcLoc, { "InputDoubles", "/Event/MyVectorOfDoubles" },
+                                  { { "OutputFractions", "/Event/OptMyVectorOfFractions" },
+                                    { "OutputIntegers", "/Event/OptMyVectorOfIntegers" } } ) {}
 
     using MultiScalarTransformer::operator();
 
@@ -399,10 +399,10 @@ namespace Gaudi::TestSuite {
       : Gaudi::Functional::ScalarTransformer<
             LdExpTransformer, std::vector<double>( const std::vector<double>&, const std::vector<int>& ), BaseClass_t> {
     LdExpTransformer( const std::string& name, ISvcLocator* svcLoc )
-        : ScalarTransformer( name, svcLoc,
-                             { KeyValue{ "InputFractions", { "/Event/MyVectorOfFractions" } },
-                               KeyValue{ "InputIntegers", { "/Event/MyVectorOfIntegers" } } },
-                             { KeyValue{ "OutputDoubles", { "/Event/MyNewVectorOfDoubles" } } } ) {}
+        : ScalarTransformer(
+              name, svcLoc,
+              { { "InputFractions", "/Event/MyVectorOfFractions" }, { "InputIntegers", "/Event/MyVectorOfIntegers" } },
+              { "OutputDoubles", "/Event/MyNewVectorOfDoubles" } ) {}
 
     using ScalarTransformer::operator();
 
@@ -419,10 +419,10 @@ namespace Gaudi::TestSuite {
                                              std::vector<double>( const std::vector<double>&, const std::vector<int>& ),
                                              BaseClass_t> {
     OptLdExpTransformer( const std::string& name, ISvcLocator* svcLoc )
-        : ScalarTransformer( name, svcLoc,
-                             { KeyValue{ "InputFractions", { "/Event/MyVectorOfFractions" } },
-                               KeyValue{ "InputIntegers", { "/Event/MyVectorOfIntegers" } } },
-                             { KeyValue{ "OutputDoubles", { "/Event/MyOptVectorOfDoubles" } } } ) {}
+        : ScalarTransformer(
+              name, svcLoc,
+              { { "InputFractions", "/Event/MyVectorOfFractions" }, { "InputIntegers", "/Event/MyVectorOfIntegers" } },
+              { "OutputDoubles", "/Event/MyOptVectorOfDoubles" } ) {}
 
     using ScalarTransformer::operator();
 
@@ -458,7 +458,7 @@ namespace Gaudi::TestSuite {
   struct SDataProducer final : Gaudi::Functional::Producer<S::Container(), BaseClass_t> {
 
     SDataProducer( const std::string& name, ISvcLocator* svcLoc )
-        : Producer( name, svcLoc, KeyValue( "OutputLocation", "/Event/MyS" ) ) {}
+        : Producer( name, svcLoc, { "OutputLocation", "/Event/MyS" } ) {}
 
     S::Container operator()() const override {
       S::Container out{};
@@ -567,7 +567,7 @@ namespace Gaudi::TestSuite {
   struct RangeProducer : Gaudi::Functional::Producer<MyDataRange()> {
 
     RangeProducer( const std::string& name, ISvcLocator* pSvcLocator )
-        : Producer( name, pSvcLocator, KeyValue{ "TrackLocation", "" } ){};
+        : Producer( name, pSvcLocator, { "TrackLocation", "" } ){};
 
     MyDataRange operator()() const override { return {}; }
   };
@@ -582,11 +582,11 @@ namespace Gaudi::TestSuite {
                                 BaseClass_t> {
 
     TwoDMerger( const std::string& name, ISvcLocator* svcLoc )
-        : MergingMultiTransformer{ name,
-                                   svcLoc,
-                                   { KeyValues{ "InputInts", {} }, KeyValues{ "InputDoubles", {} } },
-                                   { KeyValue{ "OutputInts", "/Event/MySummedInts" },
-                                     KeyValue{ "OutputDoubles", "/Event/MySummedDoubles" } } } {}
+        : MergingMultiTransformer{
+              name,
+              svcLoc,
+              { { "InputInts", {} }, { "InputDoubles", {} } },
+              { { "OutputInts", "/Event/MySummedInts" }, { "OutputDoubles", "/Event/MySummedDoubles" } } } {}
 
     std::tuple<std::vector<int>, std::vector<double>>
     operator()( const Gaudi::Functional::vector_of_const_<std::vector<int>>&    intVectors,
@@ -619,7 +619,7 @@ namespace Gaudi::TestSuite {
   struct ShrdPtrProducer final : Gaudi::Functional::Producer<std::shared_ptr<Foo>(), BaseClass_t> {
 
     ShrdPtrProducer( const std::string& name, ISvcLocator* svcLoc )
-        : Producer( name, svcLoc, KeyValue( "OutputLocation", "/Event/MySharedFoo" ) ) {}
+        : Producer( name, svcLoc, { "OutputLocation", "/Event/MySharedFoo" } ) {}
 
     std::shared_ptr<Foo> operator()() const override {
       auto foo = std::make_shared<Foo>( m_value.value() );
@@ -636,7 +636,7 @@ namespace Gaudi::TestSuite {
   struct ShrdPtrConsumer final : Gaudi::Functional::Consumer<void( std::shared_ptr<Foo> const& ), BaseClass_t> {
 
     ShrdPtrConsumer( const std::string& name, ISvcLocator* svcLoc )
-        : Consumer( name, svcLoc, KeyValue( "InputLocation", "/Event/MySharedFoo" ) ) {}
+        : Consumer( name, svcLoc, { "InputLocation", "/Event/MySharedFoo" } ) {}
 
     void operator()( const std::shared_ptr<Foo>& foo ) const override {
       info() << "executing ShrdPtrConsumer, got shared_ptr<Foo> with payload at " << foo.get() << " with value  "
@@ -673,6 +673,32 @@ namespace Gaudi::TestSuite {
   };
   DECLARE_COMPONENT( IntVectorsToInts )
 
+  struct IntVectorsToIntsWithContextAndScale final
+      : public Gaudi::Functional::SplittingMergingTransformer<
+            std::vector<int>( const EventContext&, const Gaudi::Functional::vector_of_const_<std::vector<int>>&,
+                              const int& ),
+            BaseClass_t> {
+
+    Gaudi::Property<std::vector<std::pair<int, int>>> m_mapping{ this, "Mapping", {} };
+
+    IntVectorsToIntsWithContextAndScale( const std::string& name, ISvcLocator* svcLoc )
+        : SplittingMergingTransformer( name, svcLoc, { { "InputLocations", {} }, { "Scale", "/Event/MyInt" } },
+                                       { "OutputLocations", {} } ) {}
+
+    std::vector<int> operator()( const EventContext&                                          ctx,
+                                 const Gaudi::Functional::vector_of_const_<std::vector<int>>& intVectors,
+                                 const int&                                                   scale ) const override {
+      info() << "executing with context " << ctx << ", scale " << scale << " from " << inputLocation<1>() << endmsg;
+      std::vector<int> out( outputLocationSize(), 0 );
+      for ( const auto& [l, r] : m_mapping.value() ) {
+        out[l] = std::accumulate( intVectors.at( r ).begin(), intVectors.at( r ).end(), out[l] );
+      }
+      for ( auto& value : out ) { value *= scale; }
+      return out;
+    }
+  };
+  DECLARE_COMPONENT( IntVectorsToIntsWithContextAndScale )
+
   struct Eventually {
     Gaudi::Algorithm const* parent              = nullptr;
     void ( *action )( Gaudi::Algorithm const* ) = nullptr;
@@ -697,7 +723,7 @@ namespace Gaudi::TestSuite {
             Gaudi::Functional::Traits::use_<BaseClass_t, Gaudi::Functional::Traits::WriteOpaqueFor<Eventually>>> {
 
     OpaqueProducer( const std::string& name, ISvcLocator* svcLoc )
-        : Producer( name, svcLoc, KeyValue( "OutputLocation", "/Event/Eventually" ) ) {}
+        : Producer( name, svcLoc, { "OutputLocation", "/Event/Eventually" } ) {}
 
     Eventually operator()() const override {
       always() << "creating Eventually" << endmsg;
