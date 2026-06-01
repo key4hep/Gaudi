@@ -290,7 +290,6 @@ int main( int argc, char** argv )
       "output directory for genconf files." )( "debug-level,d", po::value<int>()->default_value( 0 ), "debug level" )(
       "load-library,l", po::value<Strings_t>()->composing(), "preloading library" )(
       "user-module,m", po::value<string>(), "user-defined module to be imported by the genConf-generated one" )(
-      "no-init", "do not generate the (empty) __init__.py [deprecated]" )(
       "type", po::value<string>()->default_value( "conf,conf2" ), "comma-separate types of configurables to generate" );
 
   // declare a group of options that will be allowed both on command line
@@ -344,8 +343,6 @@ int main( int argc, char** argv )
     cout << visible << endl;
     return EXIT_FAILURE;
   }
-
-  if ( vm.contains( "no-init" ) ) { cout << "WARNING: option --no-init is deprecated as it is not needed anymore.\n"; }
 
   if ( vm.contains( "package-name" ) ) {
     pkgName = vm["package-name"].as<string>();
