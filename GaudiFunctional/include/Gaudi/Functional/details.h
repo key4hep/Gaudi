@@ -985,5 +985,3 @@ namespace Gaudi::Functional::details {
   }
 
 } // namespace Gaudi::Functional::details
-
-#include "deprecated.h"
