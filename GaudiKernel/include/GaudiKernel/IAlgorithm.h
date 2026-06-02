@@ -43,7 +43,7 @@ public:
 
   /** Type for resources needed by the algorithm (name, value)
    */
-  using AlgResources_t = std::map<std::string, unsigned int, std::less<>>;
+  using AlgResources_t = std::map<Gaudi::StringKey, unsigned int, std::less<>>;
 
   /** The version of the algorithm
    */

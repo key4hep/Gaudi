@@ -190,7 +190,7 @@ StatusCode AlgResourcePool::releaseAlgorithm( std::string_view name, IAlgorithm*
 
 StatusCode AlgResourcePool::acquireResource( std::string_view name, unsigned int value ) {
   std::scoped_lock lock( m_resource_mutex );
-  auto             res = m_availableResources.find( name );
+  auto             res = m_availableResources.find( Gaudi::StringKey( name ) );
   if ( res != m_availableResources.end() && res->second >= value ) {
     res->second -= value;
     return StatusCode::SUCCESS;
@@ -203,7 +203,7 @@ StatusCode AlgResourcePool::acquireResource( std::string_view name, unsigned int
 
 StatusCode AlgResourcePool::releaseResource( std::string_view name, unsigned int value ) {
   std::scoped_lock lock( m_resource_mutex );
-  auto             res = m_availableResources.find( name );
+  auto             res = m_availableResources.find( Gaudi::StringKey( name ) );
   if ( res == m_availableResources.end() ) { return StatusCode::FAILURE; }
 
   res->second += value;
