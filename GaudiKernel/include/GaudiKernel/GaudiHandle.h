@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -154,6 +154,18 @@ public:
       Can be used in the genconf-generated configurables.
       The corresponding python classes are defined in GaudiPython/GaudiHandles.py */
   std::string pythonRepr() const override;
+
+  /** Set "type/name" from string */
+  GaudiHandleBase& operator=( const std::string& typeAndName ) {
+    setTypeAndName( typeAndName );
+    return *this;
+  }
+
+  /** Set "type/name" from string */
+  GaudiHandleBase& operator=( std::string&& typeAndName ) {
+    setTypeAndName( std::move( typeAndName ) );
+    return *this;
+  }
 
   using PropertyType = GaudiHandleProperty;
 

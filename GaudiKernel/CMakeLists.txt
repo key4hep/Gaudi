@@ -286,6 +286,9 @@ if(BUILD_TESTING)
   gaudi_add_executable(Memory_test SOURCES tests/src/Memory_test.cpp
     LINK GaudiKernel TEST)
 
+  gaudi_add_executable(test_GaudiHandle SOURCES tests/src/test_GaudiHandle.cpp
+    LINK GaudiKernel Boost::unit_test_framework TEST)
+
   gaudi_add_executable(ContextSpecificPtrTest SOURCES tests/src/test_ContextSpecificPtr.cpp
     LINK GaudiKernel Boost::unit_test_framework TEST)
 

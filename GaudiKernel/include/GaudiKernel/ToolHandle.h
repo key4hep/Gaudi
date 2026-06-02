@@ -209,6 +209,9 @@ public:
   template <typename... Args>
   ToolHandle( std::tuple<Args...>&& args ) : ToolHandle( std::move( args ), std::index_sequence_for<Args...>{} ) {}
 
+  /// assignment operator from base class
+  using GaudiHandleBase::operator=;
+
 public:
   StatusCode initialize( const std::string& toolTypeAndName, const IInterface* parent = nullptr,
                          bool createIf = true ) {
