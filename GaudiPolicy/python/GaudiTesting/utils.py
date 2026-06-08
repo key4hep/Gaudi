@@ -12,6 +12,7 @@ import difflib
 import os
 import pprint
 import re
+import shutil
 import sys
 import xml.sax.saxutils as XSS
 from pathlib import Path
@@ -45,7 +46,11 @@ def kill_tree(ppid, sig):
     Send a signal to a process and all its child processes (starting from the
     leaves).
     """
-    ps_cmd = ["ps", "--no-headers", "-o", "pid", "--ppid", str(ppid)]
+    # Resolve ps via the parent PATH: kill_tree runs it with an empty
+    # environment (clean env workaround below), which also empties PATH and
+    # makes a bare "ps" unresolvable where it is not on a loader default path
+    ps_exe = shutil.which("ps") or "ps"
+    ps_cmd = [ps_exe, "--no-headers", "-o", "pid", "--ppid", str(ppid)]
     # Note: start in a clean env to avoid a freeze with libasan.so
     # See https://sourceware.org/bugzilla/show_bug.cgi?id=27653
     get_children = Popen(ps_cmd, stdout=PIPE, stderr=PIPE, env={})
