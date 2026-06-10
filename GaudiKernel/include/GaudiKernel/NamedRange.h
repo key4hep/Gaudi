@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -38,13 +38,13 @@ namespace Gaudi {
    *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
    *  @date   2004-11-19
    */
-  template <class CONTAINER, class ITERATOR = typename CONTAINER::const_iterator>
-  class NamedRange_ : public Gaudi::Range_<CONTAINER, ITERATOR> {
+  template <class CONTAINER>
+  class NamedRange_ : public Gaudi::Range_<CONTAINER> {
   protected:
     /// the base class
-    typedef Gaudi::Range_<CONTAINER, ITERATOR> Base;
+    typedef Gaudi::Range_<CONTAINER> Base;
     /// "self"-type
-    typedef NamedRange_<CONTAINER, ITERATOR> Self;
+    typedef NamedRange_<CONTAINER> Self;
 
   public:
     /// default constructor

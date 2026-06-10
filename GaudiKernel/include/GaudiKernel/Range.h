@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -77,10 +77,8 @@ namespace Gaudi {
    *  @author Vanya Belyaev Ivan.Belyaev@itep.ru
    *  @date   2002-07-12
    */
-  template <class CONTAINER, class ITERATOR = typename CONTAINER::const_iterator>
+  template <class CONTAINER>
   class Range_ : public RangeBase_ {
-    // FIXME: prepare for removal of ITERATOR argument: check whether the default is _always_ used
-    static_assert( std::is_same_v<ITERATOR, typename CONTAINER::const_iterator> );
 
   public:
     /// type for actual contained iterator
@@ -183,8 +181,8 @@ namespace Gaudi {
     }
 
     /// compare with another range
-    template <class C, class I>
-    bool operator<( const Range_<C, I>& right ) const {
+    template <class C>
+    bool operator<( const Range_<C>& right ) const {
       return std::lexicographical_compare( begin(), end(), right.begin(), right.end() );
     }
     /// compare with another container
