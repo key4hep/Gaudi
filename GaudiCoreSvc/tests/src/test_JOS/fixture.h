@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "COPYING".                                            *
@@ -10,6 +10,7 @@
 \***********************************************************************************/
 #pragma once
 
+#include <Gaudi/PluginService.h>
 #include <GaudiKernel/Bootstrap.h>
 #include <GaudiKernel/IAppMgrUI.h>
 #include <GaudiKernel/IProperty.h>
@@ -26,10 +27,7 @@
 struct Fixture {
   Fixture( const std::string& jos_name = "JobOptionsSvc", int outLevel = 6 ) {
     // Load required libraries (bypass PluginService)
-    {
-      System::ImageHandle handle;
-      System::loadDynamicLib( "libGaudiCoreSvc.so", &handle );
-    }
+    Gaudi::PluginService::v2::Details::Registry::instance().loadPluginLibrary( "libGaudiCoreSvc.so" );
 
     // == Begin Bootstrap
     // Instantiate the application
