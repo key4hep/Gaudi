@@ -114,17 +114,6 @@ public:
   /// Constructor from code_t in the default category (explicit conversion only)
   explicit StatusCode( code_t code ) noexcept : StatusCode( code, default_category() ) {}
 
-  /// Copy constructor
-  StatusCode( const StatusCode& rhs ) noexcept = default;
-
-  /// Move constructor
-  StatusCode( StatusCode&& rhs ) noexcept = default;
-
-  /// Destructor
-  ~StatusCode() = default;
-
-  StatusCode& operator=( const StatusCode& rhs ) noexcept = default;
-
   bool isSuccess() const;
   bool isFailure() const { return !isSuccess(); }
   bool isRecoverable() const;
