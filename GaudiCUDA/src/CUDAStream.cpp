@@ -74,8 +74,15 @@ namespace Gaudi::CUDA {
       return errmsg;
     }
   } // namespace
-  Stream::Stream( const Gaudi::AsynchronousAlgorithm* parent )
-      : m_stream( nullptr ), m_parent( parent ), m_dependents( 0 ) {
+
+  Stream::Stream( const Gaudi::Algorithm* parent, cudaStream_t stream )
+      : m_stream( stream )
+      , m_owning( stream == nullptr )
+      , m_parent( parent )
+      , m_async_parent( dynamic_cast<const Gaudi::AsynchronousAlgorithm*>( parent ) )
+      , m_dependents( 0 ) {}
+
+  Stream::Stream( const Gaudi::Algorithm* parent ) : Stream( parent, nullptr ) {
     if ( !available_streams.pop( m_stream ) ) {
       cudaError_t err = cudaStreamCreate( &m_stream );
       if ( err != cudaSuccess ) {
@@ -96,23 +103,30 @@ namespace Gaudi::CUDA {
                         << endmsg;
     }
     if ( await().isFailure() ) { m_parent->error() << "Error in Stream destructor" << endmsg; }
-    available_streams.push( m_stream );
+    if ( m_owning ) { available_streams.push( m_stream ); }
   }
 
   Stream::operator cudaStream_t() { return m_stream; }
 
-  const Gaudi::AsynchronousAlgorithm* Stream::parent() { return m_parent; }
+  const Gaudi::Algorithm*             Stream::parent() { return m_parent; }
+  const Gaudi::AsynchronousAlgorithm* Stream::asyncParent() { return m_async_parent; }
 
   StatusCode Stream::await() {
-    auto        res        = boost::fibers::cuda::waitfor_all( m_stream );
-    cudaError_t temp_error = std::get<1>( res );
+    cudaError_t temp_error;
+    if ( m_async_parent != nullptr ) {
+      auto res   = boost::fibers::cuda::waitfor_all( m_stream );
+      temp_error = std::get<1>( res );
+    } else {
+      temp_error = cudaStreamSynchronize( m_stream );
+    }
     if ( ( temp_error ) != cudaSuccess ) {
       cudaGetLastError();
       std::string errmsg = err_fmt( temp_error, __FILE__, __LINE__ );
       m_parent->error() << errmsg << endmsg;
       return StatusCode::FAILURE;
     }
-    return m_parent->restoreAfterSuspend();
+    if ( m_async_parent != nullptr ) { return m_async_parent->restoreAfterSuspend(); }
+    return StatusCode::SUCCESS;
   }
 
   void Stream::registerDependency() { ++m_dependents; }
