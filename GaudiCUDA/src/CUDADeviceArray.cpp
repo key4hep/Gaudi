@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 2024-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -46,13 +46,15 @@ namespace Gaudi::CUDA::Detail {
   } // namespace
 
   void* allocateWithStream( std::size_t size, Stream& stream ) {
-    void*       devPtr     = nullptr;
-    cudaError_t err        = cudaSuccess;
-    auto        start_time = std::chrono::steady_clock::now();
+    const Gaudi::AsynchronousAlgorithm* parent     = stream.asyncParent();
+    void*                               devPtr     = nullptr;
+    cudaError_t                         err        = cudaSuccess;
+    auto                                start_time = std::chrono::steady_clock::now();
     do {
       err = cudaMallocAsync( &devPtr, size, stream );
       if ( err == cudaSuccess ) { break; }
-      if ( err == cudaErrorMemoryAllocation ) {
+      if ( err == cudaErrorMemoryAllocation && parent != nullptr ) {
+        // Waiting and retrying only works if we're in an asynchronous algorithm
         cudaGetLastError();
         std::unique_lock lck( gpu_mem_mtx );
         gpu_mem_cv.wait( lck );
@@ -61,7 +63,7 @@ namespace Gaudi::CUDA::Detail {
       }
     } while ( err == cudaErrorMemoryAllocation );
     // In case we suspended
-    stream.parent()->restoreAfterSuspend().orThrow( "Error restoring", DEVARREXC );
+    if ( parent != nullptr ) { parent->restoreAfterSuspend().orThrow( "Error restoring", DEVARREXC ); }
     return devPtr;
   }
 

@@ -20,19 +20,26 @@ namespace Gaudi::CUDA {
   class Stream {
   private:
     cudaStream_t                        m_stream;
-    const Gaudi::AsynchronousAlgorithm* m_parent;
+    const bool                          m_owning;
+    const Gaudi::Algorithm*             m_parent;
+    const Gaudi::AsynchronousAlgorithm* m_async_parent;
     int                                 m_dependents;
 
   public:
-    /// Create a new Stream. Should happen once per algorithm.
-    Stream( const Gaudi::AsynchronousAlgorithm* parent );
+    /// Wrap an existing cudaStream
+    Stream( const Gaudi::Algorithm* parent, cudaStream_t stream );
+    /// Obtain a cudaStream from the pool
+    Stream( const Gaudi::Algorithm* parent );
     ~Stream();
 
     /// Access the internal cudaStream_t
     operator cudaStream_t();
 
     /// Access the parent algorithm
-    const Gaudi::AsynchronousAlgorithm* parent();
+    const Gaudi::Algorithm* parent();
+
+    /// Access the parent AsynchronousAlgorithm
+    const Gaudi::AsynchronousAlgorithm* asyncParent();
 
     /// Yield fiber until stream is done
     StatusCode await();
