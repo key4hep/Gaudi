@@ -31,10 +31,6 @@
 #include <utility>
 #include <vector>
 
-// TODO: migrate downstream users to include `zip.h` directly, instead of transitively,
-//       and then drop this include here...
-#include "zip.h"
-
 namespace Gaudi::Functional::details {
 
   template <template <typename> class Handle, typename I>
