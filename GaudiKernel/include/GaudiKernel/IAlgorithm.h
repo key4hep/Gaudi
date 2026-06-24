@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -12,6 +12,7 @@
 
 #include <GaudiKernel/INamedInterface.h>
 #include <GaudiKernel/IStateful.h>
+#include <map>
 #include <string>
 
 class IAlgTool;
@@ -39,6 +40,10 @@ public:
 
   /// InterfaceID
   DeclareInterfaceID( IAlgorithm, 7, 0 );
+
+  /** Type for resources needed by the algorithm (name, value)
+   */
+  using AlgResources_t = std::map<Gaudi::StringKey, unsigned int, std::less<>>;
 
   /** The version of the algorithm
    */
@@ -68,7 +73,7 @@ public:
 
   /** Named, non thread-safe resources used during event processing
    */
-  virtual const std::vector<std::string>& neededResources() const = 0;
+  virtual const AlgResources_t& neededResources() const = 0;
 
   /** The action to be performed by the algorithm on an event. This method is
       invoked once per event for top level algorithms by the application manager.

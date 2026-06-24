@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -14,3 +14,12 @@ PARSERS_DEF_FOR_STRMAP( int )
 PARSERS_DEF_FOR_STRMAP( unsigned int )
 PARSERS_DEF_FOR_STRMAP( double )
 PARSERS_DEF_FOR_STRMAP( std::vector<std::string> )
+
+StatusCode Gaudi::Parsers::parse( std::map<Gaudi::StringKey, unsigned int>& result, std::string_view input ) {
+  return Gaudi::Parsers::parse_( result, input );
+}
+
+StatusCode Gaudi::Parsers::parse( std::map<Gaudi::StringKey, unsigned int, std::less<>>& result,
+                                  std::string_view                                       input ) {
+  return Gaudi::Parsers::parse_( result, input );
+}

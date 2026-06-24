@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -33,6 +33,13 @@ StatusCode ReEntAlg::initialize() {
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 StatusCode ReEntAlg::execute( const EventContext& ctx ) const {
+
+  // Increment concurrent executions and update max if needed
+  int val = ++m_concurrentExecs;
+  int max = m_maxConcurrency.load();
+  while ( val > max && !m_maxConcurrency.compare_exchange_weak( max, val ) )
+    ;
+
   // wait a little bit to make sure the printouts are in a stable order
   std::this_thread::sleep_for( std::chrono::milliseconds( 50 * ctx.slot() ) );
 
@@ -44,12 +51,15 @@ StatusCode ReEntAlg::execute( const EventContext& ctx ) const {
   info() << "... done in " << dt.count() << " ms for " << ctx << endmsg;
   std::this_thread::sleep_for( std::chrono::milliseconds( 50 ) );
 
+  // Decrement concurrent executing counter
+  --m_concurrentExecs;
+
   return StatusCode::SUCCESS;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 StatusCode ReEntAlg::finalize() {
-  info() << "finalize()" << endmsg;
+  info() << "Maximum number of concurrent executions: " << m_maxConcurrency << endmsg;
   return Gaudi::Algorithm::finalize();
 }

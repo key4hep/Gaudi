@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -16,6 +16,7 @@ from Configurables import AvalancheSchedulerSvc
 from Configurables import Gaudi__RootCnvSvc as RootCnvSvc
 from Configurables import Gaudi__TestSuite__ReadHandleAlg as ReadHandleAlg
 from Configurables import (
+    AlgResourcePool,
     GaudiPersistency,
     HiveReadAlgorithm,
     HiveSlimEventLoopMgr,
@@ -47,7 +48,7 @@ product_name_full_path = "/Event/" + product_name
 loader = HiveReadAlgorithm(
     "Loader",
     OutputLevel=INFO,
-    NeededResources=["ROOTIO", "SOMETHINGELSE"],
+    NeededResources={"ROOTIO": 1, "SOMETHINGELSE": 1},
     Cardinality=2,  # framework should be able to fix this config problem
 )
 
@@ -61,6 +62,9 @@ algoparallel = 10
 whiteboard = HiveWhiteBoard("EventDataSvc", EventSlots=evtslots)
 
 eventloopmgr = HiveSlimEventLoopMgr(OutputLevel=INFO)
+
+# Configure the available resources
+AlgResourcePool(AvailableResources={"ROOTIO": 1, "SOMETHINGELSE": 1})
 
 # We must put the full path in this deprecated expression of dependencies.
 # Using a controlflow for the output would be the way to go

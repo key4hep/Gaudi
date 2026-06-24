@@ -323,7 +323,7 @@ stdout: |-
   PropertyAlg.IntPairArray: [ ( 1 , 2 ) , ( 3 , 4 ) , ( 5 , 6 ) ]
   PropertyAlg.IntSet: [ 1 , 2 ]
   PropertyAlg.MonitorService: 'MonitorSvc'
-  PropertyAlg.NeededResources: [  ]
+  PropertyAlg.NeededResources: {  }
   PropertyAlg.OutputLevel: 3
   PropertyAlg.PBool: False
   PropertyAlg.PBoolArray: [ True , False , True , False ]

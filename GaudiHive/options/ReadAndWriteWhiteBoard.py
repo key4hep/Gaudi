@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -16,6 +16,7 @@ from Configurables import AvalancheSchedulerSvc
 from Configurables import Gaudi__RootCnvSvc as RootCnvSvc
 from Configurables import Gaudi__TestSuite__ReadHandleAlg as ReadHandleAlg
 from Configurables import (
+    AlgResourcePool,
     GaudiPersistency,
     HiveReadAlgorithm,
     HiveSlimEventLoopMgr,
@@ -35,7 +36,7 @@ dst.ItemList = ["/Event#999"]
 dst.Output = (
     "DATAFILE='PFN:HandleWB_ROOTOutput.dst'  SVC='Gaudi::RootCnvSvc' OPT='RECREATE'"
 )
-dst.NeededResources = ["ROOTIO"]
+dst.NeededResources = {"ROOTIO": 1}
 
 GaudiPersistency()
 
@@ -52,9 +53,9 @@ FileCatalog(Catalogs=["xmlcatalog_file:HandleWB_ROOTIO.xml"])
 product_name = "MyCollision"
 product_name_full_path = "/Event/" + product_name
 
-loader = HiveReadAlgorithm("Loader", OutputLevel=INFO, NeededResources=["ROOTIO"])
+loader = HiveReadAlgorithm("Loader", OutputLevel=INFO, NeededResources={"ROOTIO": 1})
 
-reader = ReadHandleAlg("Reader", OutputLevel=INFO, NeededResources=["ROOTIO"])
+reader = ReadHandleAlg("Reader", OutputLevel=INFO, NeededResources={"ROOTIO": 1})
 reader.Input.Path = product_name
 
 evtslots = 6
@@ -63,6 +64,9 @@ algoparallel = 20
 whiteboard = HiveWhiteBoard("EventDataSvc", EventSlots=evtslots)
 
 eventloopmgr = HiveSlimEventLoopMgr(OutputLevel=INFO)
+
+# Configure the available resources
+AlgResourcePool(AvailableResources={"ROOTIO": 1})
 
 # We must put the full path in this deprecated expression of dependencies.
 # Using a controlflow for the output would be the way to go

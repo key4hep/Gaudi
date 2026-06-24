@@ -16,7 +16,7 @@ stdout: |-
   |-MonitorService             = 'MonitorSvc'
   |-RegisterForContextService  = False
   |-Cardinality                = 0
-  |-NeededResources            = []  (default: [])
+  |-NeededResources            = {}  (default: {})
   |-Asynchronous               = False
   |-FilterCircularDependencies = True
   |-MCTracksLocation           = DataHandle('/Event/MCTracks','W','std::vector<Gaudi::Example::TinyExperiment::MCTrack,std::allocator<Gaudi::Example::TinyExperiment::MCTrack> >')
@@ -40,7 +40,7 @@ stdout: |-
   |-MonitorService             = 'MonitorSvc'
   |-RegisterForContextService  = False
   |-Cardinality                = 0
-  |-NeededResources            = []  (default: [])
+  |-NeededResources            = {}  (default: {})
   |-Asynchronous               = False
   |-FilterCircularDependencies = True
   |-MCTracksLocation           = DataHandle('/Event/MCTracks','R','std::vector<Gaudi::Example::TinyExperiment::MCTrack,std::allocator<Gaudi::Example::TinyExperiment::MCTrack> >')
@@ -64,7 +64,7 @@ stdout: |-
   |-MonitorService             = 'MonitorSvc'
   |-RegisterForContextService  = False
   |-Cardinality                = 0
-  |-NeededResources            = []  (default: [])
+  |-NeededResources            = {}  (default: {})
   |-Asynchronous               = False
   |-FilterCircularDependencies = True
   |-MCHitsLocation             = DataHandle('/Event/MCHits','R','std::vector<Gaudi::Example::TinyExperiment::MCHit,std::allocator<Gaudi::Example::TinyExperiment::MCHit> >')
@@ -89,7 +89,7 @@ stdout: |-
   |-MonitorService             = 'MonitorSvc'
   |-RegisterForContextService  = False
   |-Cardinality                = 0
-  |-NeededResources            = []  (default: [])
+  |-NeededResources            = {}  (default: {})
   |-Asynchronous               = False
   |-FilterCircularDependencies = True
   |-HitsLocation               = DataHandle('/Event/Hits','R','std::vector<Gaudi::Example::TinyExperiment::Hit,std::allocator<Gaudi::Example::TinyExperiment::Hit> >')
@@ -114,7 +114,7 @@ stdout: |-
   |-MonitorService             = 'MonitorSvc'
   |-RegisterForContextService  = False
   |-Cardinality                = 0
-  |-NeededResources            = []  (default: [])
+  |-NeededResources            = {}  (default: {})
   |-Asynchronous               = False
   |-FilterCircularDependencies = True
   |-TracksLocation             = DataHandle('/Event/Tracks','R','std::vector<Gaudi::Example::TinyExperiment::Track,std::allocator<Gaudi::Example::TinyExperiment::Track> >')

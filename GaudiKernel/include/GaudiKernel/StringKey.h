@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -13,6 +13,7 @@
 #include <GaudiKernel/Kernel.h>
 #include <GaudiKernel/StatusCode.h>
 #include <iosfwd>
+#include <map>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -199,6 +200,10 @@ namespace Gaudi {
      *  @return status code
      */
     GAUDI_API StatusCode parse( std::vector<Gaudi::StringKey>& result, std::string_view input );
+
+    // Required for IAlgorithm::AlgResources_t
+    GAUDI_API StatusCode parse( std::map<Gaudi::StringKey, unsigned int>& result, std::string_view input );
+    GAUDI_API StatusCode parse( std::map<Gaudi::StringKey, unsigned int, std::less<>>& result, std::string_view input );
   } // namespace Parsers
 } // namespace Gaudi
 
