@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #####################################################################################
-# (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -14,6 +14,7 @@ import os
 import shelve
 import sys
 from optparse import OptionParser
+from pathlib import Path
 
 # https://gitlab.cern.ch/gaudi/Gaudi/-/issues/368
 # Fixed in https://github.com/python/cpython/commit/8f2280272d7e551047b7fb3f7baea885275247b1 (3.13)
@@ -35,7 +36,7 @@ parser = OptionParser(  # desc='simple script to merge files',
 parser.add_option(
     "--ignore-missing",
     action="store_true",
-    help="do not fail if an input file is missing, " "just ignore it",
+    help="do not fail if an input file is missing, just ignore it",
 )
 parser.add_option(
     "-o", "--output", help="output filename (by default use the last argument)"
@@ -51,7 +52,7 @@ if __name__ == "__main__":
 
     logging.basicConfig()
 
-    output = opts.output or args.pop()
+    output = Path(opts.output or args.pop())
     inputs = args
     missing = [i for i in inputs if not os.path.isfile(i)]
 
@@ -66,25 +67,25 @@ if __name__ == "__main__":
             sys.exit(1)
     try:
         # create the destination directory if missing
-        if not os.path.isdir(os.path.dirname(output)):
-            os.makedirs(os.path.dirname(output))
+        if not output.parent.is_dir():
+            os.makedirs(output.parent)
         logging.debug("opening %r for writing", output)
-        if os.path.exists(output):
-            os.remove(output)
-        if sys.platform.startswith("darwin") and os.path.exists(output + ".db"):
-            os.remove(output + ".db")
+        # shelve.open(filename) may create any of the following files:
+        # - "{filename}"
+        # - "{filename}.db"
+        # - "{filename}.dat" and "{filename}.dir"
+        # - or others in the future
+        # but the lookup in GaudiConfig2 always uses "{filename}"
+        # So we remove all existing files to avoid confusion
+        for path in output.parent.glob(f"{output.name}*"):
+            path.unlink()
         with shelve.open(output, "c") as out:
             for input in inputs:
                 logging.debug("adding %r", input)
                 out.update(eval(open(input, "rb").read()))
-        if sys.platform.startswith("darwin"):
-            if os.path.exists(output):  # this Python uses dbm.gnu
-                open(output + ".db", "w").close()  # make a dummy ".db" version
-            elif os.path.exists(output + ".db"):  # this Python uses dbm.ndbm
-                open(
-                    output, "w"
-                ).close()  # make a dummy version without the artificial ".db"
+        # then we make sure the output file exists (even if empty)
+        output.touch()
     except Exception:
-        if os.path.exists(output):
-            os.remove(output)
+        for path in output.parent.glob(f"{output.name}*"):
+            path.unlink()
         raise

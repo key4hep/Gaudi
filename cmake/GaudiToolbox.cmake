@@ -1471,15 +1471,35 @@ function(_merge_files_confdb dependency file_to_merge)
         "Merging .confdb files for ${PROJECT_NAME}"
         PLUGIN)
 endfunction()
+
+function(_detect_python_shelve_extensions)
+    if(NOT DEFINED SHELVE_EXTENSIONS)
+        message(STATUS "Detecting Python shelve filname extensions...")
+        file(REMOVE_RECURSE "${CMAKE_BINARY_DIR}/shelve_filename_test")
+        file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/shelve_filename_test")
+        execute_process(COMMAND python3 -c "
+from pathlib import Path
+import shelve
+with shelve.open('${CMAKE_BINARY_DIR}/shelve_filename_test/test') as db:
+    db['test'] = 1
+extensions = [Path(f).suffix for f in Path('${CMAKE_BINARY_DIR}/shelve_filename_test').glob('test*') if Path(f).suffix not in ('', '.bak')]
+print(';'.join(extensions))
+"
+            OUTPUT_VARIABLE SHELVE_EXTENSIONS
+            OUTPUT_STRIP_TRAILING_WHITESPACE)
+        set(SHELVE_EXTENSIONS ${SHELVE_EXTENSIONS} CACHE INTERNAL "Python shelve filename extensions")
+    endif()
+endfunction()
+
 # special merge function for .confdb2 as a workaround for https://gitlab.cern.ch/gaudi/Gaudi/-/issues/258
 function(_merge_files_confdb2 dependency file_to_merge)
+    _detect_python_shelve_extensions()
     set(merge_target ${PROJECT_NAME}_MergeConfDB2)
     if(NOT TARGET ${merge_target})
-        if(APPLE)
-            set(output_files ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.confdb2 ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.confdb2.db)
-        else()
-            set(output_files ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.confdb2)
-        endif()
+        set(output_files ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.confdb2)
+        foreach(ext IN LISTS SHELVE_EXTENSIONS)
+            list(APPEND output_files ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.confdb2${ext})
+        endforeach()
         add_custom_command(OUTPUT ${output_files}
             COMMAND run merge_confdb2_parts $<TARGET_PROPERTY:${merge_target},fragments>
                     --output ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.confdb2
