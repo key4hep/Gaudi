@@ -923,11 +923,9 @@ namespace Gaudi::Functional::details {
           [&]( const auto&... handle ) -> decltype( auto ) { return algo( get( handle, algo, ctx )... ); }, m_inputs );
     }
 
-  private:
-    InputHandles m_inputs;
-    bool         isReEntrant() const override { return true; }
-
   protected:
+    bool          isReEntrant() const override { return true; }
+    InputHandles  m_inputs;
     OutputHandles m_outputs;
   };
 
