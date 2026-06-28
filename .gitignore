@@ -49,3 +49,6 @@ DoxyWarnings.log
 CMakeLists.txt.user
 # - VSCode
 .vscode/
+# pixi environments
+.pixi/*
+!.pixi/config.toml

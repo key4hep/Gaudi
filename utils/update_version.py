@@ -246,6 +246,12 @@ def update_version(version: str, date: datetime.datetime, dry_run: bool):
                 (r"^release = ", 'release = "{tag_version}"'),
             ],
         ),
+        FileUpdater(
+            "pixi.toml",
+            [
+                (r"^version = ", 'version = "{cmake_version}"'),
+            ],
+        ),
         update_changelog,
     ]:
         filename, old, new = updater(fields)
