@@ -77,14 +77,14 @@ def test_confdb(monkeypatch, tmp_path):
 
     import GaudiConfig2._db
 
-    with shelve.open(tmp_path.joinpath("test1.confdb2")) as db:
+    with shelve.open(tmp_path.joinpath("test1.confdb2").as_posix()) as db:
         db.update(
             ("Cls{}".format(i), {"properties": {"IntA": ("int", i)}}) for i in range(5)
         )
     if not os.path.exists(tmp_path.joinpath("test1.confdb2")):
         tmp_path.joinpath("test1.confdb2").touch()
 
-    with shelve.open(tmp_path.joinpath("test2.confdb2")) as db:
+    with shelve.open(tmp_path.joinpath("test2.confdb2").as_posix()) as db:
         db.update(
             ("Cls{}".format(i), {"properties": {"IntB": ("int", i)}})
             for i in range(3, 8)

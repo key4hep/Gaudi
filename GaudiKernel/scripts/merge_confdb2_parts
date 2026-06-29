@@ -79,7 +79,7 @@ if __name__ == "__main__":
         # So we remove all existing files to avoid confusion
         for path in output.parent.glob(f"{output.name}*"):
             path.unlink()
-        with shelve.open(output, "c") as out:
+        with shelve.open(output.as_posix(), "c") as out:
             for input in inputs:
                 logging.debug("adding %r", input)
                 out.update(eval(open(input, "rb").read()))
