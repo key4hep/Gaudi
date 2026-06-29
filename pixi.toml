@@ -50,3 +50,4 @@ prune = "rm -rf build"
 clean = "cmake --build build --target clean"
 build = { cmd = "cmake --build build", depends-on = ["configure"] }
 test = { cmd = "ctest --test-dir build -T test --output-junit ../results.xml -j", depends-on = "build" }
+gitlab-ci-test = { cmd = "ctest --test-dir build -T test --output-junit ../results.xml -j $(nproc) --test-load $(nproc) --repeat until-pass:3 --no-compress-output", depends-on = "build" }

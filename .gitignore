@@ -52,3 +52,5 @@ CMakeLists.txt.user
 # pixi environments
 .pixi/*
 !.pixi/config.toml
+# test reports
+results.xml
