@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -187,7 +187,7 @@ public:
   __attribute__( ( deprecated ) )
 
 #endif
-  ToolHandle( const std::string& toolTypeAndName, const IInterface* parent = nullptr, bool createIf = true )
+  explicit ToolHandle( const std::string& toolTypeAndName, const IInterface* parent = nullptr, bool createIf = true )
       : BaseToolHandle( parent, createIf )
       , GaudiHandle<T>( toolTypeAndName, toolComponentType( parent ), toolParentName( parent ) )
       , m_pToolSvc( "ToolSvc", GaudiHandleBase::parentName() ) {
@@ -208,6 +208,9 @@ public:
 
   template <typename... Args>
   ToolHandle( std::tuple<Args...>&& args ) : ToolHandle( std::move( args ), std::index_sequence_for<Args...>{} ) {}
+
+  /// assignment operator from base class
+  using GaudiHandleBase::operator=;
 
 public:
   StatusCode initialize( const std::string& toolTypeAndName, const IInterface* parent = nullptr,
@@ -351,9 +354,9 @@ template <class T>
 class PublicToolHandle : public ToolHandle<T> {
 public:
   PublicToolHandle( bool createIf = true ) : ToolHandle<T>( nullptr, createIf ) {}
-  PublicToolHandle( const char* toolTypeAndName, bool createIf = true )
+  explicit PublicToolHandle( const char* toolTypeAndName, bool createIf = true )
       : PublicToolHandle{ std::string{ toolTypeAndName }, createIf } {}
-  PublicToolHandle( const std::string& toolTypeAndName, bool createIf = true )
+  explicit PublicToolHandle( const std::string& toolTypeAndName, bool createIf = true )
       : ToolHandle<T>( toolTypeAndName, nullptr, createIf ) {}
 
   /// Copy constructor from a non const T to const T tool handle
