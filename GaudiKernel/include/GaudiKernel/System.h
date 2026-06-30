@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -66,18 +66,6 @@ namespace System {
   GAUDI_API const std::string& osVersion();
   /// Machine type
   GAUDI_API const std::string& machineType();
-  /// Instruction Set "Level"
-  //    0           = 80386 instruction set
-  //    1  or above = SSE (XMM) supported by CPU (not testing for O.S. support)
-  //    2  or above = SSE2
-  //    3  or above = SSE3
-  //    4  or above = Supplementary SSE3 (SSSE3)
-  //    5  or above = SSE4.1
-  //    6  or above = SSE4.2
-  //    7  or above = AVX supported by CPU and operating system
-  //    8  or above = AVX2
-  //    9  or above = AVX512F
-  [[deprecated]] GAUDI_API int instructionsetLevel();
   /// User login name
   GAUDI_API const std::string& accountName();
   /// Number of arguments passed to the commandline
