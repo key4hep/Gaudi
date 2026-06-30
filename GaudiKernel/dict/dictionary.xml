@@ -58,7 +58,6 @@
   <!--class name="ICnvManager"/-->
   <class name="IConversionSvc"/>
   <class name="IConverter"/>
-  <class name="ICounterSummarySvc"/>
   <class name="IDataManagerSvc"/>
   <class name="IDataProviderSvc"/>
   <class name="IDataSelector"/>
@@ -111,8 +110,6 @@
   <!--class name="IToolFactory"/-->
   <class name="IToolSvc"/>
   <class name="IUpdateable"/>
-  <class name="IUpdateManagerSvc"/>
-  <class name="IUpdateManagerSvc::PythonHelper"/>
   <class name="IValidity"/>
 
   <!-- Gaudi data store classes  -->
@@ -245,8 +242,6 @@
 
   <enum name="Gaudi::StateMachine::State"/>
   <enum name="Gaudi::StateMachine::Transition"/>
-
-  <enum name="Gaudi::CounterSummary::SaveType"/>
 
   <enum name="MSG::Level"/>
   <enum name="MSG::Color"/>
