@@ -1,6 +1,7 @@
 [workspace]
 authors = ["gaudi-developers@cern.ch"]
 channels = ["conda-forge"]
+exclude-newer = "14d"
 name = "Gaudi"
 platforms = ["linux-64"]
 version = "40.5"
