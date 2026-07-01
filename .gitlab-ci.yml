@@ -299,6 +299,8 @@ pixi:
   variables:
     XDG_CACHE_HOME: $CI_PROJECT_DIR/.cache
   script:
+    # workaround for https://github.com/conda-forge/root-feedstock/issues/372
+    - apt update && apt install -y libc6-dev
     - if pixi run gitlab-ci-test ; then result=success ; else result=failure ; fi
     - cp build/Testing/$(head -1 build/Testing/TAG)/Test.xml .
     - echo "Test results can be browsed at https://lhcb-nightlies.web.cern.ch/utils/test_report?url=${CI_PROJECT_URL}/-/jobs/${CI_JOB_ID}/artifacts/raw/Test.xml"
