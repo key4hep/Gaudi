@@ -28,12 +28,6 @@
 #  include "Platform/SystemMacOS.h"
 #endif
 
-#ifdef __x86_64
-#  define VCL_NAMESPACE Gaudi
-#  include <instrset_detect.cpp>
-#  undef VCL_NAMESPACE
-#endif
-
 #include <cstdio>
 #include <cxxabi.h>
 #include <errno.h>
@@ -283,15 +277,6 @@ const std::string& System::osVersion() {
 const std::string& System::machineType() {
   static const std::string mach = Platform::machineType();
   return mach;
-}
-
-int System::instructionsetLevel() {
-#ifdef __x86_64
-  using namespace Gaudi;
-  return instrset_detect();
-#else
-  return -1;
-#endif
 }
 
 /// User login name
