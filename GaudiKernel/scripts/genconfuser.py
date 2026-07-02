@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #####################################################################################
-# (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -57,6 +57,8 @@ def loadConfigurableDb(build_dir=None, project_name=None):
     log = GaudiKernel.ConfigurableDb.log
     from os.path import join as path_join
 
+    from GaudiPluginService.cpluginsvc import GAUDI_DEFAULT_PLUGIN_PATH
+
     # look for the confdb files in all the reasonable places
     #  - CMake builds
     confDbFiles = []
@@ -71,10 +73,7 @@ def loadConfigurableDb(build_dir=None, project_name=None):
                 os.path.join(root, f) for f in files if f.endswith(".confdb")
             ]
     #  - used projects and local merged file
-    pathlist = os.getenv("GAUDI_PLUGIN_PATH", "").split(os.pathsep) + os.getenv(
-        "LD_LIBRARY_PATH", ""
-    ).split(os.pathsep)
-    for path in filter(os.path.isdir, pathlist):
+    for path in filter(os.path.isdir, GAUDI_DEFAULT_PLUGIN_PATH):
         confDbFiles += [
             f
             for f in [

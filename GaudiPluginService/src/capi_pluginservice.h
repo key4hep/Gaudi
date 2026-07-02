@@ -78,7 +78,7 @@ CGAUDI_API
 const char* cgaudi_property_get_value( cgaudi_property_t self );
 
 CGAUDI_API
-const char* cgaudi_pluginsvc_default_plugin_path();
+const char* cgaudi_pluginsvc_plugin_search_path();
 
 #ifdef __cplusplus
 } /* extern "C" */

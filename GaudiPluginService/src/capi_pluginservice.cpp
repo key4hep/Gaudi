@@ -13,10 +13,8 @@
 #define GAUDI_PLUGIN_SERVICE_V2
 #include <Gaudi/PluginService.h>
 
-#include <algorithm>
+#include <sstream>
 #include <vector>
-
-#include <iostream>
 
 using namespace Gaudi::PluginService::v2::Details;
 
@@ -79,7 +77,21 @@ const char* cgaudi_property_get_value( cgaudi_property_t self ) {
   return prop != fi.properties.end() ? prop->second.c_str() : nullptr;
 }
 
-const char* cgaudi_pluginsvc_default_plugin_path() {
-  static std::string cache = Gaudi::PluginService::Details::getDefaultPluginPath();
+const char* cgaudi_pluginsvc_plugin_search_path() {
+  static std::string cache = [] {
+    std::ostringstream oss;
+    const auto&        paths = Gaudi::PluginService::Details::getPluginSearchPath();
+    for ( auto it = paths.begin(); it != paths.end(); ++it ) {
+      if ( it != paths.begin() ) {
+#ifdef _WIN32
+        oss << ';';
+#else
+        oss << ':';
+#endif
+      }
+      oss << *it;
+    }
+    return oss.str();
+  }();
   return cache.c_str();
 }

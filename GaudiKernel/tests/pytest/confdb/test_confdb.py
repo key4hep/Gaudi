@@ -8,24 +8,26 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-import os
 import re
-import sys
 from os.path import join
 
 from common import data_root
 
-ENV_NAME = "LD_LIBRARY_PATH" if sys.platform == "linux" else "DYLD_LIBRARY_PATH"
-LD_LIBRARY_PATH = os.environ.get(ENV_NAME, "")
+import GaudiPluginService.cpluginsvc
+
+GAUDI_DEFAULT_PLUGIN_PATH = list(
+    GaudiPluginService.cpluginsvc.GAUDI_DEFAULT_PLUGIN_PATH
+)
 
 
 def test_bad(monkeypatch, caplog):
     """
     test the failure when loading malformed data
     """
-    monkeypatch.setenv(
-        ENV_NAME,
-        join(data_root, "bad") + os.pathsep + LD_LIBRARY_PATH,
+    monkeypatch.setattr(
+        GaudiPluginService.cpluginsvc,
+        "GAUDI_DEFAULT_PLUGIN_PATH",
+        [join(data_root, "bad")] + GAUDI_DEFAULT_PLUGIN_PATH,
     )
 
     from GaudiKernel.ConfigurableDb import loadConfigurableDb
@@ -47,11 +49,11 @@ def test_regular(monkeypatch):
     """
     test loading of .confdb files
     """
-    monkeypatch.setenv(
-        ENV_NAME,
-        os.pathsep.join([join(data_root, "regular", n) for n in ["dir1", "dir2"]])
-        + os.pathsep
-        + LD_LIBRARY_PATH,
+    monkeypatch.setattr(
+        GaudiPluginService.cpluginsvc,
+        "GAUDI_DEFAULT_PLUGIN_PATH",
+        [join(data_root, "regular", n) for n in ["dir1", "dir2"]]
+        + GAUDI_DEFAULT_PLUGIN_PATH,
     )
 
     from GaudiKernel.ConfigurableDb import cfgDb, loadConfigurableDb
@@ -65,11 +67,11 @@ def test_merged(monkeypatch):
     """
     test priority of *_merged.confdb files over *.confdb
     """
-    monkeypatch.setenv(
-        ENV_NAME,
-        os.pathsep.join([join(data_root, "merged", n) for n in ["dir1", "dir2"]])
-        + os.pathsep
-        + LD_LIBRARY_PATH,
+    monkeypatch.setattr(
+        GaudiPluginService.cpluginsvc,
+        "GAUDI_DEFAULT_PLUGIN_PATH",
+        [join(data_root, "merged", n) for n in ["dir1", "dir2"]]
+        + GAUDI_DEFAULT_PLUGIN_PATH,
     )
 
     from GaudiKernel.ConfigurableDb import cfgDb, loadConfigurableDb

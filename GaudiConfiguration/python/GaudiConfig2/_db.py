@@ -17,22 +17,13 @@ import sys
 class ConfDB2(object):
     def __init__(self):
         import shelve
-        from itertools import chain
         from pathlib import Path
 
         from GaudiPluginService.cpluginsvc import GAUDI_DEFAULT_PLUGIN_PATH
 
         self._dbs = {}
-        pathvars = (
-            ["GAUDI_PLUGIN_PATH", "DYLD_LIBRARY_PATH"]
-            if sys.platform == "darwin"
-            else ["GAUDI_PLUGIN_PATH", "LD_LIBRARY_PATH"]
-        )
         ignored_files = set(os.environ.get("CONFIGURABLE_DB_IGNORE", "").split(","))
-        for path in chain(
-            [GAUDI_DEFAULT_PLUGIN_PATH],
-            *[os.getenv(pv, "").split(os.pathsep) for pv in pathvars],
-        ):
+        for path in GAUDI_DEFAULT_PLUGIN_PATH:
             if not path or not os.path.isdir(path):
                 continue
             dbfiles = [
