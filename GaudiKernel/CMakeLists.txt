@@ -174,6 +174,7 @@ target_include_directories(GaudiKernel
 if(APPLE)
   target_sources(GaudiKernel PRIVATE src/Lib/Platform/SystemMacOS.h
                                      src/Lib/Platform/SystemMacOS.mm)
+  set_source_files_properties(src/Lib/Platform/SystemMacOS.mm PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON)
   target_link_libraries(GaudiKernel PUBLIC "-framework Foundation -framework CoreFoundation")
 elseif(UNIX)
   target_sources(GaudiKernel PRIVATE src/Lib/Platform/SystemLinux.h
