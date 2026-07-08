@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -20,6 +20,9 @@ StatusCode Gaudi::TestSuite::ReadHandleAlg::execute() {
   const int evtNum = Gaudi::Hive::currentContext().evt();
 
   info() << "Event " << evtNum << " Collision number " << c->collision() << endmsg;
+  for ( const auto& input : m_additionalInputs.handles() ) {
+    info() << "Event " << evtNum << " additional Collision number " << input.get()->collision() << endmsg;
+  }
 
   return StatusCode::SUCCESS;
 }

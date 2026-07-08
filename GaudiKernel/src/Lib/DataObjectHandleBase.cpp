@@ -28,6 +28,9 @@ DataObjectHandleBase::DataObjectHandleBase( DataObjectHandleBase&& other )
     , m_EDS( std::move( other.m_EDS ) )
     , m_MS( std::move( other.m_MS ) )
     , m_init( other.m_init ) {
+  if ( !m_owner ) {
+    throw GaudiException( "DataObjectHandleBase requires a non-null owner", "Invalid Owner", StatusCode::FAILURE );
+  }
   m_owner->declare( *this );
 }
 
@@ -44,6 +47,9 @@ DataObjectHandleBase& DataObjectHandleBase::operator=( const DataObjectHandleBas
 //---------------------------------------------------------------------------
 DataObjectHandleBase::DataObjectHandleBase( DataObjID k, Gaudi::DataHandle::Mode a, IDataHandleHolder* owner )
     : Gaudi::DataHandle( std::move( k ), a, owner ) {
+  if ( !m_owner ) {
+    throw GaudiException( "DataObjectHandleBase requires a non-null owner", "Invalid Owner", StatusCode::FAILURE );
+  }
   m_owner->declare( *this );
 }
 
@@ -53,7 +59,11 @@ DataObjectHandleBase::DataObjectHandleBase( std::string k, Gaudi::DataHandle::Mo
     : DataObjectHandleBase( DataObjID{ std::move( k ) }, a, owner ) {}
 
 //---------------------------------------------------------------------------
-DataObjectHandleBase::~DataObjectHandleBase() { owner()->renounce( *this ); }
+DataObjectHandleBase::~DataObjectHandleBase() {
+  // Regular DataObjectHandles are declared to an owner during construction,
+  // but destruction must remain harmless for exceptional or moved-from states.
+  if ( owner() ) owner()->renounce( *this );
+}
 
 //---------------------------------------------------------------------------
 DataObject* DataObjectHandleBase::fetch() const {

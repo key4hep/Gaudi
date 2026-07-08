@@ -27,7 +27,7 @@ if (
 
     dbm._defaultmod = dbm.gnu
 
-from GaudiKernel.DataHandle import DataHandle  # noqa: F401
+from GaudiKernel.DataHandle import DataHandle, DataHandleVector  # noqa: F401
 from GaudiKernel.GaudiHandles import *  # noqa: F401 F403
 
 parser = OptionParser(  # desc='simple script to merge files',

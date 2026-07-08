@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -10,7 +10,7 @@
 #####################################################################################
 import os
 
-from GaudiKernel.DataHandle import DataHandle
+from GaudiKernel.DataHandle import DataHandle, DataHandleVector
 from GaudiKernel.GaudiHandles import PrivateToolHandle, PrivateToolHandleArray
 
 os.environ["GAUDICONFIG2_DB"] = __name__ + "._DB"
@@ -130,6 +130,14 @@ _DB = {
             "Output": (
                 "DataObjectWriteHandle<FooType>",
                 DataHandle("/Event/Foo", "W", "FooType"),
+            ),
+            "Inputs": (
+                "Gaudi::DataHandleVector<DataObjectReadHandle, FooType>",
+                DataHandleVector(["/Event/Foo"], "R", "FooType"),
+            ),
+            "Outputs": (
+                "Gaudi::DataHandleVector<DataObjectWriteHandle, FooType>",
+                DataHandleVector(["/Event/Foo"], "W", "FooType"),
             ),
         },
     },

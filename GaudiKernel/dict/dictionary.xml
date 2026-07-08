@@ -28,8 +28,10 @@
   <class name="GaudiHandleInfo"/>
   <class name="GaudiHandleBase"/>
   <class name="GaudiHandleArrayBase"/>
+  <class name="Gaudi::DataHandleVectorBase"/>
   <class name="GaudiHandleProperty"/>
   <class name="GaudiHandleArrayProperty"/>
+  <class name="DataHandleVectorProperty"/>
 
   <class name="LinkManager"/>
   <class name="LinkManager::Link">

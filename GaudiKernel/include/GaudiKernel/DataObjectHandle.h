@@ -447,6 +447,8 @@ class DataObjectReadHandle : public ::details::ReadHandle<T> {
       : DataObjectReadHandle( std::get<Is>( std::move( args ) )... ) {}
 
 public:
+  static constexpr Gaudi::DataHandle::Mode mode_v = Gaudi::DataHandle::Reader;
+
   DataObjectReadHandle( const DataObjID& k, IDataHandleHolder* owner )
       : ::details::ReadHandle<T>{ k, Gaudi::DataHandle::Reader, owner } {}
 
@@ -471,6 +473,8 @@ class DataObjectWriteHandle : public ::details::WriteHandle<T, U> {
       : DataObjectWriteHandle( std::get<Is>( std::move( args ) )... ) {}
 
 public:
+  static constexpr Gaudi::DataHandle::Mode mode_v = Gaudi::DataHandle::Writer;
+
   DataObjectWriteHandle( const DataObjID& k, IDataHandleHolder* owner )
       : ::details::WriteHandle<T, U>{ k, Gaudi::DataHandle::Writer, owner } {}
 

@@ -16,7 +16,7 @@ import sys
 from collections.abc import MutableMapping, MutableSequence, MutableSet
 
 import GaudiKernel.GaudiHandles
-from GaudiKernel.DataHandle import DataHandle
+from GaudiKernel.DataHandle import DataHandle, DataHandleVector
 from GaudiKernel.GaudiHandles import GaudiHandle
 
 from . import Configurable, Configurables
@@ -560,6 +560,47 @@ class SequenceSemantics(PropertySemantics):
         if not isinstance(value, _ListHelper):
             value = self.default(value)
         return value.opt_value()
+
+
+class DataHandleVectorSemantics(SequenceSemantics):
+    """Sequence semantics whose elements are data handles."""
+
+    __handled_types__ = (
+        re.compile(r"Gaudi::DataHandleVector<DataObject(Read|Write)Handle,.*>$"),
+    )
+
+    def __init__(self, cpp_type):
+        if not self.__handled_types__[0].match(cpp_type):
+            raise TypeError(f"C++ type {cpp_type!r} not supported")
+        handle_type, value_type = extract_template_args(cpp_type)
+        super().__init__(
+            cpp_type, valueSem=DataHandleSemantics(f"{handle_type}<{value_type}>")
+        )
+
+    def store(self, value):
+        if isinstance(value, DataHandleVector):
+            value = value.paths()
+        handles = super().store(value)
+        return DataHandleVector(
+            [handle.Path for handle in handles],
+            self.value_semantics._mode,
+            self.value_semantics._type,
+            self.value_semantics._isCond,
+        )
+
+    def default(self, value):
+        return self.store(value)
+
+    def opt_value(self, value):
+        return value.paths()
+
+    def merge(self, b, a):
+        paths = a.paths()
+        for handle in b:
+            path = self.value_semantics.store(handle).Path
+            if path not in paths:
+                paths.append(path)
+        return a
 
 
 class _SetHelper(MutableSet):

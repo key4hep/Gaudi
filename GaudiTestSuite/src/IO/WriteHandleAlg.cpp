@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -26,6 +26,9 @@ StatusCode Gaudi::TestSuite::WriteHandleAlg::execute() // the execution of the a
 
   if ( m_useHandle ) {
     m_output_handle.put( std::move( c ) );
+    for ( const auto& output : m_additionalOutputs.handles() ) {
+      output.put( std::make_unique<Collision>( Gaudi::Hive::currentContext().evt() ) );
+    }
     return StatusCode::SUCCESS;
   } else {
     return eventSvc()->registerObject( "/Event", "MyCollision", c.release() );

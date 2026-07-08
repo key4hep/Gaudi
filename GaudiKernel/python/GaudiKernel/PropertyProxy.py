@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -19,7 +19,7 @@ import logging
 import os
 
 from GaudiKernel import ConfigurableDb
-from GaudiKernel.DataHandle import DataHandle
+from GaudiKernel.DataHandle import DataHandle, DataHandleVector
 from GaudiKernel.GaudiHandles import GaudiHandle, GaudiHandleArray
 
 log = logging.getLogger("PropertyProxy")
@@ -443,7 +443,7 @@ class DataHandlePropertyProxy(PropertyProxy):
             try:
                 default = obj.__class__.getDefaultProperty(self.descr.__name__)
                 default = self.convertValueToBeSet(obj, default)
-                if default:
+                if default is not None:
                     self.__set__(obj, default)
             except AttributeError as e:
                 # change type of exception to avoid false error message
@@ -476,6 +476,37 @@ class DataHandlePropertyProxy(PropertyProxy):
             )
 
 
+class DataHandleVectorPropertyProxy(DataHandlePropertyProxy):
+    def __init__(self, descr, docString, default):
+        DataHandlePropertyProxy.__init__(self, descr, docString, default)
+
+    def convertValueToBeSet(self, obj, value):
+        if value is None:
+            value = []
+
+        default = obj.__class__.getDefaultProperty(self.descr.__name__)
+        mode = default.mode()
+        _type = default.type()
+        if isinstance(value, DataHandleVector):
+            return DataHandleVector(value.paths(), mode, _type)
+        if isinstance(value, (list, tuple)):
+            paths = []
+            for path in value:
+                if isinstance(path, DataHandle):
+                    path = str(path)
+                if not isinstance(path, str):
+                    raise ValueError(
+                        "received an instance of %s, but str or DataHandle expected"
+                        % type(path)
+                    )
+                paths.append(path)
+            return DataHandleVector(paths, mode, _type)
+        raise ValueError(
+            "received an instance of %s, but %s expected"
+            % (type(value), "list, tuple or DataHandleVector")
+        )
+
+
 def PropertyProxyFactory(descr, doc, default):
     #   print "PropertyProxyFactory( %s, %r )" % (descr.__name__,default)
 
@@ -487,5 +518,8 @@ def PropertyProxyFactory(descr, doc, default):
 
     if isinstance(default, DataHandle):
         return DataHandlePropertyProxy(descr, doc, default)
+
+    if isinstance(default, DataHandleVector):
+        return DataHandleVectorPropertyProxy(descr, doc, default)
 
     return PropertyProxy(descr, doc, default)

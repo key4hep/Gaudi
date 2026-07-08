@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -15,7 +15,7 @@ from GaudiKernel.Configurable import (
     ConfigurableAlgorithm,
     ConfigurableAlgTool,
 )
-from GaudiKernel.DataHandle import DataHandle
+from GaudiKernel.DataHandle import DataHandle, DataHandleVector
 from GaudiKernel.GaudiHandles import PrivateToolHandle, PublicToolHandleArray
 
 
@@ -25,6 +25,7 @@ class MyAlg(ConfigurableAlgorithm):
         "Text": "some text",
         "Int": 23,
         "DataHandle": DataHandle("Location", "R"),
+        "DataHandleVector": DataHandleVector([], "R", "DataType"),
         "Dict": {},
         "List": [],
         "Set": set(),
@@ -95,6 +96,24 @@ def test_default_handle_append():
     assert a.ToolHandleArray == PublicToolHandleArray(["foo/bar"])
 
 
+def test_data_handle_vector_assignment():
+    a = MyAlg()
+
+    assert a.DataHandleVector == DataHandleVector([], "R", "DataType")
+    assert a.getValuedProperties() == {}
+
+    a.DataHandleVector = ["/Event/A", DataHandle("/Event/B", "W", "OtherType")]
+    assert a.DataHandleVector == DataHandleVector(
+        ["/Event/A", "/Event/B"], "R", "DataType"
+    )
+
+    a.DataHandleVector = DataHandleVector(["/Event/C"], "W", "OtherType")
+    assert a.DataHandleVector == DataHandleVector(["/Event/C"], "R", "DataType")
+
+    a.DataHandleVector = ("/Event/D",)
+    assert a.DataHandleVector == DataHandleVector(["/Event/D"], "R", "DataType")
+
+
 def test_invalid_value():
     a = MyAlg()
 
@@ -106,6 +125,12 @@ def test_invalid_value():
 
     with pytest.raises(ValueError):
         a.DataHandle = [123]
+
+    with pytest.raises(ValueError):
+        a.DataHandleVector = "value"
+
+    with pytest.raises(ValueError):
+        a.DataHandleVector = [123]
 
     with pytest.raises(ValueError):
         a.Dict = []

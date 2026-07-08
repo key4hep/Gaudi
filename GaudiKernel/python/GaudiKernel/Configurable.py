@@ -40,7 +40,7 @@ from GaudiKernel.Constants import (
     WARNING,
     error_explanation,
 )
-from GaudiKernel.DataHandle import DataHandle
+from GaudiKernel.DataHandle import DataHandle, DataHandleVector
 from GaudiKernel.GaudiHandles import (
     GaudiHandle,
     GaudiHandleArray,
@@ -499,7 +499,10 @@ class Configurable(metaclass=ConfigurableMeta.ConfigurableMeta):
             return self.__tools[attr]
 
         if attr in self._properties:
-            if isinstance(self._properties[attr].__get__(self), DataHandle):
+            if isinstance(
+                self._properties[attr].__get__(self),
+                (DataHandle, DataHandleVector),
+            ):
                 return self._properties[attr].__get__(self)
 
         for c in self.__children:
@@ -790,7 +793,10 @@ class Configurable(metaclass=ConfigurableMeta.ConfigurableMeta):
         if not hasattr(self, name):
             return False
         default = self.getDefaultProperty(name)
-        if isinstance(default, (list, dict, set, DataHandle, GaudiHandleArray)):
+        if isinstance(
+            default,
+            (list, dict, set, DataHandle, DataHandleVector, GaudiHandleArray),
+        ):
             value = getattr(self, name)
             return value != default
         return True
