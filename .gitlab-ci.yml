@@ -35,11 +35,8 @@ variables:
     - ccache -s
     - cp build/compile_commands.json .
     # run the tests
-    - cd build
-    - if ctest -T test -j $(nproc) --test-load $(nproc) --repeat until-pass:3 --no-compress-output ; then result=success ; else result=failure ; fi
-    - cp Testing/$(head -1 Testing/TAG)/Test.xml ..
-    - cd ..
-    - xsltproc ci-utils/CTest2JUnit.xslt Test.xml > results.xml
+    - if ctest --test-dir build -T test -j $(nproc) --test-load $(nproc) --repeat until-pass:3 --no-compress-output --output-junit $PWD/results.xml ; then result=success ; else result=failure ; fi
+    - cp build/Testing/$(head -1 build/Testing/TAG)/Test.xml .
     - echo "Test results can be browsed at https://lhcb-nightlies.web.cern.ch/utils/test_report?url=${CI_PROJECT_URL}/-/jobs/${CI_JOB_ID}/artifacts/raw/Test.xml"
     - test "$result" = "success"
     - ( cd build && cpack -G TZST )
@@ -78,12 +75,11 @@ variables:
     - make 2>&1 | tee build.log
     - ccache -s
     # run the tests
-    - if make test ARGS="-j $(nproc) --repeat until-pass:3 --no-compress-output" ; then result=success ; else result=failure ; fi
+    - if make test ARGS="-j $(nproc) --repeat until-pass:3 --no-compress-output --output-junit $PWD/results.xml" ; then result=success ; else result=failure ; fi
     - cp build.${BINARY_TAG}/Testing/$(head -1 build.${BINARY_TAG}/Testing/TAG)/Test.xml .
     - mkdir -p build && mv build.${BINARY_TAG}/Testing build
     - cp build.${BINARY_TAG}/compile_commands.json .
     - mv build.${BINARY_TAG}/html .
-    - xsltproc ci-utils/CTest2JUnit.xslt Test.xml > results.xml
     - echo "Test results can be browsed at https://lhcb-nightlies.web.cern.ch/utils/test_report?url=${CI_PROJECT_URL}/-/jobs/${CI_JOB_ID}/artifacts/raw/Test.xml"
     - test "$result" = "success"
   artifacts:
@@ -111,11 +107,8 @@ variables:
     - ccache -s
     - cp build/compile_commands.json .
     # run the tests
-    - cd build
-    - if ctest -T test -j $(nproc) --test-load $(nproc) --repeat until-pass:3 --no-compress-output ; then result=success ; else result=failure ; fi
-    - cp Testing/$(head -1 Testing/TAG)/Test.xml ..
-    - cd ..
-    - xsltproc ci-utils/CTest2JUnit.xslt Test.xml > results.xml
+    - if ctest --test-dir build -T test -j $(nproc) --test-load $(nproc) --repeat until-pass:3 --no-compress-output --output-junit $PWD/results.xml ; then result=success ; else result=failure ; fi
+    - cp build/Testing/$(head -1 build/Testing/TAG)/Test.xml .
     - echo "Test results can be browsed at https://lhcb-nightlies.web.cern.ch/utils/test_report?url=${CI_PROJECT_URL}/-/jobs/${CI_JOB_ID}/artifacts/raw/Test.xml"
     - test "$result" = "success"
 
@@ -157,11 +150,8 @@ variables:
     - cmake --build k4fwcore_build 2>&1 | tee -a build.log
     # Run k4FWCore tests
     - echo "=== Running k4FWCore tests ==="
-    - cd k4fwcore_build
-    - if ctest -T test -j $(nproc) --test-load $(nproc) --no-compress-output ; then result=success ; else result=failure ; fi
-    - cp Testing/$(head -1 Testing/TAG)/Test.xml ..
-    - cd ..
-    - xsltproc ci-utils/CTest2JUnit.xslt Test.xml > results.xml
+    - if ctest --test-dir k4fwcore_build -T test -j $(nproc) --test-load $(nproc) --repeat until-pass:3 --no-compress-output --output-junit $PWD/results.xml ; then result=success ; else result=failure ; fi
+    - cp k4fwcore_build/Testing/$(head -1 k4fwcore_build/Testing/TAG)/Test.xml .
     - echo "Test results can be browsed at https://lhcb-nightlies.web.cern.ch/utils/test_report?url=${CI_PROJECT_URL}/-/jobs/${CI_JOB_ID}/artifacts/raw/Test.xml"
     - test "$result" = "success"
   artifacts:
