@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 2024-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 2024-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -72,7 +72,7 @@ namespace Gaudi::NTuple {
           error() << "Failed to retrieve TFile." << endmsg;
           return StatusCode::FAILURE;
         }
-
+        m_file->cd();
         m_tree = std::make_unique<TTree>( m_ntupleTname.value().c_str(), "Tree of GenericWriter Algorithm" ).release();
 
         createBranches( extraInputs );
