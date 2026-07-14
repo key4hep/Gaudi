@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -319,7 +319,7 @@ StatusCode RootHistCnv::RConverter::findTFile( const std::string& id, TFile*& tf
   return StatusCode::SUCCESS;
 }
 //-----------------------------------------------------------------------------
-std::string RootHistCnv::RConverter::convertId( const std::string& id ) const
+std::string RootHistCnv::RConverter::convertId( const std::string& id )
 //-----------------------------------------------------------------------------
 {
   bool forced = false;

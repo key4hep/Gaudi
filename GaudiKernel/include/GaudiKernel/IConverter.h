@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -110,7 +110,7 @@ public:
   /** Get conversion service the converter is connected to
       @return    Pointer to IConversionSvc interface
   */
-  virtual SmartIF<IConversionSvc>& conversionSvc() const = 0;
+  virtual SmartIF<IConversionSvc> conversionSvc() = 0;
 
   /** Set address creator facility.
       @param      creator     Reference to address creator interface

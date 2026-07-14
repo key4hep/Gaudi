@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -116,7 +116,7 @@ public:
   StatusCode setConversionSvc( IConversionSvc* svc ) override;
 
   /// Implementation of IConverter: Get conversion service the converter is connected to
-  SmartIF<IConversionSvc>& conversionSvc() const override;
+  SmartIF<IConversionSvc> conversionSvc() override;
 
   /// Set address creator facility
   StatusCode setAddressCreator( IAddressCreator* creator ) override;
@@ -210,8 +210,6 @@ protected:
   mutable SmartIF<IDataProviderSvc> m_dataSvc;
   /// Pointer to the address creation service interface
   mutable SmartIF<IAddressCreator> m_addressCreator;
-  /// Pointer to the IConversionSvc interface of this
-  mutable SmartIF<IConversionSvc> m_cnvSvc;
   /// Conversion service type
   long m_type;
   /// List of conversion workers
