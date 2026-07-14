@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -171,7 +171,9 @@ StatusCode ConversionSvc::setAddressCreator( IAddressCreator* creator ) {
   for ( auto& i : m_workers ) {
     auto* cnv = i.converter();
     if ( cnv ) {
-      if ( cnv->setAddressCreator( m_addressCreator ).isFailure() ) { error() << "setting Address Creator" << endmsg; }
+      if ( cnv->setAddressCreator( m_addressCreator ? m_addressCreator.get() : this ).isFailure() ) {
+        error() << "setting Address Creator" << endmsg;
+      }
     }
   }
   return StatusCode::SUCCESS;
@@ -184,7 +186,7 @@ SmartIF<IAddressCreator>& ConversionSvc::addressCreator() const { return m_addre
 StatusCode ConversionSvc::setConversionSvc( IConversionSvc* /* svc */ ) { return StatusCode::FAILURE; }
 
 /// Get conversion service the converter is connected to
-SmartIF<IConversionSvc>& ConversionSvc::conversionSvc() const { return m_cnvSvc; }
+SmartIF<IConversionSvc> ConversionSvc::conversionSvc() { return SmartIF<IConversionSvc>( this ); }
 
 /// Add converter object to conversion service.
 StatusCode ConversionSvc::addConverter( const CLID& clid ) {
@@ -246,7 +248,6 @@ StatusCode ConversionSvc::finalize() {
   // release interfaces
   m_addressCreator = nullptr;
   m_dataSvc        = nullptr;
-  m_cnvSvc         = nullptr;
   return Service::finalize();
 }
 
@@ -264,7 +265,7 @@ IConverter* ConversionSvc::createConverter( long typ, const CLID& clid, const IC
 StatusCode ConversionSvc::configureConverter( long /* typ */, const CLID& /* clid */, IConverter* pConverter ) {
   if ( !pConverter ) return Status::NO_CONVERTER;
   pConverter->setConversionSvc( this ).ignore();
-  pConverter->setAddressCreator( m_addressCreator ).ignore();
+  pConverter->setAddressCreator( m_addressCreator ? m_addressCreator.get() : this ).ignore();
   pConverter->setDataProvider( m_dataSvc ).ignore();
   return StatusCode::SUCCESS;
 }
@@ -318,6 +319,4 @@ StatusCode ConversionSvc::createAddress( long /* svc_type */, const CLID& /* cli
 
 /// Standard Constructor
 ConversionSvc::ConversionSvc( const std::string& name, ISvcLocator* svc, long type )
-    : base_class( name, svc ), m_dataSvc( nullptr ), m_cnvSvc( this ), m_type( type ) {
-  setAddressCreator( this ).ignore();
-}
+    : base_class( name, svc ), m_dataSvc( nullptr ), m_type( type ) {}

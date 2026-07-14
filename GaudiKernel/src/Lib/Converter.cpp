@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -86,7 +86,7 @@ StatusCode Converter::setConversionSvc( IConversionSvc* svc ) {
 }
 
 /// Get data conversion service the converter is connected to
-SmartIF<IConversionSvc>& Converter::conversionSvc() const { return m_conversionSvc; }
+SmartIF<IConversionSvc> Converter::conversionSvc() { return m_conversionSvc; }
 
 /// Set address creator facility
 StatusCode Converter::setAddressCreator( IAddressCreator* creator ) {
@@ -114,7 +114,7 @@ Converter::Converter( long storage_type, const CLID& class_type, ISvcLocator* sv
     : m_storageType( storage_type ), m_classType( class_type ), m_svcLocator( svc ) {}
 
 SmartIF<IService> Converter::service( const std::string& name, const bool createIf ) const {
-  SmartIF<INamedInterface> cnvsvc( conversionSvc() );
+  SmartIF<INamedInterface> cnvsvc( m_conversionSvc );
   SmartIF<IService>        svc;
   if ( cnvsvc ) {
     const ServiceLocatorHelper helper( *serviceLocator(), "Converter", cnvsvc->name() );

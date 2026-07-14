@@ -164,7 +164,7 @@ StatusCode PersistencySvc::setConversionSvc( IConversionSvc* svc ) {
 }
 
 /// Get conversion service the converter is connected to
-SmartIF<IConversionSvc>& PersistencySvc::conversionSvc() const { return m_cnvDefault; }
+SmartIF<IConversionSvc> PersistencySvc::conversionSvc() { return m_cnvDefault; }
 
 /// Add converter object to conversion service.
 StatusCode PersistencySvc::addConverter( const CLID& /* clid */ ) { return StatusCode::FAILURE; }
