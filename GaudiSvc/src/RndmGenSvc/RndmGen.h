@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -76,4 +76,8 @@ public:
       @param  start    ... starting at position start
   */
   StatusCode shootArray( std::vector<double>& array, long howmany, long start ) const override;
+  /// Allow to set new seeds
+  StatusCode setSeeds( const std::vector<long>& seeds ) override;
+  /// Allow to retrieve seeds
+  StatusCode seeds( std::vector<long>& seeds ) const override;
 };

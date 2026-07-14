@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -46,4 +46,16 @@ StatusCode RndmGen::shootArray( std::vector<double>& array, long howmany, long s
   array.resize( start + howmany );
   std::generate_n( std::next( std::begin( array ), start ), howmany, [&]() { return this->shoot(); } );
   return StatusCode::SUCCESS;
+}
+
+/// Allow to set new seeds
+StatusCode RndmGen::setSeeds( const std::vector<long>& seeds ) {
+  if ( !m_engine ) return StatusCode::FAILURE;
+  return m_engine->setSeeds( seeds );
+}
+
+/// Allow to retrieve seeds
+StatusCode RndmGen::seeds( std::vector<long>& seeds ) const {
+  if ( !m_engine ) return StatusCode::FAILURE;
+  return m_engine->seeds( seeds );
 }
