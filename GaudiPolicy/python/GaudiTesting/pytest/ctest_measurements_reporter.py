@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 2024 CERN for the benefit of the LHCb and ATLAS collaborations      #
+# (c) Copyright 2024-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -35,7 +35,7 @@ def sanitize_for_xml(data):
     return bad_chars.sub(quote, data)
 
 
-def pytest_report_header(config, start_path, startdir):
+def pytest_report_header(config, start_path):
     # make sure CTest does not drop output lines on successful tests
     return "CTEST_FULL_OUTPUT"
 
