@@ -6,6 +6,23 @@ Project Coordinators: Marco Clemencic @clemenci, Charles Leggett @leggett, Frank
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 
+## [v40r5](https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v40r5) - 2026-07-21
+This is a minor bugfix release that includes some of backward compatible changes needed by LHCb.
+
+A special thanks to all the people that contributed to this release:
+@ahennequ,
+@clemenci,
+@sponce.
+
+### Added
+- Allow to seed seeds to the random number generators through the Numbers interface (gaudi/Gaudi!1960)
+
+### Fixed
+- Fix EvtStoreSvc's unregisterObject and implement objectLeaves() (gaudi/Gaudi!1952)
+- Fixed wrong behavior of GenericNTupleWriter when using concurrently several files (gaudi/Gaudi!1958)
+- Small clean up and fixes (gaudi/Gaudi!1959)
+
+
 ## [v40r4](https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v40r4) - 2026-05-15
 This release brings a mix of modernisation, improvements to the build and test infrastructure,
 and a large number of bug fixes. Notable changes include the migration of CMake configuration tests
