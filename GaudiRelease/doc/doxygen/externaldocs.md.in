@@ -14,7 +14,6 @@ From [LCG version @LCG_VERSION@][lcg-details]:
 - **System Libraries:**
   - UUID (universally unique identifier)
   - Threads (POSIX threads)
-  - ZLIB (compression)
   - Rangev3 (C++ ranges library)
   - cppgsl (C++ Guidelines Support Library)
   - fmt (formatting library)

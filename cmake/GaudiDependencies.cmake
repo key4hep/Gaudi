@@ -49,7 +49,6 @@ What is searched?
 * UUID
 * TBB>=2019.0.11007.2
 * Threads
-* ZLIB>=1.2.11
 * Rangev3
 * cppgsl
 * fmt
@@ -113,8 +112,7 @@ endif()
 
 find_package(TBB 2019.0.11007.2 CONFIG REQUIRED ${__quiet})
 
-set(_gaudi_ZLIB_MIN_VERSION 1.2.11)
-foreach(dep IN ITEMS UUID Threads ZLIB Rangev3 cppgsl fmt nlohmann_json)
+foreach(dep IN ITEMS UUID Threads Rangev3 cppgsl fmt nlohmann_json)
   find_package(${dep} ${_gaudi_${dep}_MIN_VERSION} REQUIRED ${__quiet})
 endforeach()
 
