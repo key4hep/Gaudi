@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -313,8 +313,9 @@ public:
 
   StatusCode objectParent( const DataObject*, IRegistry*& ) override { return dummy( __FUNCTION__ ); }
   StatusCode objectParent( const IRegistry*, IRegistry*& ) override { return dummy( __FUNCTION__ ); }
-  StatusCode objectLeaves( const DataObject*, std::vector<IRegistry*>& ) override { return dummy( __FUNCTION__ ); }
-  StatusCode objectLeaves( const IRegistry*, std::vector<IRegistry*>& ) override { return dummy( __FUNCTION__ ); }
+  // Objects have no leaves, so just return success
+  StatusCode objectLeaves( const DataObject*, std::vector<IRegistry*>& ) override { return StatusCode::SUCCESS; }
+  StatusCode objectLeaves( const IRegistry*, std::vector<IRegistry*>& ) override { return StatusCode::SUCCESS; }
 
   StatusCode clearSubTree( std::string_view ) override;
   StatusCode clearSubTree( DataObject* obj ) override {
@@ -648,6 +649,7 @@ StatusCode EvtStoreSvc::findObject( std::string_view fullPath, DataObject*& pObj
   return retrieveObject( nullptr, fullPath, pObject );
 }
 StatusCode EvtStoreSvc::unregisterObject( std::string_view sr ) {
+  sr = normalize_path( sr, rootName() );
   return fwd( [&]( Partition& p ) { return p.store->erase( sr ) != 0 ? StatusCode::SUCCESS : StatusCode::FAILURE; } );
 }
 StatusCode EvtStoreSvc::addPreLoadItem( const DataStoreItem& item ) {
