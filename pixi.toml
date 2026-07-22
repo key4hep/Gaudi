@@ -5,6 +5,7 @@ exclude-newer = "14d"
 name = "Gaudi"
 platforms = ["linux-64", "linux-aarch64"]
 version = "40.5"
+preview = ["pixi-build"]
 
 [dependencies]
 # build tools
@@ -51,3 +52,50 @@ clean = "cmake --build build --target clean"
 build = { cmd = "cmake --build build", depends-on = ["configure"] }
 test = { cmd = "ctest --test-dir build -T test --output-junit ../results.xml -j", depends-on = "build" }
 gitlab-ci-test = { cmd = "ctest --test-dir build -T test --output-junit ../results.xml -j $(nproc) --test-load $(nproc) --repeat until-pass:3 --no-compress-output", depends-on = "build" }
+
+[package]
+name = "Gaudi"
+version = "40.5"
+
+[package.build.backend]
+name = "pixi-build-cmake"
+version = "*"
+channels = ["https://prefix.dev/conda-forge"]
+
+[package.build.config]
+extra-args = ["-DCMAKE_C_COMPILER_LAUNCHER=sccache", "-DCMAKE_CXX_COMPILER_LAUNCHER=sccache", "-DCMAKE_CXX_SCAN_FOR_MODULES=NO", "-DBUILD_TESTING=YES"]
+
+[package.build-dependencies]
+# cmake and the C++ compiler are added automatically by pixi-build-cmake
+sccache = "*"
+
+[package.host-dependencies]
+# core dependencies
+python = ">=3.9"
+libboost-devel = ">=1.83"
+libboost-python-devel = ">=1.83"
+root_base = ">=6.30,<7"
+root_cxx_standard = ">=20"
+libuuid = "*"
+tbb-devel = "*"
+range-v3 = ">=0.11"
+ms-gsl = "*"
+fmt = ">=10.0"
+nlohmann_json = ">=3.10"
+# optional dependencies
+xerces-c = ">=3.2.4"
+clhep = ">=2.4.7.1"
+heppdt = ">=2.6.1"
+doxygen = ">=1.8"
+git = "*"
+gdb = "*"
+aida = ">=3.2.1"
+# testing dependencies
+catch2 = ">=2.13"
+pytest = ">=7.0"
+pytest-cov = ">=3.0.0"
+coverage = ">=6.3.2"
+networkx = ">=2.8.4"
+pyyaml = ">=6.0.1"
+procps-ng = "*"
+binutils = "*"
