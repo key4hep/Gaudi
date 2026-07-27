@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -8,82 +8,76 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-import logging
-import os
-import sys
+import re
 from os.path import join
-from re import compile as re_comp
 
-from common import MockLoggingHandler, data_root
+from common import data_root
 
+import GaudiPluginService.cpluginsvc
 
-class fixLibPath(object):
-    """
-    Temporarily override the LD_LIBRARY_PATH.
-    """
-
-    def __init__(self, entries):
-        env = os.environ
-        self.old_lib_path = env.get("LD_LIBRARY_PATH")
-        new_path = entries + env.get("LD_LIBRARY_PATH", "").split(os.pathsep)
-        env["LD_LIBRARY_PATH"] = os.pathsep.join(new_path)
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        if self.old_lib_path is None:
-            if "LD_LIBRARY_PATH" in os.environ:
-                del os.environ["LD_LIBRARY_PATH"]
-        else:
-            os.environ["LD_LIBRARY_PATH"] = self.old_lib_path
+GAUDI_DEFAULT_PLUGIN_PATH = list(
+    GaudiPluginService.cpluginsvc.GAUDI_DEFAULT_PLUGIN_PATH
+)
 
 
-def setup():
-    for n in [n for n in sys.modules if n.startswith("GaudiKernel")]:
-        del sys.modules[n]
-
-
-def test_bad():
+def test_bad(monkeypatch, caplog):
     """
     test the failure when loading malformed data
     """
-    mlh = MockLoggingHandler()
-    logging.getLogger("ConfigurableDb").addHandler(mlh)
-    with fixLibPath([join(data_root, "bad")]):
-        from GaudiKernel.ConfigurableDb import loadConfigurableDb
+    monkeypatch.setattr(
+        GaudiPluginService.cpluginsvc,
+        "GAUDI_DEFAULT_PLUGIN_PATH",
+        [join(data_root, "bad")] + GAUDI_DEFAULT_PLUGIN_PATH,
+    )
 
-        loadConfigurableDb()
-        warnings = mlh.messages["warning"]
-        assert filter(re_comp(r"Could not load.*bad.confdb").match, warnings)
-        assert filter(re_comp(r"Reason: invalid line format").match, warnings)
+    from GaudiKernel.ConfigurableDb import loadConfigurableDb
+
+    loadConfigurableDb()
+
+    warnings = [rec.message for rec in caplog.records if rec.levelname == "WARNING"]
+    assert [
+        record for record in warnings if re.match(r"Could not load.*bad.confdb", record)
+    ]
+    assert [
+        record
+        for record in warnings
+        if re.match(r"Reason: invalid line format", record)
+    ]
 
 
-def test_regular():
+def test_regular(monkeypatch):
     """
     test loading of .confdb files
     """
-    mlh = MockLoggingHandler()
-    logging.getLogger("ConfigurableDb").addHandler(mlh)
-    with fixLibPath([join(data_root, "regular", n) for n in ["dir1", "dir2"]]):
-        from GaudiKernel.ConfigurableDb import cfgDb, loadConfigurableDb
+    monkeypatch.setattr(
+        GaudiPluginService.cpluginsvc,
+        "GAUDI_DEFAULT_PLUGIN_PATH",
+        [join(data_root, "regular", n) for n in ["dir1", "dir2"]]
+        + GAUDI_DEFAULT_PLUGIN_PATH,
+    )
 
-        loadConfigurableDb()
-        for c in [t + n for t in ["Alg", "Svc"] for n in ["1a", "1b", "2"]]:
-            assert c in cfgDb, "missing entry for " + c
+    from GaudiKernel.ConfigurableDb import cfgDb, loadConfigurableDb
+
+    loadConfigurableDb()
+    for c in [t + n for t in ["Alg", "Svc"] for n in ["1a", "1b", "2"]]:
+        assert c in cfgDb, "missing entry for " + c
 
 
-def test_merged():
+def test_merged(monkeypatch):
     """
     test priority of *_merged.confdb files over *.confdb
     """
-    mlh = MockLoggingHandler()
-    logging.getLogger("ConfigurableDb").addHandler(mlh)
-    with fixLibPath([join(data_root, "merged", n) for n in ["dir1", "dir2"]]):
-        from GaudiKernel.ConfigurableDb import cfgDb, loadConfigurableDb
+    monkeypatch.setattr(
+        GaudiPluginService.cpluginsvc,
+        "GAUDI_DEFAULT_PLUGIN_PATH",
+        [join(data_root, "merged", n) for n in ["dir1", "dir2"]]
+        + GAUDI_DEFAULT_PLUGIN_PATH,
+    )
 
-        loadConfigurableDb()
-        for c in [t + n for t in ["Alg", "Svc"] for n in ["M", "2"]]:
-            assert c in cfgDb, "missing entry for " + c
-        for c in ["Alg1", "Svc1"]:
-            assert c not in cfgDb, "unwanted entry for " + c
+    from GaudiKernel.ConfigurableDb import cfgDb, loadConfigurableDb
+
+    loadConfigurableDb()
+    for c in [t + n for t in ["Alg", "Svc"] for n in ["M", "2"]]:
+        assert c in cfgDb, "missing entry for " + c
+    for c in ["Alg1", "Svc1"]:
+        assert c not in cfgDb, "unwanted entry for " + c

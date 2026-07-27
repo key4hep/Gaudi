@@ -29,6 +29,7 @@ e.g.:
 
 import ctypes
 import ctypes.util
+import os
 
 __all__ = (
     "Registry",
@@ -229,7 +230,7 @@ _functions_list = [
         ctypes.c_char_p,
     ),
     (
-        "cgaudi_pluginsvc_default_plugin_path",
+        "cgaudi_pluginsvc_plugin_search_path",
         [],
         ctypes.c_char_p,
     ),
@@ -245,7 +246,11 @@ for f in _functions_list:
     pass
 
 
-GAUDI_DEFAULT_PLUGIN_PATH = _lib.cgaudi_pluginsvc_default_plugin_path().decode()
+GAUDI_DEFAULT_PLUGIN_PATH = [
+    p
+    for p in _lib.cgaudi_pluginsvc_plugin_search_path().decode().split(os.pathsep)
+    if p
+]
 
 
 if __name__ == "__main__":
