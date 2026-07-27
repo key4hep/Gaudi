@@ -150,6 +150,10 @@ if(GAUDI_ENABLE_GAUDIPARTPROP)
     )
     target_link_libraries(GaudiTestSuiteComponents PRIVATE Gaudi::GaudiPartProp)
 endif()
+if(CMAKE_BUILD_TYPE STREQUAL "Debug" AND CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
+    # histograms tests are just too slow when compiled with -O0
+    set_source_files_properties(src/Histograms/CounterHistos.cpp PROPERTIES COMPILE_OPTIONS "-Og")
+endif()
 
 # Build the executable
 gaudi_add_executable(Allocator
