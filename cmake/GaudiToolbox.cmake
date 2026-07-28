@@ -808,8 +808,9 @@ function(gaudi_add_pytest)
         return()
     endif()
 
-    # ensure the imported target pytest for the generator expression $<TARGET_FILE:pytest>
-    _import_pytest()
+    if(NOT TARGET Python::Interpreter)
+        find_package(Python REQUIRED COMPONENTS Interpreter)
+    endif()
 
     cmake_parse_arguments(
         ARG
@@ -921,11 +922,11 @@ if(NOT hash STREQUAL old_hash OR NOT EXISTS ${base_filename}.tests.cmake)
         message(\"... collect pytest tests from ${roots_msg}\")
     endif()
     execute_process(
-        COMMAND $<TARGET_FILE:run> $<TARGET_FILE:pytest>
+        COMMAND $<TARGET_FILE:run> $<TARGET_FILE:Python::Interpreter> -m pytest
             --collect-only --strict-markers
             ${ARG_OPTIONS_CMD}
             --ctest-output-file=${base_filename}.tests.cmake
-            --ctest-pytest-command=${CMAKE_CROSSCOMPILING_EMULATOR}\\ $<TARGET_FILE:run>\\ $<TARGET_FILE:pytest>\\ ${ARG_OPTIONS_ESC}
+            --ctest-pytest-command=${CMAKE_CROSSCOMPILING_EMULATOR}\\ $<TARGET_FILE:run>\\ $<TARGET_FILE:Python::Interpreter>\\ -m\\ pytest\\ ${ARG_OPTIONS_ESC}
             --ctest-pytest-root-dir=${ARG_ROOT_DIR}
             --ctest-prefix=${ARG_PREFIX}
             --ctest-label=${PROJECT_NAME}
@@ -1540,12 +1541,6 @@ function(_import_runtime runtime)
     mark_as_advanced(${runtime}_PROGRAM)
     add_executable(${runtime} IMPORTED GLOBAL)
     set_target_properties(${runtime} PROPERTIES IMPORTED_LOCATION ${${runtime}_PROGRAM})
-endfunction()
-
-
-# This function imports pytest to make it usable in gaudi_add_tests(pytest)
-function(_import_pytest)
-    _import_runtime(pytest)
 endfunction()
 
 
