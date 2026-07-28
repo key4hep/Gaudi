@@ -401,7 +401,7 @@ if(BUILD_TESTING)
     target_include_directories(${target} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/tests/include)
   endforeach()
 
-  gaudi_add_pytest(tests/pytest)
+  gaudi_add_pytest(tests/pytest DEPENDS GaudiPluginService)
 
   gaudi_add_module(test_CustomFactory
     SOURCES tests/src/custom_factory.cpp
