@@ -921,8 +921,26 @@ if(NOT hash STREQUAL old_hash OR NOT EXISTS ${base_filename}.tests.cmake)
     if(NOT DEFINED PREFETCH_PYTEST_TESTS)
         message(\"... collect pytest tests from ${roots_msg}\")
     endif()
+    # LSAN_OPTIONS=detect_leaks=0: --collect-only only imports test modules,
+    # it doesn't run any test bodies, so a real leak surfacing here (e.g. in
+    # a dependency's import-time code) would otherwise fail this whole
+    # execute_process() with a non-zero exit and abort the *entire* configure
+    # via the FATAL_ERROR below -- for every package, not just the leaky one.
+    # Leak detection stays fully on for actual test execution later, this
+    # only disables it for the one-off collection/discovery step.
+    # Note: this must be `env LSAN_OPTIONS=... <run's own args>`, placed
+    # *after* $<TARGET_FILE:run> rather than set via `cmake -E env` before
+    # it. `run` unconditionally sources the project's env.sh, which (see
+    # lcg-toolchains' fragments/sanitizers/settings.cmake) itself exports
+    # LSAN_OPTIONS on every invocation for LSAN/ALUBSAN builds (without
+    # detect_leaks=0) -- so anything set *before* run gets silently
+    # overwritten the moment run sources it. Setting it after run, as part
+    # of what run execs, is the only place late enough to stick. Plain
+    # `env` (not `cmake -E env`) avoids a separate, already-fixed bug where
+    # running the `cmake` binary itself through `run`'s environment broke
+    # cmake's own dynamic linking.
     execute_process(
-        COMMAND $<TARGET_FILE:run> $<TARGET_FILE:Python::Interpreter> -m pytest
+        COMMAND $<TARGET_FILE:run> env LSAN_OPTIONS=detect_leaks=0 $<TARGET_FILE:Python::Interpreter> -m pytest
             --collect-only --strict-markers
             ${ARG_OPTIONS_CMD}
             --ctest-output-file=${base_filename}.tests.cmake
