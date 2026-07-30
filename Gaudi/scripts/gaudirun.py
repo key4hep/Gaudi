@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #####################################################################################
-# (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -372,13 +372,22 @@ if __name__ == "__main__":
     preload = os.environ.get("LD_PRELOAD", "")
     if sanitizers:
         os.environ["PRELOAD_SANITIZER_LIB"] = ""
-        if preload and sanitizers != preload:
+        sanitizer_list = sanitizers.split(":")
+        # PRELOAD_SANITIZER_LIB may be a bare filename (e.g. "libasan.so")
+        # while LD_PRELOAD has already been set to its resolved absolute
+        # path by another mechanism (e.g. gaudi_add_pytest()'s collection-
+        # time resolution); comparing the two strings for exact equality
+        # would then spuriously report LD_PRELOAD as "different", even
+        # though it already covers every entry of PRELOAD_SANITIZER_LIB.
+        # Check containment instead, matching the check already used below
+        # to avoid re-adding an already-preloaded library.
+        if preload and not all(s in preload for s in sanitizer_list):
             logging.warning(
                 "Ignoring PRELOAD_SANITIZER_LIB (={}) as LD_PRELOAD (={}) is "
                 "different and takes precedence.".format(sanitizers, preload)
             )
         else:
-            for sanitizer in reversed(sanitizers.split(":")):
+            for sanitizer in reversed(sanitizer_list):
                 if sanitizer not in preload:
                     opts.preload.insert(0, sanitizer)
             if opts.profilerName == "jemalloc":
