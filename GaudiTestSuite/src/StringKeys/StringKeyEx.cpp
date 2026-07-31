@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -68,12 +68,12 @@ StatusCode Gaudi::TestSuite::StringKeyEx::execute() {
   //
 
   // prepare some maps
-  typedef std::map<std::string, int>              MAP1;
+  typedef std::map<std::string, int, std::less<>> MAP1;
   typedef GaudiUtils::Map<std::string, int>       MAP2;
   typedef GaudiUtils::HashMap<std::string, int>   MAP3;
   typedef GaudiUtils::VectorMap<std::string, int> MAP4;
 
-  typedef std::map<Key, int>              MAP01;
+  typedef std::map<Key, int, std::less<>> MAP01;
   typedef GaudiUtils::Map<Key, int>       MAP02;
   typedef GaudiUtils::HashMap<Key, int>   MAP03;
   typedef GaudiUtils::VectorMap<Key, int> MAP04;
@@ -119,10 +119,10 @@ StatusCode Gaudi::TestSuite::StringKeyEx::execute() {
   always() << " In Map 3: " << Gaudi::Utils::toString( map3.end() != map3.find( m_key.value() ) ) << endmsg;
   always() << " In Map 4: " << Gaudi::Utils::toString( map4.end() != map4.find( m_key.value() ) ) << endmsg;
 
-  always() << " In Map01: " << Gaudi::Utils::toString( map01.end() != map01.find( m_key ) ) << endmsg;
+  always() << " In Map01: " << Gaudi::Utils::toString( map01.end() != map01.find( m_key.value() ) ) << endmsg;
   always() << " In Map02: " << Gaudi::Utils::toString( map02.end() != map02.find( m_key ) ) << endmsg;
   always() << " In Map03: " << Gaudi::Utils::toString( map03.end() != map03.find( m_key ) ) << endmsg;
-  always() << " In Map04: " << Gaudi::Utils::toString( map04.end() != map04.find( m_key ) ) << endmsg;
+  always() << " In Map04: " << Gaudi::Utils::toString( map04.end() != map04.find( m_key.value() ) ) << endmsg;
 
   std::string akey = "rrr";
 
@@ -137,6 +137,34 @@ StatusCode Gaudi::TestSuite::StringKeyEx::execute() {
   always() << " In Map02: " << Gaudi::Utils::toString( map02.end() != map02.find( akey ) ) << endmsg;
   always() << " In Map03: " << Gaudi::Utils::toString( map03.end() != map03.find( akey ) ) << endmsg;
   always() << " In Map04: " << Gaudi::Utils::toString( map04.end() != map04.find( akey ) ) << endmsg;
+
+  std::string_view akey_sv = "rrr";
+
+  always() << "check for std::string_view key " << Gaudi::Utils::toString( akey_sv ) << endmsg;
+
+  always() << " In Map 1: " << Gaudi::Utils::toString( map1.end() != map1.find( akey_sv ) ) << endmsg;
+  // always() << " In Map 2: " << Gaudi::Utils::toString( map2.end() != map2.find( akey_sv ) ) << endmsg;
+  // always() << " In Map 3: " << Gaudi::Utils::toString( map3.end() != map3.find( akey_sv ) ) << endmsg;
+  always() << " In Map 4: " << Gaudi::Utils::toString( map4.end() != map4.find( akey_sv ) ) << endmsg;
+
+  always() << " In Map01: " << Gaudi::Utils::toString( map01.end() != map01.find( akey_sv ) ) << endmsg;
+  // always() << " In Map02: " << Gaudi::Utils::toString( map02.end() != map02.find( akey_sv ) ) << endmsg;
+  // always() << " In Map03: " << Gaudi::Utils::toString( map03.end() != map03.find( akey_sv ) ) << endmsg;
+  always() << " In Map04: " << Gaudi::Utils::toString( map04.end() != map04.find( akey_sv ) ) << endmsg;
+
+  const char* akey_cl = "rrr";
+
+  always() << "check for const char* key " << Gaudi::Utils::toString( akey_cl ) << endmsg;
+
+  always() << " In Map 1: " << Gaudi::Utils::toString( map1.end() != map1.find( akey_cl ) ) << endmsg;
+  // always() << " In Map 2: " << Gaudi::Utils::toString( map2.end() != map2.find( akey_cl ) ) << endmsg;
+  // always() << " In Map 3: " << Gaudi::Utils::toString( map3.end() != map3.find( akey_cl ) ) << endmsg;
+  always() << " In Map 4: " << Gaudi::Utils::toString( map4.end() != map4.find( akey_cl ) ) << endmsg;
+
+  always() << " In Map01: " << Gaudi::Utils::toString( map01.end() != map01.find( akey_cl ) ) << endmsg;
+  always() << " In Map02: " << Gaudi::Utils::toString( map02.end() != map02.find( akey_cl ) ) << endmsg;
+  always() << " In Map03: " << Gaudi::Utils::toString( map03.end() != map03.find( akey_cl ) ) << endmsg;
+  always() << " In Map04: " << Gaudi::Utils::toString( map04.end() != map04.find( akey_cl ) ) << endmsg;
 
   return StatusCode::SUCCESS;
 }

@@ -248,8 +248,8 @@ stdout: "JobOptionsSvc         INFO Job options successfully file Maps.opts\nApp
   \ Stopped successfully\nMap                SUCCESS\nMap                SUCCESS \
   \ FINALIZE\nMap                SUCCESS  \tTested maps :\nMap                SUCCESS\
   \  \t1) std::map<int,double,std::less<int>,std::allocator<std::pair<int const,double>\
-  \ > >\nMap                SUCCESS  \t2) GaudiUtils::VectorMap<int,double,std::less<int\
-  \ const>,std::allocator<std::pair<int,double> > >\nMap                SUCCESS  \t\
+  \ > >\nMap                SUCCESS  \t2) GaudiUtils::VectorMap<int,double,std::less<void>\
+  ,std::allocator<std::pair<int,double> > >\nMap                SUCCESS  \t\
   3) GaudiUtils::Map<int,double,std::map<int,double,std::less<int>,std::allocator<std::pair<int\
   \ const,double> > > >\nMap                SUCCESS  \t4) GaudiUtils::HashMap<int,double,GaudiUtils::Hash<int>,std::unordered_map<int,double,GaudiUtils::Hash<int>,std::equal_to<int>,std::allocator<std::pair<int\
   \ const,double> > > >\nApplicationMgr        INFO Application Manager Finalized\
