@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 2024-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 2024-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -24,10 +24,31 @@
 #  include <catch2/catch_test_macros.hpp>
 #endif
 
+#include <cstdlib>
+#include <string_view>
+
 using namespace std::chrono_literals;
 using Gaudi::Utils::PeriodicAction;
 
+namespace {
+  /// mirrors GaudiTesting.platform_matches(): this test's real-time expectations don't hold up
+  /// under sanitizer instrumentation slowdown, so skip it there rather than chase flaky margins
+  bool running_under_sanitizer() {
+    const char* tag = std::getenv( "BINARY_TAG" );
+    if ( !tag ) return false;
+    std::string_view sv{ tag };
+    for ( std::string_view s : { "asan", "lsan", "tsan", "ubsan" } ) {
+      if ( sv.find( s ) != std::string_view::npos ) return true;
+    }
+    return false;
+  }
+} // namespace
+
 TEST_CASE( "PeriodicAction" ) {
+  if ( running_under_sanitizer() ) {
+    WARN( "Skipping timing-sensitive PeriodicAction checks: unreliable under sanitizer instrumentation" );
+    return;
+  }
   SECTION( "default" ) {
     int counter{ 0 };
     {

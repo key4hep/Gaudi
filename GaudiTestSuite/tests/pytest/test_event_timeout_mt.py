@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 2024 CERN for the benefit of the LHCb and ATLAS collaborations      #
+# (c) Copyright 2024-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -9,7 +9,7 @@
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
 import pytest
-from GaudiTesting import GaudiExeTest
+from GaudiTesting import GaudiExeTest, platform_matches
 
 
 # Note: we need at least 3 events to have multiple event in flight as
@@ -51,6 +51,10 @@ def config(event_slots=2, events=3, threads=6):
     return [app] + list(app.TopAlg) + list(app.ExtSvc) + [scheduler, slimeventloopmgr]
 
 
+@pytest.mark.skipif(
+    platform_matches(["asan", "lsan", "ubsan", "tsan"]),
+    reason="Unsupported platform",
+)
 class Test(GaudiExeTest):
     command = ["gaudirun.py", f"{__file__}:config"]
 
