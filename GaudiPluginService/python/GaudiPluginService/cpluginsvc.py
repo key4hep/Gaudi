@@ -30,6 +30,7 @@ e.g.:
 import ctypes
 import ctypes.util
 import os
+import platform
 
 __all__ = (
     "Registry",
@@ -39,26 +40,32 @@ __all__ = (
     "Property",
 )
 
-_libname = None
+_lib_basename = {
+    "Darwin": "libGaudiPluginService.dylib",
+    "Windows": "libGaudiPluginService.dll",
+    "Linux": "libGaudiPluginService.so",
+}[platform.system()]
 
 
-def _get_filename():
-    if _libname:
-        return _libname
-    import platform
+def _find_library():
+    """Locate libGaudiPluginService, searching library path env vars explicitly."""
+    search_vars = (
+        ["DYLD_LIBRARY_PATH", "LD_LIBRARY_PATH"]
+        if platform.system() == "Darwin"
+        else ["LD_LIBRARY_PATH"]
+    )
+    for var in search_vars:
+        for directory in os.environ.get(var, "").split(os.pathsep):
+            if not directory:
+                continue
+            candidate = os.path.join(directory, _lib_basename)
+            if os.path.exists(candidate):
+                return candidate
+    # Fall back to bare name and let the dynamic linker resolve it
+    return _lib_basename
 
-    name = platform.system()
 
-    fname = {
-        "Darwin": "libGaudiPluginService.dylib",
-        "Windows": "libGaudiPluginService.dll",
-        "Linux": "libGaudiPluginService.so",
-    }[name]
-    return fname
-
-
-_libname = _get_filename()
-_lib = ctypes.CDLL(_libname, ctypes.RTLD_GLOBAL)
+_lib = ctypes.CDLL(_find_library(), ctypes.RTLD_GLOBAL)
 
 
 class Registry(ctypes.Structure):
