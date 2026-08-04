@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -91,6 +91,27 @@ def test_array_from_list():
     s = getSemanticsFor("PrivateToolHandleArray")
     h = s.store([])
     assert isinstance(h, PrivateToolHandleArray)
+
+
+def test_array_option_value_is_a_sequence():
+    s = getSemanticsFor("PrivateToolHandleArray")
+    h = s.store(["TestConf::MyTool/First", "TestConf::MyTool/Second"])
+
+    assert s.opt_value(h) == [
+        "TestConf::MyTool/First",
+        "TestConf::MyTool/Second",
+    ]
+
+
+def test_array_option_representation_is_not_quoted():
+    alg = TestConf.AlgWithComplexProperty(
+        "Alg",
+        THA=["TestConf::MyTool/First", "TestConf::MyTool/Second"],
+    )
+
+    assert alg.__opt_properties__()["Alg.THA"] == (
+        "['TestConf::MyTool/First','TestConf::MyTool/Second']"
+    )
 
 
 def test_array_merge():

@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -316,6 +316,11 @@ class ComponentHandleSemantics(PropertySemantics):
         return a.merge(b)
 
 
+class _GaudiHandleArrayOptionValue(list):
+    def __opt_repr__(self):
+        return "[" + ",".join(map(repr, self)) + "]"
+
+
 class GaudiHandleArraySemantics(DefaultSemantics):
     """Semantics for GaudiHandleArrays."""
 
@@ -337,6 +342,11 @@ class GaudiHandleArraySemantics(DefaultSemantics):
         if not isinstance(value, self.handle_type):
             value = self.handle_type(value)
         return value
+
+    def opt_value(self, value):
+        return _GaudiHandleArrayOptionValue(
+            handle.toStringProperty() for handle in value
+        )
 
     def merge(self, b, a):
         for comp in b:
