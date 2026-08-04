@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -12,7 +12,11 @@
 # Author: Wim Lavrijsen (WLavrijsen@lbl.gov)
 """Useful/conventional constants."""
 
+from enum import IntEnum, unique
+
 __all__ = [
+    "MessageLevel",
+    "NIL",
     "ALL",
     "VERBOSE",
     "DEBUG",
@@ -20,18 +24,36 @@ __all__ = [
     "WARNING",
     "ERROR",
     "FATAL",
+    "ALWAYS",
     "TRUE",
     "FALSE",
 ]
 
+
+@unique
+class MessageLevel(IntEnum):
+    """Message severity and output-threshold levels matching ``MSG::Level``."""
+
+    NIL = 0
+    VERBOSE = 1
+    DEBUG = 2
+    INFO = 3
+    WARNING = 4
+    ERROR = 5
+    FATAL = 6
+    ALWAYS = 7
+
+
 # message levels -----------------------------------------------------------
-ALL = 0
-VERBOSE = 1
-DEBUG = 2
-INFO = 3
-WARNING = 4
-ERROR = 5
-FATAL = 6
+NIL = MessageLevel.NIL.value
+ALL = NIL
+VERBOSE = MessageLevel.VERBOSE.value
+DEBUG = MessageLevel.DEBUG.value
+INFO = MessageLevel.INFO.value
+WARNING = MessageLevel.WARNING.value
+ERROR = MessageLevel.ERROR.value
+FATAL = MessageLevel.FATAL.value
+ALWAYS = MessageLevel.ALWAYS.value
 
 # for job options legacy (TODO: get rid of these!) -------------------------
 TRUE = True
