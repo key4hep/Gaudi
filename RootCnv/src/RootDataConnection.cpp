@@ -515,11 +515,10 @@ pair<int, unsigned long> RootDataConnection::save( std::string_view section, std
       TBranch* dummy_branch = dummy_tree->Branch( "DummyBranch", cl->GetName(), &pObj, minBufferSize, split_lvl );
       Int_t    nWritten     = dummy_branch->Fill();
       if ( nWritten < 0 ) return { nWritten, evt };
-      Int_t newBasketSize = nWritten * approxEventsPerBasket;
       // Ensure that newBasketSize doesn't wrap around
-      if ( std::numeric_limits<Int_t>::max() / approxEventsPerBasket < nWritten ) {
-        newBasketSize = std::numeric_limits<Int_t>::max();
-      }
+      const Int_t newBasketSize = std::numeric_limits<Int_t>::max() / approxEventsPerBasket < nWritten
+                                      ? std::numeric_limits<Int_t>::max()
+                                      : nWritten * approxEventsPerBasket;
       b->SetBasketSize( std::min( maxBufferSize, std::max( minBufferSize, newBasketSize ) ) );
       msgSvc() << MSG::DEBUG << "Setting basket size to " << newBasketSize << " for " << cnt << endmsg;
     }
