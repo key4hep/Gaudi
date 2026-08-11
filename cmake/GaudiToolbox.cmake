@@ -893,6 +893,15 @@ function(gaudi_add_pytest)
         string(JOIN "," ARG_COVERAGE ${ARG_COVERAGE})
         string(JOIN "\\ " ARG_COVERAGE_OPTIONS_ESC report ${ARG_COVERAGE_OPTIONS})
     endif()
+    # On sanitizer builds, PRELOAD_SANITIZER_LIB names the runtime that must
+    # be preloaded into this collection process itself (invoking the plain
+    # Python::Interpreter binary directly, as we do below, does not get it
+    # for free the way the old dedicated `pytest` runtime target used to) --
+    # without it the process aborts immediately with "ASan runtime does not
+    # come first in initial library list" and collection never runs at all.
+    if(PRELOAD_SANITIZER_LIB)
+        set(preload_sanitizer env LD_PRELOAD=${PRELOAD_SANITIZER_LIB})
+    endif()
     file(GENERATE OUTPUT ${base_filename}.cmake
         CONTENT "
 set(files_to_hash \${CMAKE_CURRENT_LIST_FILE})
@@ -940,7 +949,7 @@ if(NOT hash STREQUAL old_hash OR NOT EXISTS ${base_filename}.tests.cmake)
     # running the `cmake` binary itself through `run`'s environment broke
     # cmake's own dynamic linking.
     execute_process(
-        COMMAND $<TARGET_FILE:run> env LSAN_OPTIONS=detect_leaks=0 $<TARGET_FILE:Python::Interpreter> -m pytest
+        COMMAND $<TARGET_FILE:run> env LSAN_OPTIONS=detect_leaks=0 ${preload_sanitizer} $<TARGET_FILE:Python::Interpreter> -m pytest
             --collect-only --strict-markers
             ${ARG_OPTIONS_CMD}
             --ctest-output-file=${base_filename}.tests.cmake
@@ -1315,8 +1324,14 @@ function(gaudi_generate_confuserdb)
     string(REPLACE "." "/" modules_path_list "${modules}")
     list(TRANSFORM modules_path_list PREPEND "${CMAKE_CURRENT_SOURCE_DIR}/python/")
     list(TRANSFORM modules_path_list APPEND ".py")
+    # See the matching comment in gaudi_add_pytest(): on sanitizer builds,
+    # genconfuser.py needs the sanitizer runtime preloaded up front or it
+    # aborts with "ASan runtime does not come first in initial library list".
+    if(PRELOAD_SANITIZER_LIB)
+        set(preload_sanitizer env LD_PRELOAD=${PRELOAD_SANITIZER_LIB})
+    endif()
     add_custom_command(OUTPUT "${output_file}"
-        COMMAND run genconfuser.py
+        COMMAND run ${preload_sanitizer} genconfuser.py
                 --build-dir ${CMAKE_BINARY_DIR}
                 --project-name ${PROJECT_NAME}
                 --root ${CMAKE_CURRENT_SOURCE_DIR}/python
