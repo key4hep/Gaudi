@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -20,8 +20,10 @@
 
 #include <Gaudi/Parsers/CommonParsers.h>
 #include <Gaudi/Parsers/Factory.h>
+#include <nlohmann/json.hpp>
 #include <string>
 #include <string_view>
+#include <utility>
 
 #define PARSERS_DEF_FOR_SINGLE( Type )                                                                                 \
   StatusCode Gaudi::Parsers::parse( Type& result, std::string_view input ) {                                           \
@@ -44,3 +46,10 @@ PARSERS_DEF_FOR_SINGLE( double )
 PARSERS_DEF_FOR_SINGLE( float )
 PARSERS_DEF_FOR_SINGLE( long double )
 PARSERS_DEF_FOR_SINGLE( std::string )
+
+StatusCode Gaudi::Parsers::parse( nlohmann::json& result, std::string_view input ) {
+  auto parsed = nlohmann::json::parse( input, nullptr, false );
+  if ( parsed.is_discarded() ) return StatusCode::FAILURE;
+  result = std::move( parsed );
+  return StatusCode::SUCCESS;
+}

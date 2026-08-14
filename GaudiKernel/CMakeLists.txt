@@ -34,6 +34,7 @@ target_include_directories(GaudiCommonParsers PRIVATE include)
 target_link_libraries(GaudiCommonParsers
     PRIVATE
         Boost::headers
+        nlohmann_json::nlohmann_json
         ROOT::Core
 )
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")

@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -10,18 +10,30 @@
 #####################################################################################
 import pytest
 from GaudiConfig2 import Configurable
+from GaudiConfig2._configurables import Property, opt_repr
 from GaudiConfig2.Configurables.TestConf import MyAlg
 from GaudiConfig2.semantics import (
     ComponentSemantics,
     DefaultSemantics,
+    JSONSemantics,
     StringSemantics,
     getSemanticsFor,
 )
 
 
+class JSONConfigurable(Configurable):
+    __component_type__ = "Algorithm"
+    __cpp_type__ = "JSONConfigurable"
+    Payload = Property("nlohmann::json", '{"enabled":false}')
+
+
 def test_semantics_lookup():
     assert isinstance(getSemanticsFor("std::string"), StringSemantics)
     assert isinstance(getSemanticsFor("no-semantics-defined"), DefaultSemantics)
+    assert isinstance(
+        getSemanticsFor("nlohmann::json_abi_v3_11_3::basic_json<std::map>"),
+        JSONSemantics,
+    )
 
 
 def test_string_ok():
@@ -32,6 +44,40 @@ def test_string_ok():
 def test_string_bad():
     with pytest.raises(TypeError):
         getSemanticsFor("std::string").store(123)
+
+
+def test_json_semantics():
+    semantics = getSemanticsFor("nlohmann::json")
+    value = semantics.default('{"enabled":false,"missing":null,"values":[1,2]}')
+
+    assert semantics.load(value) == {
+        "enabled": False,
+        "missing": None,
+        "values": [1, 2],
+    }
+    assert not semantics.is_set(value)
+
+    semantics.load(value)["enabled"] = True
+    assert semantics.is_set(value)
+
+    value = semantics.store({"values": (1, 2), "enabled": True, "missing": None})
+    assert semantics.load(value)["values"] == [1, 2]
+    assert (
+        opt_repr(semantics.opt_value(value))
+        == '{"enabled":true,"missing":null,"values":[1,2]}'
+    )
+
+    with pytest.raises(TypeError):
+        semantics.store(object())
+    with pytest.raises(ValueError):
+        semantics.store(float("nan"))
+
+    configurable = JSONConfigurable("Json")
+    assert configurable.Payload == {"enabled": False}
+    configurable.Payload = {"enabled": True, "missing": None}
+    assert configurable.__opt_properties__() == {
+        "Json.Payload": '{"enabled":true,"missing":null}'
+    }
 
 
 def test_semantics_delegation():

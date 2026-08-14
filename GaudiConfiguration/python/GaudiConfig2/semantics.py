@@ -9,6 +9,7 @@
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
 import copy
+import json
 import logging
 import re
 import sys
@@ -128,6 +129,54 @@ class DefaultSemantics(PropertySemantics):
             # so the value was not explicitly set nor modified
             # from the default
             return False
+
+
+class _JSONValue:
+    def __init__(self, data, explicitly_set):
+        self.data = data
+        self.default = copy.deepcopy(data)
+        self.explicitly_set = explicitly_set
+
+    def __eq__(self, other):
+        return isinstance(other, _JSONValue) and self.data == other.data
+
+
+class _JSONOption(str):
+    def __opt_repr__(self):
+        return str(self)
+
+
+class JSONSemantics(PropertySemantics):
+    __handled_types__ = (
+        "nlohmann::json",
+        re.compile(r"nlohmann::(?:json_abi[^:]*::)?basic_json<.*>$"),
+    )
+
+    @staticmethod
+    def _normalize(value):
+        return json.loads(json.dumps(value, allow_nan=False))
+
+    def default(self, value):
+        data = json.loads(value) if isinstance(value, str) else self._normalize(value)
+        return _JSONValue(data, False)
+
+    def load(self, value):
+        return value.data
+
+    def store(self, value):
+        return _JSONValue(self._normalize(value), True)
+
+    def is_set(self, value):
+        return value.explicitly_set or value.data != value.default
+
+    def opt_value(self, value):
+        if not isinstance(value, _JSONValue):
+            value = self.default(value)
+        return _JSONOption(
+            json.dumps(
+                value.data, allow_nan=False, separators=(",", ":"), sort_keys=True
+            )
+        )
 
 
 class StringSemantics(PropertySemantics):

@@ -54,6 +54,7 @@
 #include <fmt/format.h>
 #include <fstream>
 #include <iostream>
+#include <nlohmann/json.hpp>
 #include <set>
 #include <sstream>
 #include <type_traits>
@@ -830,6 +831,8 @@ void configGenerator::pythonizeValue( const PropertyBase* p, string& pvalue, str
       pvalue = cvalue + ".0";
     }
   } else if ( ti == typeIndex<string>() ) {
+    pvalue = quote( cvalue );
+  } else if ( ti == typeIndex<nlohmann::json>() ) {
     pvalue = quote( cvalue );
   } else if ( ti == typeIndex<GaudiHandleBase>() ) {
     const GaudiHandleProperty& hdl  = dynamic_cast<const GaudiHandleProperty&>( *p );
