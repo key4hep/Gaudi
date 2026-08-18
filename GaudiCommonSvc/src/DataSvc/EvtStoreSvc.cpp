@@ -186,6 +186,7 @@ namespace {
     // to pass constructor arguments to Store<>.
     std::optional<Store<>> store;
     int                    eventNumber = -1;
+    std::string_view       onlyThisID{};
   };
 
   template <typename T, typename Mutex = std::recursive_mutex, typename ReadLock = std::scoped_lock<Mutex>,
@@ -288,7 +289,6 @@ class GAUDI_API EvtStoreSvc : public extends<Service, IDataProviderSvc, IDataMan
   Gaudi::Property<bool> m_followLinksToAncestors{
       this, "FollowLinksToAncestors", true,
       "Load objects which reside in files other than the one corresponding to the root of the event store" };
-  std::string_view m_onlyThisID; // let's be a bit risky... we 'know' when the underlying string goes out of scope...
 
 public:
   using extends::extends;
@@ -464,8 +464,8 @@ StatusCode EvtStoreSvc::freeStore( size_t partition ) {
 }
 /// Remove all data objects in one 'slot' of the data store.
 StatusCode EvtStoreSvc::clearStore( size_t partition ) {
-  m_onlyThisID = {};
   return m_partitions[partition].with_lock( [this]( Partition& p ) {
+    p.onlyThisID = {};
     fillStats( p );
     initStore( p ); // replace with a clean store
     return StatusCode::SUCCESS;
@@ -479,8 +479,8 @@ StatusCode EvtStoreSvc::clearSubTree( std::string_view top ) {
   } );
 }
 StatusCode EvtStoreSvc::clearStore() {
-  m_onlyThisID = {};
   return fwd( [this]( Partition& p ) {
+    p.onlyThisID = {};
     fillStats( p );
     initStore( p ); // replace with a clean store
     return StatusCode::SUCCESS;
@@ -531,7 +531,12 @@ StatusCode EvtStoreSvc::setRoot( std::string root_path, IOpaqueAddress* pRootAdd
     throw GaudiException{ "setRoot called with non-empty store", "EvtStoreSvc", StatusCode::FAILURE };
   }
   if ( !rootAddr ) return Status::INVALID_OBJ_ADDR; // Precondition: Address must be valid
-  if ( !m_followLinksToAncestors ) m_onlyThisID = rootAddr->par()[0];
+  if ( !m_followLinksToAncestors ) {
+    fwd( [&]( Partition& p ) {
+      p.onlyThisID = rootAddr->par()[0];
+      return StatusCode::SUCCESS;
+    } ).ignore();
+  }
   auto object = createObj( *m_dataLoader, *rootAddr ); // Call data loader
   if ( !object ) return Status::INVALID_OBJECT;
   if ( msgLevel( MSG::DEBUG ) ) { debug() << "Root Object " << root_path << " created " << endmsg; }
@@ -559,7 +564,9 @@ StatusCode EvtStoreSvc::registerAddress( IRegistry* pReg, std::string_view path,
             << " )" << endmsg;
   }
   if ( path.empty() || path[0] != '/' ) return StatusCode::FAILURE;
-  if ( !m_onlyThisID.empty() && addr->par()[0] != m_onlyThisID ) {
+  const auto onlyThisID =
+      s_current ? s_current->with_lock( []( const Partition& p ) { return p.onlyThisID; } ) : std::string_view{};
+  if ( !onlyThisID.empty() && addr->par()[0] != onlyThisID ) {
     if ( msgLevel( MSG::DEBUG ) )
       debug() << "Attempt to load " << addr->par()[1] << " from file " << addr->par()[0] << " blocked -- different file"
               << endmsg;
