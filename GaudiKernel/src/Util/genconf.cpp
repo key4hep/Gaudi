@@ -633,18 +633,21 @@ void configGenerator::genImport( std::ostream& s, std::string_view frmt, std::st
 
     // Prepare import string
     mod = m_configurable[component_t::Module].substr( pos, nxtpos - pos );
-    std::ostringstream import;
-    import << fmt::format( fmt::runtime( frmt ), mod );
+    std::ostringstream import_cmd;
+    import_cmd << fmt::format( fmt::runtime( frmt ), mod );
 
-    // append a normal import or a try/except enclosed one depending
+    // append a normal import_cmd or a try/except enclosed one depending
     // on availability of a fall-back module (next in the list)
     if ( std::string::npos == nxtpos ) {
       // last possible module
-      s << indent << import.str() << "\n" << flush;
+      s << indent << import_cmd.str() << "\n" << flush;
       pos = std::string::npos;
     } else {
       // we have a fallback for this
-      s << indent << "try:\n" << indent << py_tab << import.str() << "\n" << indent << "except ImportError:\n" << flush;
+      s << indent << "try:\n"
+        << indent << py_tab << import_cmd.str() << "\n"
+        << indent << "except ImportError:\n"
+        << flush;
       pos = nxtpos + 1;
     }
     // increase indentation level for next iteration
