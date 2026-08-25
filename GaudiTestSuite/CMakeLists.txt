@@ -91,6 +91,7 @@ gaudi_add_module(GaudiTestSuiteComponents
                          src/PluginService/BackwardCompatibleAliases.cpp
                          src/PluginService/SpecialCustomFactory.cpp
                          src/Properties/CustomPropertiesAlg.cpp
+                         src/Properties/JSONPropertyAlg.cpp
                          src/Properties/PropertyAlg.cpp
                          src/Properties/PropertyProxy.cpp
                          src/QueueingEventProcessor/QueueingEventLoopMgr.cpp

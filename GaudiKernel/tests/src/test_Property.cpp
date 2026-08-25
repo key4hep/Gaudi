@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -12,7 +12,9 @@
 #define BOOST_TEST_MODULE test_PropertyHolder
 #include <boost/test/unit_test.hpp>
 
+#include <Gaudi/Parsers/CommonParsers.h>
 #include <Gaudi/Property.h>
+#include <nlohmann/json.hpp>
 
 struct MyClass {};
 
@@ -111,6 +113,22 @@ BOOST_AUTO_TEST_CASE( string_conversion ) {
     BOOST_CHECK_EQUAL( p3.value(), true );
     BOOST_CHECK_EQUAL( p3.toString(), "True" );
   }
+}
+
+BOOST_AUTO_TEST_CASE( json_conversion ) {
+  constexpr char                  json[] = R"({"enabled":true,"values":[1,null,"two"]})";
+  Gaudi::Property<nlohmann::json> property{ "json", nlohmann::json::object() };
+
+  BOOST_CHECK( property.fromString( json ) );
+  BOOST_CHECK_EQUAL( property.value().at( "enabled" ), true );
+  BOOST_CHECK_EQUAL( property.toString(), json );
+
+  property = nlohmann::json::parse( json );
+  BOOST_CHECK_EQUAL( property.toString(), json );
+
+  auto parsed = property.value();
+  BOOST_CHECK( Gaudi::Parsers::parse( parsed, "not JSON" ).isFailure() );
+  BOOST_CHECK_EQUAL( parsed, property.value() );
 }
 
 template <class T>
