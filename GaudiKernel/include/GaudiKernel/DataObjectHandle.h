@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -143,18 +143,16 @@ public:
   }
 
 private:
-  T*           get( bool mustExist ) const;
-  mutable bool m_goodType = false;
+  T* get( bool mustExist ) const;
 };
 
 //---------------------------------------------------------------------------
 //
 /**
- * Try to retrieve from the transient store. If the retrieval succeded and
- * this is the first time we retrieve, perform a dynamic cast to the desired
- * object. Then finally set the handle as Read.
- * If this is not the first time we cast and the cast worked, just use the
- * static cast: we do not need the checks of the dynamic cast for every access!
+ * Try to retrieve from the transient store. If the retrieval succeeds and
+ * we are in a debug build, perform a dynamic cast to verify the type of the
+ * object. In optimized builds the type check is skipped and a static cast is
+ * used directly.
  */
 template <typename T>
 T* DataObjectHandle<T>::get( bool mustExist ) const {
@@ -166,7 +164,9 @@ T* DataObjectHandle<T>::get( bool mustExist ) const {
     }
     return nullptr;
   }
-  if ( !m_goodType ) m_goodType = ::details::verifyType<T>( dataObj );
+#ifndef NDEBUG
+  ::details::verifyType<T>( dataObj );
+#endif
   return static_cast<T*>( dataObj );
 }
 
@@ -366,10 +366,11 @@ private:
         return nullptr;
       }
     }
-    if ( !m_goodType ) m_goodType = ::details::verifyType<AnyDataWrapper<T>>( obj );
+#ifndef NDEBUG
+    ::details::verifyType<AnyDataWrapper<T>>( obj );
+#endif
     return static_cast<AnyDataWrapper<T>*>( obj );
   }
-  mutable bool m_goodType = false;
 };
 
 //---------------------------------------------------------------------------
@@ -424,10 +425,11 @@ private:
         return nullptr;
       }
     }
-    if ( !m_goodType ) m_goodType = ::details::verifyType<AnyDataWithViewWrapper<View, Owned>>( obj );
+#ifndef NDEBUG
+    ::details::verifyType<AnyDataWithViewWrapper<View, Owned>>( obj );
+#endif
     return static_cast<AnyDataWithViewWrapper<View, Owned>*>( obj );
   }
-  mutable bool m_goodType = false;
 };
 
 //---------------------------- user-facing interface ----------
