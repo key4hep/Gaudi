@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -42,20 +42,20 @@ template <class TYPE>
 class ObjectList : public ObjectContainerBase {
 
 public:
-  typedef TYPE                                  contained_type;
-  typedef typename std::list<TYPE*>::value_type value_type;
+  typedef TYPE contained_type;
+  using value_type = typename std::list<TYPE*>::value_type;
 
-  typedef typename std::list<TYPE*>::reference       reference;
-  typedef typename std::list<TYPE*>::const_reference const_reference;
+  using reference       = typename std::list<TYPE*>::reference;
+  using const_reference = typename std::list<TYPE*>::const_reference;
 
-  typedef typename std::list<TYPE*>::iterator       iterator;
-  typedef typename std::list<TYPE*>::const_iterator const_iterator;
+  using iterator       = typename std::list<TYPE*>::iterator;
+  using const_iterator = typename std::list<TYPE*>::const_iterator;
 
-  typedef typename std::list<TYPE*>::reverse_iterator       reverse_iterator;
-  typedef typename std::list<TYPE*>::const_reverse_iterator const_reverse_iterator;
+  using reverse_iterator       = typename std::list<TYPE*>::reverse_iterator;
+  using const_reverse_iterator = typename std::list<TYPE*>::const_reverse_iterator;
 
-  typedef typename std::vector<TYPE*>::pointer       pointer;
-  typedef typename std::vector<TYPE*>::const_pointer const_pointer;
+  using pointer       = typename std::vector<TYPE*>::pointer;
+  using const_pointer = typename std::vector<TYPE*>::const_pointer;
 
 public:
   ObjectList()                                     = default;

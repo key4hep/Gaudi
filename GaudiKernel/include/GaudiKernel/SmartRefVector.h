@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -68,9 +68,9 @@ protected:
   /// That's the type of crap I am hosting
   typedef SmartRef<TYPE> _Entry;
   /// Object types: typedef myself as Base
-  typedef std::vector<_Entry>                          _Base;
-  typedef typename std::vector<_Entry>::const_iterator _BaseConstIter;
-  typedef typename std::vector<_Entry>::value_type     _BaseValueType;
+  typedef std::vector<_Entry> _Base;
+  using _BaseConstIter = typename std::vector<_Entry>::const_iterator;
+  using _BaseValueType = typename std::vector<_Entry>::value_type;
 
   /// Object data: Pointer to the identifiable object the link originates
   mutable const DataObject* m_data;

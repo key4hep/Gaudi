@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -66,8 +66,8 @@ namespace Containers {
 
   template <class CONT>
   class find {
-    const void*                       m_obj;
-    typedef typename CONT::value_type v_type;
+    const void* m_obj;
+    using v_type = typename CONT::value_type;
 
   public:
     find( const void* o ) : m_obj( o ) {}
@@ -198,8 +198,8 @@ long Containers::KeyedObjectManager<T>::insertDirect( ObjectContainerBase* pBase
 // Remove object from container
 template <class T>
 void* Containers::KeyedObjectManager<T>::erase( long key, const void* obj ) {
-  typedef typename T::map_type MTYP;
-  typedef find<MTYP>           FND;
+  using MTYP = typename T::map_type;
+  typedef find<MTYP> FND;
   if ( 1 == m_direct ) {
     auto& m = m_setup.s->m;
     auto  i = ( obj ? std::find_if( m.begin(), m.end(), FND( obj ) ) : m_setup.s->m.find( key ) );
@@ -265,8 +265,8 @@ void Containers::KeyedObjectManager<T>::clearDirect() {
 // Remove object by sequential iterators
 template <class T>
 long Containers::KeyedObjectManager<T>::erase( seq_type::iterator beg, seq_type::iterator end ) {
-  typedef typename T::map_type MTYP;
-  typedef find<MTYP>           FND;
+  using MTYP = typename T::map_type;
+  typedef find<MTYP> FND;
   if ( 0 == m_direct ) {
     onDirty();
     return erase( beg, end );

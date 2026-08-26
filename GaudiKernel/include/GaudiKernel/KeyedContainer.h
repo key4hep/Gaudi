@@ -74,31 +74,31 @@ public:
   */
   //@{
   /// Definition of the STL sequential access type
-  typedef typename std::vector<contained_type*> seq_type;
+  using seq_type = std::vector<contained_type*>;
   /// Definition of the key type: re-use definition of contained type
-  typedef typename contained_type::key_type key_type;
+  using key_type = typename contained_type::key_type;
   /// Sequential access: definition of type stored in sequential container
-  typedef typename seq_type::value_type value_type;
+  using value_type = typename seq_type::value_type;
   /// Sequential access: reference type used in sequential container
-  typedef typename seq_type::reference reference;
+  using reference = typename seq_type::reference;
   /// Sequential access: const reference type used in sequential container
-  typedef typename seq_type::const_reference const_reference;
+  using const_reference = typename seq_type::const_reference;
   /// Sequential access: iterator type used in sequential container
-  typedef typename seq_type::iterator iterator;
+  using iterator = typename seq_type::iterator;
   /// Sequential access: const iterator type used in sequential container
-  typedef typename seq_type::const_iterator const_iterator;
+  using const_iterator = typename seq_type::const_iterator;
   /// Sequential access: reverse iterator type used in sequential container
-  typedef typename seq_type::reverse_iterator reverse_iterator;
+  using reverse_iterator = typename seq_type::reverse_iterator;
   /** Sequential access: const reverse iterator type used in
       sequential container.
   */
-  typedef typename seq_type::const_reverse_iterator const_reverse_iterator;
+  using const_reverse_iterator = typename seq_type::const_reverse_iterator;
   //@}
 private:
   /** Traits class definition. Specializing traits allows to specialize the
    *  container implementation for special needs.
    */
-  typedef typename Containers::traits<container_type, contained_type> traits;
+  using traits = Containers::traits<container_type, contained_type>;
 
   /**@name Implementation helpers.
    */

@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -43,7 +43,7 @@ public:
 
 protected:
   /// definition of the container key traits to be made friend
-  typedef typename Containers::key_traits<key_type> traits;
+  using traits = Containers::key_traits<key_type>;
   /// Allow the container traits to access full object properties
   friend struct Containers::key_traits<key_type>;
 

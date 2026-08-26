@@ -124,13 +124,13 @@ namespace GaudiUtils {
     /// allocator (could be useful for optimizations)
     typedef ALLOCATOR allocator_type;
     /// the types to conform STL
-    typedef typename ALLOCATOR::value_type const& reference;
+    using reference = typename ALLOCATOR::value_type const&;
     /// the types to conform STL
-    typedef typename ALLOCATOR::value_type const& const_reference;
+    using const_reference = typename ALLOCATOR::value_type const&;
     /// the types to conform STL
-    typedef typename ALLOCATOR::size_type size_type;
+    using size_type = typename ALLOCATOR::size_type;
     /// the types to conform STL
-    typedef typename ALLOCATOR::difference_type difference_type;
+    using difference_type = typename ALLOCATOR::difference_type;
 
   public:
     /// the actual storage container (no export)
@@ -138,13 +138,13 @@ namespace GaudiUtils {
 
   protected:
     /// the regular iterator  (no export)
-    typedef typename _vector::iterator _iterator;
+    using _iterator = typename _vector::iterator;
 
   public:
     /// visible const_iterator (exported)
-    typedef typename _vector::const_iterator iterator;
+    using iterator = typename _vector::const_iterator;
     /// visible const_iterator (exported)
-    typedef typename _vector::const_iterator const_iterator;
+    using const_iterator = typename _vector::const_iterator;
     /// visible reverse const_iterator (exported)
     typedef std::reverse_iterator<iterator> reverse_iterator;
     /// visible reverse const_iterator (exported)

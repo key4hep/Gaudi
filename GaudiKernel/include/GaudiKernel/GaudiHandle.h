@@ -417,15 +417,15 @@ public:
   //
   // public nested types
   //
-  typedef std::vector<T>                                HandleVector;
-  typedef typename HandleVector::value_type             value_type;
-  typedef typename HandleVector::size_type              size_type;
-  typedef typename HandleVector::reference              reference;
-  typedef typename HandleVector::const_reference        const_reference;
-  typedef typename HandleVector::iterator               iterator;
-  typedef typename HandleVector::const_iterator         const_iterator;
-  typedef typename HandleVector::reverse_iterator       reverse_iterator;
-  typedef typename HandleVector::const_reverse_iterator const_reverse_iterator;
+  typedef std::vector<T> HandleVector;
+  using value_type             = typename HandleVector::value_type;
+  using size_type              = typename HandleVector::size_type;
+  using reference              = typename HandleVector::reference;
+  using const_reference        = typename HandleVector::const_reference;
+  using iterator               = typename HandleVector::iterator;
+  using const_iterator         = typename HandleVector::const_iterator;
+  using reverse_iterator       = typename HandleVector::reverse_iterator;
+  using const_reverse_iterator = typename HandleVector::const_reverse_iterator;
 
 protected:
   //

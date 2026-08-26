@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -93,10 +93,10 @@ namespace GaudiUtils {
     typedef std::pair<const K, T> value_type;
     typedef const value_type&     const_reference;
 
-    typedef typename map_type::size_type size_type;
+    using size_type = typename map_type::size_type;
 
-    typedef typename map_type::iterator       iterator;
-    typedef typename map_type::const_iterator const_iterator;
+    using iterator       = typename map_type::iterator;
+    using const_iterator = typename map_type::const_iterator;
 
   protected:
     map_type                 m_map;

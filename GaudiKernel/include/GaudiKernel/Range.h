@@ -88,12 +88,12 @@ namespace Gaudi {
     using Base           = std::pair<iterator, iterator>;
 
   private:
-    typedef typename std::iterator_traits<iterator> iter_traits;
+    using iter_traits = std::iterator_traits<iterator>;
 
   public:
-    typedef typename iter_traits::value_type value_type;
-    typedef typename iter_traits::reference  reference;
-    typedef typename iter_traits::reference  const_reference;
+    using value_type      = typename iter_traits::value_type;
+    using reference       = typename iter_traits::reference;
+    using const_reference = typename iter_traits::reference;
 
     typedef std::reverse_iterator<iterator> reverse_iterator;
     typedef std::reverse_iterator<iterator> const_reverse_iterator;
