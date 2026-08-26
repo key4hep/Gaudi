@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -33,14 +33,14 @@ public:
   /// the actual container type
   typedef std::vector<const TYPE*> ConstVector;
   // various types (to make STL happy)
-  typedef typename ConstVector::value_type             value_type;
-  typedef typename ConstVector::size_type              size_type;
-  typedef typename ConstVector::reference              reference;
-  typedef typename ConstVector::const_reference        const_reference;
-  typedef typename ConstVector::iterator               iterator;
-  typedef typename ConstVector::const_iterator         const_iterator;
-  typedef typename ConstVector::reverse_iterator       reverse_iterator;
-  typedef typename ConstVector::const_reverse_iterator const_reverse_iterator;
+  using value_type             = typename ConstVector::value_type;
+  using size_type              = typename ConstVector::size_type;
+  using reference              = typename ConstVector::reference;
+  using const_reference        = typename ConstVector::const_reference;
+  using iterator               = typename ConstVector::iterator;
+  using const_iterator         = typename ConstVector::const_iterator;
+  using reverse_iterator       = typename ConstVector::reverse_iterator;
+  using const_reverse_iterator = typename ConstVector::const_reverse_iterator;
 
   SharedObjectsContainer()                                      = default;
   SharedObjectsContainer( SharedObjectsContainer&& )            = default;

@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -94,19 +94,19 @@ public:
   /// Inspect container of object items by its reference (mutable and const)
   template <class T, class O>
   StatusCode inspectContByRef( const T* pObj, const O* pOwner, const std::string& comment, long flag = Mutable ) {
-    typedef typename T::value_type _VVV;
-    typedef typename T::value_type _TTT;
+    using _VVV = typename T::value_type;
+    using _TTT = typename T::value_type;
     // Unfortunately this is not implemented on G++:
-    // typedef typename T::allocator_type::value_type _TTT;
+    // using _TTT = typename T::allocator_type::value_type;
     return inspectContByRef( (void*)pObj, _TT<T>(), _TT<_VVV>(), _TT<_TTT>(), (void*)pOwner, _TT<O>(), comment, flag );
   }
   /// Inspect container of object items by its value (const)
   template <class T, class O>
   StatusCode inspectContByValue( const T& obj, const O* pOwner, const std::string& comment ) {
-    typedef typename T::value_type _VVV;
-    typedef typename T::value_type _TTT;
+    using _VVV = typename T::value_type;
+    using _TTT = typename T::value_type;
     // Unfortunately this is not implemented on G++:
-    // typedef typename T::allocator_type::value_type _TTT;
+    // using _TTT = typename T::allocator_type::value_type;
     return inspectContByValue( new _V<T>( obj ), _TT<T>(), _TT<_VVV>(), _TT<_TTT>(), (void*)pOwner, _TT<O>(), comment );
   }
 };
