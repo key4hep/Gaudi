@@ -173,7 +173,9 @@ StatusCode AvalancheSchedulerSvc::initialize() {
 
   DataObjIDColl globalInp, globalOutp;
 
-  // figure out all outputs
+  auto hasAsynchronousAlgorithms = false;
+
+  // figure out all outputs and check for asynchronous algorithms
   std::map<std::string, DataObjIDColl> algosOutputDependenciesMap;
   for ( IAlgorithm* ialgoPtr : algos ) {
     Gaudi::Algorithm* algoPtr = dynamic_cast<Gaudi::Algorithm*>( ialgoPtr );
@@ -188,6 +190,14 @@ StatusCode AvalancheSchedulerSvc::initialize() {
       algoOutputs.insert( id );
     }
     algosOutputDependenciesMap[algoPtr->name()] = algoOutputs;
+
+    hasAsynchronousAlgorithms = hasAsynchronousAlgorithms || algoPtr->isAsynchronous();
+  }
+
+  if ( m_numOffloadThreads <= 0 && hasAsynchronousAlgorithms ) {
+    fatal() << "Found asynchronous algorithms, but NumOffloadThreads is " << m_numOffloadThreads
+            << "; no fiber pool threads will be available to execute them." << endmsg;
+    return StatusCode::FAILURE;
   }
 
   std::ostringstream ostdd;
