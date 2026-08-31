@@ -4,7 +4,6 @@ stdout: |-
   |-ExtraOutputs               = set()  (default: set())
   |-OutputLevel                = 0
   |-Enable                     = True
-  |-ErrorMax                   = 1
   |-AuditInitialize            = False
   |-AuditReinitialize          = False
   |-AuditRestart               = False
@@ -28,7 +27,6 @@ stdout: |-
   |-ExtraOutputs               = set()  (default: set())
   |-OutputLevel                = 0
   |-Enable                     = True
-  |-ErrorMax                   = 1
   |-AuditInitialize            = False
   |-AuditReinitialize          = False
   |-AuditRestart               = False
@@ -52,7 +50,6 @@ stdout: |-
   |-ExtraOutputs               = set()  (default: set())
   |-OutputLevel                = 0
   |-Enable                     = True
-  |-ErrorMax                   = 1
   |-AuditInitialize            = False
   |-AuditReinitialize          = False
   |-AuditRestart               = False
@@ -77,7 +74,6 @@ stdout: |-
   |-ExtraOutputs               = set()  (default: set())
   |-OutputLevel                = 0
   |-Enable                     = True
-  |-ErrorMax                   = 1
   |-AuditInitialize            = False
   |-AuditReinitialize          = False
   |-AuditRestart               = False
@@ -102,7 +98,6 @@ stdout: |-
   |-ExtraOutputs               = set()  (default: set())
   |-OutputLevel                = 0
   |-Enable                     = True
-  |-ErrorMax                   = 1
   |-AuditInitialize            = False
   |-AuditReinitialize          = False
   |-AuditRestart               = False

@@ -35,7 +35,6 @@ stdout: |-
   Fill              SUCCESS Property ['Name': Value] =  'Context':
   Fill              SUCCESS Property ['Name': Value] =  'CounterList':[ '.*' ]
   Fill              SUCCESS Property ['Name': Value] =  'Enable':True
-  Fill              SUCCESS Property ['Name': Value] =  'ErrorMax':1
   Fill              SUCCESS Property ['Name': Value] =  'ErrorsPrint':True
   Fill              SUCCESS Property ['Name': Value] =  'EvtColDir':Fill
   Fill              SUCCESS Property ['Name': Value] =  'EvtColLUN':EXTEVT
