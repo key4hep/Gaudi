@@ -31,7 +31,7 @@ stdout: "{'A1': {'Cardinality': 1,\n        'OutputLevel': 3,\n        'baseView
   PrecedenceSvc         INFO PrecedenceSvc initialized successfully\nAvalancheSchedu...\
   \    INFO Concurrency level information:\nAvalancheSchedu...    INFO  o Number of\
   \ events in flight: 1\nAvalancheSchedu...    INFO  o TBB thread pool size:  'ThreadPoolSize':1\n\
-  AvalancheSchedu...    INFO  o Fiber thread pool size:  'NumOffloadThreads':2\nAvalancheSchedu...\
+  AvalancheSchedu...    INFO  o Fiber thread pool size:  'NumOffloadThreads':0\nAvalancheSchedu...\
   \    INFO Task scheduling settings:\nAvalancheSchedu...    INFO  o Avalanche generation\
   \ mode: disabled\nAvalancheSchedu...    INFO  o Scheduling of condition tasks:\
   \ disabled\nHiveSlimEventLo...    INFO \"EventSelector\" disabled: no events will\
