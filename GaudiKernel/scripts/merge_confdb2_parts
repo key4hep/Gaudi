@@ -30,8 +30,9 @@ if (
 from GaudiKernel.DataHandle import DataHandle  # noqa: F401
 from GaudiKernel.GaudiHandles import *  # noqa: F401 F403
 
-parser = OptionParser(  # desc='simple script to merge files',
-    usage="%prog [options] input1 input2 ... [output|--output output]"
+parser = OptionParser(
+    description="Script to merge confdb2_part files.",
+    usage="%prog [options] input1 input2 ... [output|--output output]",
 )
 parser.add_option(
     "--ignore-missing",
@@ -39,21 +40,34 @@ parser.add_option(
     help="do not fail if an input file is missing, just ignore it",
 )
 parser.add_option(
+    "--ignore-duplicates",
+    action="store_true",
+    help="do not fail if there are duplicate configurables in the inputs",
+)
+parser.add_option(
+    "-i",
+    "--inputs-file",
+    help="text file with input file names if not given as arguments (one per line)",
+)
+parser.add_option(
     "-o", "--output", help="output filename (by default use the last argument)"
 )
 
 if __name__ == "__main__":
     opts, args = parser.parse_args()
-    if len(args) < 1:
+    if not opts.inputs_file and len(args) < 1:
         parser.print_usage()
         sys.exit(0)
 
     import logging
 
-    logging.basicConfig()
+    logging.basicConfig(format="merge_confdb2_parts: %(levelname)s %(message)s")
 
     output = Path(opts.output or args.pop())
     inputs = args
+    if opts.inputs_file:
+        inputs += Path(opts.inputs_file).read_text().splitlines()
+
     missing = [i for i in inputs if not os.path.isfile(i)]
 
     if missing:
@@ -65,11 +79,17 @@ if __name__ == "__main__":
             for i in missing:
                 logging.error("file %s not found", i)
             sys.exit(1)
+
+    def cleanup():
+        """Helper to cleanup existing output files"""
+        for path in output.parent.glob(f"{output.name}*"):
+            path.unlink()
+
     try:
         # create the destination directory if missing
         if not output.parent.is_dir():
             os.makedirs(output.parent)
-        logging.debug("opening %r for writing", output)
+        logging.debug("opening %r for writing", output.as_posix())
         # shelve.open(filename) may create any of the following files:
         # - "{filename}"
         # - "{filename}.db"
@@ -77,15 +97,33 @@ if __name__ == "__main__":
         # - or others in the future
         # but the lookup in GaudiConfig2 always uses "{filename}"
         # So we remove all existing files to avoid confusion
-        for path in output.parent.glob(f"{output.name}*"):
-            path.unlink()
+        cleanup()
+
         with shelve.open(output.as_posix(), "c") as out:
-            for input in inputs:
-                logging.debug("adding %r", input)
-                out.update(eval(open(input, "rb").read()))
+            for f in inputs:
+                logging.debug("adding %r", f)
+                input_conf = eval(open(f, "rb").read())
+                duplicates = input_conf.keys() & out.keys()
+                if duplicates:
+                    for dup in duplicates:
+                        logging.log(
+                            (
+                                logging.WARNING
+                                if opts.ignore_duplicates
+                                else logging.ERROR
+                            ),
+                            f"Duplicate configurable '{dup}' found in {f} ({input_conf[dup]['__declaration_location__']}). "
+                            f"Already declared by another library in {out[dup]['__declaration_location__']}.",
+                        )
+                    if not opts.ignore_duplicates:
+                        cleanup()
+                        sys.exit(1)
+
+                # merge the DBs
+                out.update(input_conf)
+
         # then we make sure the output file exists (even if empty)
         output.touch()
     except Exception:
-        for path in output.parent.glob(f"{output.name}*"):
-            path.unlink()
+        cleanup()
         raise
