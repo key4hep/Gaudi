@@ -272,12 +272,17 @@ class Configurable(metaclass=ConfigurableMeta):
             raise TypeError(
                 f"cannot merge instance of {type(other).__name__} into an instance of { type(self).__name__}"
             )
-        if hasattr(self, "name") != hasattr(other, "name"):
-            raise ValueError("cannot merge a named configurable with an unnamed one")
-        if hasattr(self, "name") and (self.name != other.name):
-            raise ValueError(
-                f"cannot merge configurables with different names ({self.name} and {other.name})"
-            )
+        try:
+            # First try most common case of two named configurables
+            if self.name != other.name:
+                raise ValueError(
+                    f"cannot merge configurables with different names ({self.name} and {other.name})"
+                )
+        except AttributeError:
+            if hasattr(self, "name") != hasattr(other, "name"):
+                raise ValueError(
+                    "cannot merge a named configurable with an unnamed one"
+                )
 
         for name in other._properties:
             if (
