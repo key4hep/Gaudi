@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 2024-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 2024-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -10,6 +10,8 @@
 \***********************************************************************************/
 #include <Gaudi/Interfaces/IFileSvc.h>
 #include <Gaudi/Parsers/Factory.h>
+#include <GaudiKernel/DataIncident.h>
+#include <GaudiKernel/IIncidentSvc.h>
 #include <GaudiKernel/Service.h>
 #include <GaudiKernel/StatusCode.h>
 #include <TFile.h>
@@ -27,7 +29,8 @@
  * unintentionally overwritten or duplicated.
  *
  * Files can be accessed via an identifier and should be listed at configuration time
- * through the Config property.
+ * through the Config property. Opening a distinct physical file emits a
+ * CONNECTED_OUTPUT ContextIncident<TFile*> when IncidentSvc is available.
  *
  * Note that the paths given to Config property are URL syntax, that is they support
  * extra paremeters in key=vlaue form after a '?' and seprated by '&'
@@ -159,6 +162,8 @@ FileSvc::FileSvc( const std::string& name, ISvcLocator* svc ) : base_class( name
 
 StatusCode FileSvc::initialize() {
   return Service::initialize().andThen( [this]() {
+    auto incidentSvc = service<IIncidentSvc>( "IncidentSvc", false );
+
     if ( checkConfig( m_config, *this ).isFailure() ) { return StatusCode::FAILURE; }
 
     for ( const auto& [identifier, path] : m_config ) {
@@ -176,6 +181,11 @@ StatusCode FileSvc::initialize() {
         if ( auto file = openFile( path, params["mode"], compress ) ) {
           m_files.push_back( std::move( file ) );
           m_identifiers[boost::to_lower_copy( identifier )] = m_files.size() - 1;
+          auto* outputFile                                  = m_files.back().get();
+          if ( incidentSvc ) {
+            incidentSvc->fireIncident(
+                ContextIncident<TFile*>( outputFile->GetName(), "CONNECTED_OUTPUT", outputFile ) );
+          }
         } else {
           error() << "Failed to open file: " << params["path"] << endmsg;
           return StatusCode::FAILURE;
