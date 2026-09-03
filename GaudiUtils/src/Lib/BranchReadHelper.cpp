@@ -43,7 +43,10 @@ namespace Gaudi::details {
         code << "return new AnyDataWrapper(std::move(*ptr));";
       }
     } else {
-      // simple type case: store is the actual value
+      // simple type case: store is the actual value.
+      // std::memcpy is safe because ROOT stores simple small types directly in void*,
+      // while for complex objects clptr != nullptr. The check on clptr is equivalent to
+      // verifying that the type is trivially copyable and size(value) <= sizeof(void*).
       code << TDataType::GetTypeName( datatype ) << " value;";
       code << "std::memcpy(&value, &store, sizeof(value));";
       code << "return new AnyDataWrapper(std::move(value));";
