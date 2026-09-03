@@ -31,7 +31,7 @@ namespace Gaudi::details {
     // into a DataObject. This is done by directly returning the pointer
     // if the type inherits from DataObject, or by creating a new AnyDataWrapper.
     std::ostringstream code;
-    code << "new std::function<DataObject*(void*)>([] (void* store) -> DataObject* {";
+    code << "static_cast<DataObject*(*)(void*)>([] (void* store) -> DataObject* {";
     if ( clptr ) {
       // complex type case: store points to an instance of the object
       code << "auto ptr = reinterpret_cast<" << clptr->GetName() << "*>(store);";
@@ -54,8 +54,7 @@ namespace Gaudi::details {
     if ( gInterpreter->Evaluate( code.str().c_str(), *val ) == 0 ) {
       throw std::runtime_error( "Failed to compile code" );
     }
-    m_extractor = std::unique_ptr<std::function<DataObject*( void* )>>(
-        reinterpret_cast<std::function<DataObject*( void* )>*>( val->GetAsPointer() ) );
+    m_extractor = reinterpret_cast<DataObject* (*)( void* )>( val->GetAsPointer() );
   }
 
   BranchReadHelper::BranchReadHelper( BranchReadHelper&& other ) noexcept {

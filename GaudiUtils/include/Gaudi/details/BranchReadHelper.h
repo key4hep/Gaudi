@@ -12,7 +12,6 @@
 
 #include <GaudiKernel/DataObject.h>
 #include <TBranch.h>
-#include <functional>
 #include <gsl/pointers>
 #include <memory>
 
@@ -48,7 +47,7 @@ namespace Gaudi::details {
     TBranch* m_branch{ nullptr };
     void*    m_store{ nullptr };
 
-    std::unique_ptr<std::function<DataObject*( void* )>> m_extractor;
+    DataObject* ( *m_extractor )( void* ) = nullptr;
   };
 
 } // namespace Gaudi::details
