@@ -14,6 +14,7 @@
 #include <TFile.h>
 #include <TTree.h>
 #include <format>
+#include <mutex>
 #include <string>
 #include <unordered_map>
 
@@ -30,8 +31,6 @@ namespace Gaudi::NTuple {
   class GenericReader : public Gaudi::Algorithm {
   public:
     using Gaudi::Algorithm::Algorithm;
-
-    bool isReEntrant() const override { return false; }
 
     StatusCode initialize() override {
       const auto& extraOutputs = extraOutputDeps();
@@ -62,6 +61,7 @@ namespace Gaudi::NTuple {
     }
 
     StatusCode execute( const EventContext& ctx ) const override {
+      std::scoped_lock lock( m_mutex );
       m_tree->GetEntry( ctx.evt() );
       for ( auto& [address, helper] : m_branchReadHelpers ) {
         eventSvc()
@@ -81,6 +81,7 @@ namespace Gaudi::NTuple {
     Gaudi::Property<std::string> m_ntupleTname{ this, "NTupleName", "", "Name of the TTree" };
     TTree*                       m_tree{ nullptr };
     mutable std::unordered_map<std::string, Gaudi::details::BranchReadHelper> m_branchReadHelpers;
+    mutable std::mutex                                                        m_mutex;
 
     StatusCode connectBranches( const DataObjIDColl& extraOutputs ) {
       m_branchReadHelpers.clear();
