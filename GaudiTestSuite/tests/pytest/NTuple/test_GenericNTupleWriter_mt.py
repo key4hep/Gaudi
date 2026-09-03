@@ -15,18 +15,18 @@ import pytest
 
 sys.path.append(os.path.dirname(__file__))
 
-from NTpleWriterTestBase import (
+from NTupleWriterTestBase import (
     ALG_NAME,
     EXPECTED_ENTRIES,
     EXPECTED_STRING_VALUE,
     OUTPUT_FILE_NAME,
-    NTpleWriterTestBase,
+    NTupleWriterTestBase,
 )
 
 
 @pytest.mark.ctest_fixture_setup("ntuple_io_mt")
 @pytest.mark.shared_cwd("ntuple_io_mt")
-class TestMT(NTpleWriterTestBase):
+class TestMT(NTupleWriterTestBase):
     command = ["gaudirun.py", f"{__file__}:config_mt"]
 
 
