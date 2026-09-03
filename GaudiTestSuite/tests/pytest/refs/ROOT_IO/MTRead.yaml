@@ -48,7 +48,6 @@ stdout: |-
   AvalancheSchedu...    INFO  o Fiber thread pool size:  'NumOffloadThreads':2
   AvalancheSchedu...    INFO Task scheduling settings:
   AvalancheSchedu...    INFO  o Avalanche generation mode: disabled
-  AvalancheSchedu...    INFO  o Preemptive scheduling of CPU-blocking tasks: disabled
   AvalancheSchedu...    INFO  o Scheduling of condition tasks: disabled
   EventPersistenc...    INFO Added successfully Conversion service RootCnvSvc
   EventSelector.D...   DEBUG Selection root:/Event CLID:110
