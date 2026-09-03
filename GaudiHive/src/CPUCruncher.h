@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -30,8 +30,6 @@
 class CPUCruncher : public Algorithm {
 
 public:
-  typedef tbb::concurrent_hash_map<std::string, unsigned int> CHM;
-
   bool isClonable() const override { return true; }
 
   /// the execution of the algorithm
@@ -41,21 +39,19 @@ public:
   /// the finalization of the algorithm
   StatusCode finalize() override;
 
-  double get_runtime() const { return m_avg_runtime; }
-
   CPUCruncher( const std::string& name, // the algorithm instance name
                ISvcLocator*       pSvc );     // the Service Locator
 
-  /// virtual & protected desctrustor
-  virtual ~CPUCruncher(); // virtual & protected desctrustor
+  /// virtual & protected destructor
+  virtual ~CPUCruncher(); // virtual & protected destructor
 
 private:
   /// the default constructor is disabled
   CPUCruncher(); // no default constructor
   /// the copy constructor is disabled
   CPUCruncher( const CPUCruncher& ); // no copy constructor
-  /// the assignement operator is disabled
-  CPUCruncher& operator=( const CPUCruncher& ); // no assignement
+  /// the assignment operator is disabled
+  CPUCruncher& operator=( const CPUCruncher& ); // no assignment
   /// The CPU intensive function
 
   /// Pick up late-attributed data outputs
@@ -78,13 +74,10 @@ private:
   Gaudi::Property<unsigned int> m_failNEvents{ this, "FailNEvents", 0, "Return FAILURE on every Nth event" };
   Gaudi::Property<int>          m_nParallel{ this, "NParallel", -1, "Run N parallel crunching tasks" };
 
-  // For the concurrency
-  const uint MAX_INPUTS  = 40;
-  const uint MAX_OUTPUTS = 10;
-
   std::vector<DataObjectHandle<DataObject>*> m_inputHandles;
   std::vector<DataObjectHandle<DataObject>*> m_outputHandles;
 
+  using CHM = tbb::concurrent_hash_map<std::string, unsigned int>;
   static CHM m_name_ncopies_map;
 
   // CPUCrunchSvc
