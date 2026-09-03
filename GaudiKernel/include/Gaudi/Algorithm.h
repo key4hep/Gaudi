@@ -414,9 +414,6 @@ namespace Gaudi {
     /// Produce string represention of the control flow expression.
     std::ostream& toControlFlowExpression( std::ostream& os ) const override;
 
-  private:
-    unsigned int maxErrors() const { return m_errorMax; }
-
   protected:
     bool isReEntrant() const override { return true; }
 
@@ -470,8 +467,6 @@ namespace Gaudi {
         [this]( Gaudi::Details::PropertyBase& ) { this->updateMsgStreamOutputLevel( this->m_outputLevel ); },
         "output level" };
     Gaudi::Property<bool> m_isEnabled{ this, "Enable", true, "should the algorithm be executed or not" };
-
-    Gaudi::Property<unsigned int> m_errorMax{ this, "ErrorMax", 1, "[[deprecated]] max number of errors" };
 
     Gaudi::Property<bool> m_auditorInitialize{
         this, "AuditInitialize", Details::getDefaultAuditorValue( m_pSvcLocator ), "trigger auditor on initialize()" };

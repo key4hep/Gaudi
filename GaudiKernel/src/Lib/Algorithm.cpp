@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -381,18 +381,7 @@ namespace Gaudi {
       status = exceptionSvc()->handle( *this );
     }
 
-    if ( status.isFailure() ) {
-      // Increment the error count
-      unsigned int nerr = m_aess->incrementErrorCount( this );
-      // Check if maximum is exeeded
-      if ( nerr < m_errorMax ) {
-        warning() << "Continuing from error (cnt=" << nerr << ", max=" << m_errorMax << ")" << endmsg;
-        // convert to success
-        status = StatusCode::SUCCESS;
-      } else {
-        error() << "Maximum number of errors (" << m_errorMax << ") reached." << endmsg;
-      }
-    }
+    if ( status.isFailure() ) { m_aess->incrementErrorCount( this ); }
 
     algState.setState( AlgExecState::Done, status );
 

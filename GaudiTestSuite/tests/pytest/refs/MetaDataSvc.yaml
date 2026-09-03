@@ -242,7 +242,6 @@ stdout: |-
   NTupleAlgorithm.AuditStop:False
   NTupleAlgorithm.Cardinality:1
   NTupleAlgorithm.Enable:True
-  NTupleAlgorithm.ErrorMax:1
   NTupleAlgorithm.ExtraInputs:set()
   NTupleAlgorithm.ExtraOutputs:set()
   NTupleAlgorithm.FilterCircularDependencies:True
