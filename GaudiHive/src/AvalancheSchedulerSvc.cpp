@@ -388,8 +388,6 @@ StatusCode AvalancheSchedulerSvc::initialize() {
     m_eventSlots.back().complete = true;
   }
 
-  if ( m_threadPoolSize > 1 ) { m_maxAlgosInFlight = (size_t)m_threadPoolSize; }
-
   // Clearly inform about the level of concurrency
   info() << "Concurrency level information:" << endmsg;
   info() << " o Number of events in flight: " << m_maxEventsInFlight << endmsg;
@@ -400,11 +398,6 @@ StatusCode AvalancheSchedulerSvc::initialize() {
   info() << "Task scheduling settings:" << endmsg;
   info() << " o Avalanche generation mode: "
          << ( m_optimizationMode.empty() ? "disabled" : m_optimizationMode.toString() ) << endmsg;
-  info() << " o Preemptive scheduling of CPU-blocking tasks: "
-         << ( m_enablePreemptiveBlockingTasks
-                  ? ( "enabled (max. " + std::to_string( m_maxBlockingAlgosInFlight ) + " concurrent tasks)" )
-                  : "disabled" )
-         << endmsg;
   info() << " o Scheduling of condition tasks: " << ( m_enableCondSvc ? "enabled" : "disabled" ) << endmsg;
 
   if ( m_showControlFlow ) m_precSvc->dumpControlFlow();
@@ -1059,11 +1052,7 @@ StatusCode AvalancheSchedulerSvc::schedule( TaskSpec&& ts ) {
 
       ON_DEBUG debug() << "Scheduled " << algName << " [slot:" << slotIndex << ", event:" << contextPtr->evt()
                        << ", rank:" << algRank << ", asynchronous:" << ( asynchronous ? "yes" : "no" )
-                       << "]. Scheduled algorithms: " << m_algosInFlight + m_blockingAlgosInFlight
-                       << ( m_enablePreemptiveBlockingTasks
-                                ? " (including " + std::to_string( m_blockingAlgosInFlight ) + " - off TBB runtime)"
-                                : "" )
-                       << endmsg;
+                       << "]. Scheduled algorithms: " << m_algosInFlight << endmsg;
 
     } else { // Avoid scheduling via TBB if the pool size is -100. Instead, run here in the scheduler's control thread
       // Beojan: I don't think this bit works. ts hasn't been pushed into any queue so AlgTask won't retrieve it
@@ -1105,11 +1094,7 @@ StatusCode AvalancheSchedulerSvc::signoff( const TaskSpec& ts ) {
 
   ON_DEBUG debug() << "Executed " << ts.algName << " [slot:" << ts.slotIndex << ", event:" << ts.contextPtr->evt()
                    << ", rank:" << ts.algRank << ", asynchronous:" << ( ts.asynchronous ? "yes" : "no" )
-                   << "]. Scheduled algorithms: " << m_algosInFlight + m_blockingAlgosInFlight
-                   << ( m_enablePreemptiveBlockingTasks
-                            ? " (including " + std::to_string( m_blockingAlgosInFlight ) + " - off TBB runtime)"
-                            : "" )
-                   << endmsg;
+                   << "]. Scheduled algorithms: " << m_algosInFlight << endmsg;
 
   // Prompt a call to updateStates
   m_needsUpdate.store( true );

@@ -93,12 +93,13 @@ class IAlgorithm;
  *
  *   o Other mechanisms of throughput maximization
  *
- *     The scheduler is able to maximize the overall throughput of data processing
- *     by preemptive scheduling CPU-blocking tasks. The mechanism can be applied
- *     to the following types of tasks:
+ *     The scheduler supports cooperative scheduling with fibers, allowing a task to suspend its execution while
+ *     waiting for an off-CPU operation to complete. The worker thread is then free to execute other work and
+ *     resumes the suspended task once the operation completes.
+ *
+ *     The mechanism can be applied to the following types of tasks:
  *     - I/O-bound tasks;
- *     - tasks with computation offloading (accelerators, GPGPUs, clouds,
- *       quantum computing devices..joke);
+ *     - tasks with computation offloading (accelerators, GPGPUs, clouds);
  *     - synchronization-bound tasks.
  *
  *
@@ -175,23 +176,18 @@ private:
       this, "maxParallelismExtra", 0,
       "Allows to add some extra threads to the maximum parallelism set in TBB"
       "The TBB max parallelism is set as: ThreadPoolSize + maxParallelismExtra + 1" };
-  Gaudi::Property<std::string>  m_whiteboardSvcName{ this, "WhiteboardSvc", "EventDataSvc", "The whiteboard name" };
-  Gaudi::Property<unsigned int> m_maxBlockingAlgosInFlight{
-      this, "MaxBlockingAlgosInFlight", 0, "Maximum allowed number of simultaneously running CPU-blocking algorithms" };
-  Gaudi::Property<bool> m_simulateExecution{
+  Gaudi::Property<std::string> m_whiteboardSvcName{ this, "WhiteboardSvc", "EventDataSvc", "The whiteboard name" };
+  Gaudi::Property<bool>        m_simulateExecution{
       this, "SimulateExecution", false,
       "Flag to perform single-pass simulation of execution flow before the actual execution" };
   Gaudi::Property<std::string> m_optimizationMode{ this, "Optimizer", "",
                                                    "The following modes are currently available: PCE, COD, DRE,  E" };
   Gaudi::Property<bool>        m_dumpIntraEventDynamics{ this, "DumpIntraEventDynamics", false,
                                                   "Dump intra-event concurrency dynamics to csv file" };
-  Gaudi::Property<bool>        m_enablePreemptiveBlockingTasks{
-      this, "PreemptiveBlockingTasks", false,
-      "Enable preemptive scheduling of CPU-blocking algorithms. Blocking algorithms must be flagged accordingly." };
-  Gaudi::Property<int> m_numOffloadThreads{
+  Gaudi::Property<int>         m_numOffloadThreads{
       this, "NumOffloadThreads", 2,
       "Number of threads to use for CPU portion of asynchronous algorithms. Asynchronous algorithms must be flagged "
-      "and use Boost Fiber functionality to suspend while waiting for offloaded work." };
+              "and use Boost Fiber functionality to suspend while waiting for offloaded work." };
   Gaudi::Property<bool>                     m_checkDeps{ this, "CheckDependencies", false,
                                      "Runtime check of Algorithm Input Data Dependencies" };
   Gaudi::Property<bool>                     m_checkOutput{ this, "CheckOutputUsage", false,
@@ -283,9 +279,6 @@ private:
   /// Number of algorithms presently in flight
   unsigned int m_algosInFlight = 0;
 
-  /// Number of algorithms presently in flight
-  unsigned int m_blockingAlgosInFlight = 0;
-
   // States management ------------------------------------------------------
 
   /// Loop on all slots to schedule DATAREADY algorithms and sign off ready events
@@ -369,7 +362,6 @@ private:
   std::unique_ptr<FiberManager> m_fiberManager{ nullptr };
 
   size_t m_maxEventsInFlight{ 0 };
-  size_t m_maxAlgosInFlight{ 1 };
 
 public:
   // get next schedule-able TaskSpec
