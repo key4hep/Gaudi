@@ -160,15 +160,6 @@ foreach(dep IN LISTS deps)
   endif()
 endforeach()
 
-# Make sure platform specific system libraries are available
-if(UNIX AND NOT APPLE)
-  find_library(rt_LIBRARY rt)
-  mark_as_advanced(rt_LIBRARY)
-  if(NOT rt_LIBRARY)
-    message(FATAL_ERROR "rt was not found")
-  endif()
-endif()
-
 if(APPLE)
   find_library(Foundation_FRAMEWORK Foundation)
   mark_as_advanced(Foundation_FRAMEWORK)

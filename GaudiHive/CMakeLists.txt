@@ -45,7 +45,6 @@ gaudi_add_module(GaudiHive
                       ROOT::Hist
                       ROOT::RIO
                       TBB::tbb
-                      ${rt_LIBRARY}
                       ${GAUDI_ATOMIC_LIBS})
 
 # Build executable
