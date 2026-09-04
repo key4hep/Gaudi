@@ -70,7 +70,6 @@ gaudi_add_module(GaudiCoreSvc
                    Boost::thread
                    nlohmann_json::nlohmann_json
                    TBB::tbb
-                   ${rt_LIBRARY} # UNIX only
                    ${GAUDI_ATOMIC_LIBS})
 
 gaudi_install(SCRIPTS)

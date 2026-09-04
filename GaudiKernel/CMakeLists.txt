@@ -180,7 +180,6 @@ if(APPLE)
 elseif(UNIX)
   target_sources(GaudiKernel PRIVATE src/Lib/Platform/SystemLinux.h
                                      src/Lib/Platform/SystemLinux.cpp)
-  target_link_libraries(GaudiKernel PUBLIC ${rt_LIBRARY})
 endif()
 if(CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
   target_include_directories(GaudiKernel
