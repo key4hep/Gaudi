@@ -140,7 +140,8 @@ set(CMAKE_CXX_STANDARD ${GAUDI_CXX_STANDARD})
 set(CMAKE_CXX_STANDARD_REQUIRED TRUE) # do not fall back on older version
 set(CMAKE_CXX_EXTENSIONS OFF) # strict c++.. instead of gnu++..
 if(GAUDI_USE_CUDA)
-    set(CMAKE_CUDA_STANDARD ${GAUDI_CXX_STANDARD} CACHE STRING "The version of C++ used to compile CUDA code")
+    # Until we have CMake 4.4+ we need to keep the CUDA standard fixed at 20
+    set(CMAKE_CUDA_STANDARD 20 CACHE STRING "The version of C++ used to compile CUDA code")
     set(CMAKE_CUDA_STANDARD_REQUIRED TRUE CACHE BOOL "Make CUDA_STANDARD a requirement")
     set(CMAKE_CUDA_EXTENSIONS OFF CACHE BOOL "Allow compiler extension in CUDA code")
 endif()
