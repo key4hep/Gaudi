@@ -185,7 +185,7 @@ private:
   Gaudi::Property<bool>        m_dumpIntraEventDynamics{ this, "DumpIntraEventDynamics", false,
                                                   "Dump intra-event concurrency dynamics to csv file" };
   Gaudi::Property<int>         m_numOffloadThreads{
-      this, "NumOffloadThreads", 2,
+      this, "NumOffloadThreads", 0,
       "Number of threads to use for CPU portion of asynchronous algorithms. Asynchronous algorithms must be flagged "
               "and use Boost Fiber functionality to suspend while waiting for offloaded work." };
   Gaudi::Property<bool>                     m_checkDeps{ this, "CheckDependencies", false,
