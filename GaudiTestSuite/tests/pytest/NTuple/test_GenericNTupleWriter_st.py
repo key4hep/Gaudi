@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 2024 CERN for the benefit of the LHCb and ATLAS collaborations      #
+# (c) Copyright 2024-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -11,18 +11,22 @@
 import os
 import sys
 
+import pytest
+
 sys.path.append(os.path.dirname(__file__))
 
-from NTpleWriterTestBase import (
+from NTupleWriterTestBase import (
     ALG_NAME,
     EXPECTED_ENTRIES,
     EXPECTED_STRING_VALUE,
     OUTPUT_FILE_NAME,
-    NTpleWriterTestBase,
+    NTupleWriterTestBase,
 )
 
 
-class TestST(NTpleWriterTestBase):
+@pytest.mark.ctest_fixture_setup("ntuple_io_st")
+@pytest.mark.shared_cwd("ntuple_io_st")
+class TestST(NTupleWriterTestBase):
     command = ["gaudirun.py", f"{__file__}:config_st"]
 
 
@@ -80,7 +84,7 @@ def config_st():
 
     fileSvc = FileSvc(
         Config={
-            "NTuple": f"{OUTPUT_FILE_NAME}?mode=create",
+            "NTuple": f"{OUTPUT_FILE_NAME}?mode=recreate",
         }
     )
 

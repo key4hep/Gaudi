@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 2024-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 2026 CERN for the benefit of the LHCb and ATLAS collaborations      #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -9,42 +9,62 @@
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
 import os
+import re
 import sys
 
 import pytest
+from GaudiTesting import GaudiExeTest
 
 sys.path.append(os.path.dirname(__file__))
 
 from NTupleWriterTestBase import (
-    ALG_NAME,
+    ALG_NAME as WRITER_ALG_NAME,
+)
+from NTupleWriterTestBase import (
     EXPECTED_ENTRIES,
     EXPECTED_STRING_VALUE,
-    OUTPUT_FILE_NAME,
-    NTupleWriterTestBase,
+)
+from NTupleWriterTestBase import (
+    OUTPUT_FILE_NAME as INPUT_FILE_NAME,
 )
 
 
-@pytest.mark.ctest_fixture_setup("ntuple_io_mt")
+@pytest.mark.ctest_fixture_required("ntuple_io_mt")
 @pytest.mark.shared_cwd("ntuple_io_mt")
-class TestMT(NTupleWriterTestBase):
+class TestMT(GaudiExeTest):
     command = ["gaudirun.py", f"{__file__}:config_mt"]
+
+    def test_stdout(self, stdout: bytes):
+        lines = stdout.decode("utf-8").splitlines()
+        for t, v in [
+            ("float", r"2\.5"),
+            ("vector", r"\[0, 1, 2, 3, 4\]"),
+            ("string", EXPECTED_STRING_VALUE),
+            ("struct", r"MyStruct { id: 1, name: myStruct }"),
+            ("counter", r"DataObject at 0x[0-9a-f]+"),
+        ]:
+            for expression in [f".+INFO +Received {t}: {v}$"]:
+                assert (
+                    sum(1 for line in lines if re.match(expression, line))
+                    == EXPECTED_ENTRIES
+                ), f"expected regex r'{expression}' missing"
 
 
 def config_mt():
     """
-    Configuration function for the Gaudi application. Sets up components, services, and producers
+    Configuration function for the Gaudi application. Sets up components, services, and consumers
     """
     from Configurables import (
         AlgResourcePool,
         ApplicationMgr,
         AvalancheSchedulerSvc,
         FileSvc,
-        Gaudi__NTuple__GenericWriter,
-        Gaudi__TestSuite__NTuple__CounterDataProducer,
-        Gaudi__TestSuite__NTuple__FloatDataProducer,
-        Gaudi__TestSuite__NTuple__IntVectorDataProducer,
-        Gaudi__TestSuite__NTuple__StrDataProducer,
-        Gaudi__TestSuite__NTuple__StructDataProducer,
+        Gaudi__NTuple__GenericReader,
+        Gaudi__TestSuite__NTuple__CounterDataConsumer,
+        Gaudi__TestSuite__NTuple__FloatDataConsumer,
+        Gaudi__TestSuite__NTuple__IntVectorDataConsumer,
+        Gaudi__TestSuite__NTuple__StrDataConsumer,
+        Gaudi__TestSuite__NTuple__StructDataConsumer,
         HiveSlimEventLoopMgr,
         HiveWhiteBoard,
     )
@@ -70,45 +90,43 @@ def config_mt():
     # Algorithm Resource Pool
     AlgResourcePool(OutputLevel=DEBUG)
 
-    # Create producers (float/std::vector/std::string/MyStruct)
-    producers = [
-        Gaudi__TestSuite__NTuple__FloatDataProducer("FProducer", OutputLevel=DEBUG),
-        Gaudi__TestSuite__NTuple__IntVectorDataProducer("VProducer", OutputLevel=DEBUG),
-        Gaudi__TestSuite__NTuple__StrDataProducer(
-            "SProducer", OutputLevel=DEBUG, StringValue=EXPECTED_STRING_VALUE
-        ),
-        Gaudi__TestSuite__NTuple__StructDataProducer("STProducer", OutputLevel=DEBUG),
-        Gaudi__TestSuite__NTuple__CounterDataProducer("CounterDataProducer"),
+    # Create consumers (float/std::vector/std::string/MyStruct)
+    consumers = [
+        Gaudi__TestSuite__NTuple__FloatDataConsumer("FConsumer", OutputLevel=DEBUG),
+        Gaudi__TestSuite__NTuple__IntVectorDataConsumer("VConsumer", OutputLevel=DEBUG),
+        Gaudi__TestSuite__NTuple__StrDataConsumer("SConsumer", OutputLevel=DEBUG),
+        Gaudi__TestSuite__NTuple__StructDataConsumer("STConsumer", OutputLevel=DEBUG),
+        Gaudi__TestSuite__NTuple__CounterDataConsumer("CounterDataConsumer"),
     ]
 
-    # Configure the NTupleWriter
-    NTupleWriter = Gaudi__NTuple__GenericWriter(
-        ALG_NAME, OutputLevel=DEBUG, OutputFile="NTuple"
+    # Configure the NTupleReader
+    NTupleReader = Gaudi__NTuple__GenericReader(
+        "ReaderAlg", OutputLevel=DEBUG, InputFile="NTuple", NTupleName=WRITER_ALG_NAME
     )
-    NTupleWriter.ExtraInputs = [
+    NTupleReader.ExtraOutputs = [
         ("float", "MyFloat"),
         ("std::vector<int>", "MyVector"),
         ("std::string", "MyString"),
         ("Gaudi::TestSuite::NTuple::MyStruct", "MyStruct"),
         ("Gaudi::TestSuite::Counter", "MyCounter"),
     ]
-    # NTupleWriter.ExtraInputs = [
-    #     (alg.Output.Type, str(alg.Output))
-    #     for alg in producers
+    # NTupleReader.ExtraOutputs = [
+    #     (alg.Input.Type, str(alg.Input))
+    #     for alg in consumers
     # ]
 
     fileSvc = FileSvc(
         Config={
-            "NTuple": f"{OUTPUT_FILE_NAME}?mode=recreate",
+            "NTuple": f"{INPUT_FILE_NAME}?mode=read",
         }
     )
 
     # Application setup
     ApplicationMgr(
+        TopAlg=[NTupleReader] + consumers,
         EvtMax=evtMax,
         EvtSel="NONE",
         ExtSvc=[whiteboard, fileSvc],
         EventLoop=slimeventloopmgr,
-        TopAlg=producers + [NTupleWriter],
         MessageSvcType="InertMessageSvc",
     )

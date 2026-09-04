@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 2024 CERN for the benefit of the LHCb and ATLAS collaborations      #
+# (c) Copyright 2024-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -21,7 +21,7 @@ EXPECTED_STRING_VALUE = "hello world"
 ALG_NAME = "WriterAlg"
 
 
-class NTpleWriterTestBase(GaudiExeTest):
+class NTupleWriterTestBase(GaudiExeTest):
     @pytest.fixture(scope="class")
     def setup_file_tree(self, cwd):
         """
