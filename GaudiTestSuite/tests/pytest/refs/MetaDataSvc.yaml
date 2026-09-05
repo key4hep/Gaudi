@@ -262,6 +262,10 @@ stdout: |-
   NTupleSvc.CheckToolDeps:True
   NTupleSvc.DataAccessName:'DataAccess'
   NTupleSvc.DataFaultName:'DataFault'
+  NTupleSvc.DiskBuffer:False
+  NTupleSvc.DiskBufferBlockSize:65536
+  NTupleSvc.DiskBufferCompression:3
+  NTupleSvc.DiskBufferDirectory:''
   NTupleSvc.EnableAccessHandler:False
   NTupleSvc.EnableFaultHandler:False
   NTupleSvc.ForceLeaves:False
