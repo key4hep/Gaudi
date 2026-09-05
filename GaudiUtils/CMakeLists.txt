@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -15,6 +15,7 @@ gaudi_add_library(GaudiUtilsLib
                   SOURCES
                       src/Lib/QuasiRandom.cpp
                       src/Lib/BranchWrapper.cpp
+                      src/Lib/NTupleDiskBuffer.cpp
                       src/Lib/PeriodicAction.cpp
                   LINK
                     PUBLIC GaudiKernel
@@ -40,6 +41,11 @@ if(GAUDI_USE_AIDA)
                   src/Lib/HistoStats.cpp
                   src/Lib/HistoXML.cpp)
   target_link_libraries(GaudiUtilsLib PUBLIC AIDA::aida)
+endif()
+if(GAUDI_USE_ZSTD)
+  # Gaudi::NTuple::DiskBuffer compression
+  target_link_libraries(GaudiUtilsLib PRIVATE zstd::libzstd)
+  target_compile_definitions(GaudiUtilsLib PRIVATE GAUDI_USE_ZSTD)
 endif()
 
 gaudi_add_module(GaudiUtils
@@ -112,6 +118,7 @@ if(BUILD_TESTING)
 
   gaudi_add_executable(GaudiUtilsTests
       SOURCES
+          src/tests/NTupleDiskBuffer.cpp
           src/tests/PeriodicAction.cpp
       LINK
           Catch2::Catch2WithMain
