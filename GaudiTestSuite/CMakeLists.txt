@@ -200,6 +200,7 @@ endif()
 if(NOT GAUDI_USE_CUDA OR NOT _nvsmi_code EQUAL 0)
    list(APPEND tests_to_disable
        GaudiTestSuite.pytest.test_cuda
+       GaudiTestSuite.pytest.test_nvtx_auditor
      )
 endif()
 
