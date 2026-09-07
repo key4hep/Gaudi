@@ -10,6 +10,7 @@
 \***********************************************************************************/
 #include <Gaudi/Accumulators.h>
 #include <Gaudi/Arena/Monotonic.h>
+#include <Gaudi/cxx/SynchronizedValue.h>
 #include <GaudiKernel/ConcurrencyFlags.h>
 #include <GaudiKernel/IConversionSvc.h>
 #include <GaudiKernel/IDataManagerSvc.h>
@@ -188,32 +189,9 @@ namespace {
     int                    eventNumber = -1;
     std::string_view       onlyThisID{};
   };
+  using SynchronizedPartition = Gaudi::cxx::SynchronizedValue<Partition, std::recursive_mutex>;
 
-  template <typename T, typename Mutex = std::recursive_mutex, typename ReadLock = std::scoped_lock<Mutex>,
-            typename WriteLock = ReadLock>
-  class Synced {
-    T             m_obj;
-    mutable Mutex m_mtx;
-
-  public:
-    template <typename F>
-    decltype( auto ) with_lock( F&& f ) {
-      WriteLock lock{ m_mtx };
-      return f( m_obj );
-    }
-    template <typename F>
-    decltype( auto ) with_lock( F&& f ) const {
-      ReadLock lock{ m_mtx };
-      return f( m_obj );
-    }
-  };
-  // transform an f(T) into an f(Synced<T>)
-  template <typename Fun>
-  auto with_lock( Fun&& f ) {
-    return [f = std::forward<Fun>( f )]( auto& p ) -> decltype( auto ) { return p.with_lock( f ); };
-  }
-
-  TTHREAD_TLS( Synced<Partition>* ) s_current = nullptr;
+  TTHREAD_TLS( SynchronizedPartition* ) s_current = nullptr;
 
   template <typename Fun>
   StatusCode fwd( Fun&& f ) {
@@ -277,7 +255,7 @@ class GAUDI_API EvtStoreSvc : public extends<Service, IDataProviderSvc, IDataMan
   std::vector<DataStoreItem> m_preLoads;
 
   /// The actual store(s)
-  std::vector<Synced<Partition>> m_partitions;
+  std::vector<SynchronizedPartition> m_partitions;
 
   tbb::concurrent_queue<size_t> m_freeSlots;
 
@@ -378,7 +356,7 @@ public:
       error() << "Cannot set number of slots" << endmsg;
       return StatusCode::FAILURE;
     }
-    m_partitions = std::vector<Synced<Partition>>( m_slots );
+    m_partitions = std::vector<SynchronizedPartition>( m_slots );
     // m_partitions is now full of empty std::optionals, fill them now.
     for ( auto& synced_p : m_partitions ) {
       synced_p.with_lock( [this]( Partition& p ) { initStore( p ); } );
@@ -445,8 +423,9 @@ StatusCode EvtStoreSvc::setNumberOfStores( size_t slots ) {
 }
 /// Get the partition number corresponding to a given event
 size_t EvtStoreSvc::getPartitionNumber( int eventnumber ) const {
-  auto i = std::find_if( begin( m_partitions ), end( m_partitions ),
-                         with_lock( [eventnumber]( const Partition& p ) { return p.eventNumber == eventnumber; } ) );
+  auto i = std::find_if(
+      begin( m_partitions ), end( m_partitions ),
+      Gaudi::cxx::with_lock( [eventnumber]( const Partition& p ) { return p.eventNumber == eventnumber; } ) );
   return i != end( m_partitions ) ? std::distance( begin( m_partitions ), i ) : std::string::npos;
 }
 /// Activate a partition object. The  identifies the partition uniquely.

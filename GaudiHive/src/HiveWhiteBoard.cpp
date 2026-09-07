@@ -14,6 +14,7 @@
 //
 //====================================================================
 // Include files
+#include <Gaudi/cxx/SynchronizedValue.h>
 #include <GaudiKernel/ConcurrencyFlags.h>
 #include <GaudiKernel/DataObjID.h>
 #include <GaudiKernel/DataObject.h>
@@ -59,41 +60,11 @@ namespace {
   IDataManagerSvc* Partition::get<IDataManagerSvc>() {
     return dataManager.get();
   }
+  using SynchronizedPartition = Gaudi::cxx::SynchronizedValue<Partition, std::recursive_mutex>;
 
-  // C++20: replace with http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2017/p0290r2.html
-  //         http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2014/n4033.html
-
-  template <typename T, typename Mutex = std::recursive_mutex, typename ReadLock = std::scoped_lock<Mutex>,
-            typename WriteLock = ReadLock>
-  class Synced {
-    T             m_obj;
-    mutable Mutex m_mtx;
-
-  public:
-    template <typename F>
-    decltype( auto ) with_lock( F&& f ) {
-      WriteLock lock{ m_mtx };
-      return f( m_obj );
-    }
-    template <typename F>
-    decltype( auto ) with_lock( F&& f ) const {
-      ReadLock lock{ m_mtx };
-      return f( m_obj );
-    }
-  };
-  // transform an f(T) into an f(Synced<T>)
-  template <typename Fun>
-  auto with_lock( Fun&& f ) {
-    return [f = std::forward<Fun>( f )]( auto& p ) -> decltype( auto ) { return p.with_lock( f ); };
-  }
-  // call f(T) for each element in a container of Synced<T>
-  template <typename ContainerOfSynced, typename Fun>
-  void for_( ContainerOfSynced& c, Fun&& f ) {
-    std::for_each( begin( c ), end( c ), with_lock( std::forward<Fun>( f ) ) );
-  }
 } // namespace
 
-TTHREAD_TLS( Synced<Partition>* ) s_current = nullptr;
+TTHREAD_TLS( SynchronizedPartition* ) s_current = nullptr;
 
 namespace {
   namespace detail {
@@ -142,7 +113,7 @@ protected:
   /// Reference to address creator
   SmartIF<IAddressCreator> m_addrCreator;
   /// Datastore partitions
-  std::vector<Synced<Partition>> m_partitions;
+  std::vector<SynchronizedPartition> m_partitions;
   /// fifo queue of free slots
   tbb::concurrent_queue<size_t> m_freeSlots;
 
@@ -155,7 +126,7 @@ public:
     setDataLoader( 0 ).ignore();
     resetPreLoad().ignore();
     clearStore().ignore();
-    for_( m_partitions, []( Partition& p ) {
+    Gaudi::cxx::for_each( m_partitions, []( Partition& p ) {
       p.dataManager->release();
       p.dataProvider->release();
     } );
@@ -212,7 +183,7 @@ public:
   }
   /// IDataManagerSvc: Remove all data objects in the data store.
   StatusCode clearStore() override {
-    for_( m_partitions, []( Partition& p ) { p.dataManager->clearStore().ignore(); } );
+    Gaudi::cxx::for_each( m_partitions, []( Partition& p ) { p.dataManager->clearStore().ignore(); } );
     return StatusCode::SUCCESS;
   }
 
@@ -250,26 +221,27 @@ public:
     if ( pDataLoader ) pDataLoader->addRef();
     if ( pDataLoader ) pDataLoader->setDataProvider( this ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
     m_dataLoader = pDataLoader;
-    for_( m_partitions, [&]( Partition& p ) { p.dataManager->setDataLoader( m_dataLoader, this ).ignore(); } );
+    Gaudi::cxx::for_each( m_partitions,
+                          [&]( Partition& p ) { p.dataManager->setDataLoader( m_dataLoader, this ).ignore(); } );
     return StatusCode::SUCCESS;
   }
   /// Add an item to the preload list
   StatusCode addPreLoadItem( const DataStoreItem& item ) override {
-    for_( m_partitions, [&]( Partition& p ) {
+    Gaudi::cxx::for_each( m_partitions, [&]( Partition& p ) {
       p.dataProvider->addPreLoadItem( item ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
     } );
     return StatusCode::SUCCESS;
   }
   /// Remove an item from the preload list
   StatusCode removePreLoadItem( const DataStoreItem& item ) override {
-    for_( m_partitions, [&]( Partition& p ) {
+    Gaudi::cxx::for_each( m_partitions, [&]( Partition& p ) {
       p.dataProvider->removePreLoadItem( item ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
     } );
     return StatusCode::SUCCESS;
   }
   /// Clear the preload list
   StatusCode resetPreLoad() override {
-    for_( m_partitions, [&]( Partition& p ) {
+    Gaudi::cxx::for_each( m_partitions, [&]( Partition& p ) {
       p.dataProvider->resetPreLoad().ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
     } );
     return StatusCode::SUCCESS;
@@ -400,8 +372,9 @@ public:
 
   /// Get the partition number corresponding to a given event
   size_t getPartitionNumber( int eventnumber ) const override {
-    auto i = std::find_if( begin( m_partitions ), end( m_partitions ),
-                           with_lock( [eventnumber]( const Partition& p ) { return p.eventNumber == eventnumber; } ) );
+    auto i = std::find_if(
+        begin( m_partitions ), end( m_partitions ),
+        Gaudi::cxx::with_lock( [eventnumber]( const Partition& p ) { return p.eventNumber == eventnumber; } ) );
     return i != end( m_partitions ) ? std::distance( begin( m_partitions ), i ) : std::string::npos;
   }
 
@@ -454,7 +427,7 @@ public:
       return StatusCode::FAILURE;
     }
 
-    m_partitions = std::vector<Synced<Partition>>( m_slots );
+    m_partitions = std::vector<SynchronizedPartition>( m_slots );
     for ( size_t i = 0; i < m_slots; i++ ) {
       DataSvc* svc = new DataSvc( name() + "_" + std::to_string( i ), serviceLocator() );
       // Percolate properties
