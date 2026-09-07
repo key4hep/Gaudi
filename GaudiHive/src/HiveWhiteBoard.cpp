@@ -126,7 +126,7 @@ public:
     setDataLoader( 0 ).ignore();
     resetPreLoad().ignore();
     clearStore().ignore();
-    Gaudi::cxx::for_each( m_partitions, []( Partition& p ) {
+    for_each( m_partitions, []( Partition& p ) {
       p.dataManager->release();
       p.dataProvider->release();
     } );
@@ -183,7 +183,7 @@ public:
   }
   /// IDataManagerSvc: Remove all data objects in the data store.
   StatusCode clearStore() override {
-    Gaudi::cxx::for_each( m_partitions, []( Partition& p ) { p.dataManager->clearStore().ignore(); } );
+    for_each( m_partitions, []( Partition& p ) { p.dataManager->clearStore().ignore(); } );
     return StatusCode::SUCCESS;
   }
 
@@ -221,27 +221,26 @@ public:
     if ( pDataLoader ) pDataLoader->addRef();
     if ( pDataLoader ) pDataLoader->setDataProvider( this ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
     m_dataLoader = pDataLoader;
-    Gaudi::cxx::for_each( m_partitions,
-                          [&]( Partition& p ) { p.dataManager->setDataLoader( m_dataLoader, this ).ignore(); } );
+    for_each( m_partitions, [&]( Partition& p ) { p.dataManager->setDataLoader( m_dataLoader, this ).ignore(); } );
     return StatusCode::SUCCESS;
   }
   /// Add an item to the preload list
   StatusCode addPreLoadItem( const DataStoreItem& item ) override {
-    Gaudi::cxx::for_each( m_partitions, [&]( Partition& p ) {
+    for_each( m_partitions, [&]( Partition& p ) {
       p.dataProvider->addPreLoadItem( item ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
     } );
     return StatusCode::SUCCESS;
   }
   /// Remove an item from the preload list
   StatusCode removePreLoadItem( const DataStoreItem& item ) override {
-    Gaudi::cxx::for_each( m_partitions, [&]( Partition& p ) {
+    for_each( m_partitions, [&]( Partition& p ) {
       p.dataProvider->removePreLoadItem( item ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
     } );
     return StatusCode::SUCCESS;
   }
   /// Clear the preload list
   StatusCode resetPreLoad() override {
-    Gaudi::cxx::for_each( m_partitions, [&]( Partition& p ) {
+    for_each( m_partitions, [&]( Partition& p ) {
       p.dataProvider->resetPreLoad().ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
     } );
     return StatusCode::SUCCESS;
