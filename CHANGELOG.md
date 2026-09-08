@@ -6,6 +6,29 @@ Project Coordinators: Marco Clemencic @clemenci, Charles Leggett @leggett, Frank
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 
+## [v40r6](https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v40r6) - 2026-09-08
+This release focuses on improvements to NTuple writing performance and ROOT thread safety.
+A key feature is the optional disk buffer for ntuple writing, which can significantly reduce
+memory usage for jobs with many wide ntuples.
+
+A special thanks to all the people that contributed to this release:
+@ahennequ,
+@cburr,
+@clemenci,
+@graven.
+
+### Added
+- Support using a disk buffer for ntuple writing (gaudi/Gaudi!2010)
+  - New `Gaudi::NTuple::DiskBuffer` class for spilling ntuple rows to disk during a job
+  - Configurable via NTupleSvc properties: `DiskBuffer`, `DiskBufferDirectory`, `DiskBufferCompression`, `DiskBufferBlockSize`
+  - Optional zstd compression for buffered rows
+  - Can significantly reduce memory usage for wide ntuples
+
+### Fixed
+- Enable root thread safety on application startup (gaudi/Gaudi!2014)
+- Emit incidents for FileSvc output files (gaudi/Gaudi!2005)
+
+
 ## [v40r5](https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v40r5) - 2026-07-21
 This is a minor bugfix release that includes some of backward compatible changes needed by LHCb.
 
