@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 2024 CERN for the benefit of the LHCb and ATLAS collaborations      #
+# (c) Copyright 2024-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -45,6 +45,9 @@ class Test(GaudiExeTest):
         file, _, _ = setup_file_tree
         assert file.GetCompressionAlgorithm() == 4
 
+    def test_output_file_incident(self, stdout):
+        assert stdout.count(b"Handling incident 'CONNECTED_OUTPUT'") == 1
+
 
 def config():
     from GaudiConfig2 import Configurables as C
@@ -56,6 +59,9 @@ def config():
         E.HistogramWriterAlg("HistogramWriterAlg"),
     ]
 
+    incident_listener = C.IncidentAsyncTestSvc(
+        "FileSvcIncidentListener", IncidentNames=["CONNECTED_OUTPUT"]
+    )
     fileSvc = C.FileSvc(
         Config={
             "Histogram": f"{OUTPUT_FILE_NAME}?mode=recreate&flag=test&compress=404",
@@ -66,6 +72,7 @@ def config():
     loopmgr = C.HiveSlimEventLoopMgr(SchedulerName="AvalancheSchedulerSvc")
     whiteboard = C.HiveWhiteBoard("EventDataSvc", EventSlots=5)
     svcs = [
+        incident_listener,
         fileSvc,
         whiteboard,
     ]
