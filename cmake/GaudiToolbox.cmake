@@ -893,6 +893,15 @@ function(gaudi_add_pytest)
         string(JOIN "," ARG_COVERAGE ${ARG_COVERAGE})
         string(JOIN "\\ " ARG_COVERAGE_OPTIONS_ESC report ${ARG_COVERAGE_OPTIONS})
     endif()
+    # On sanitizer builds, PRELOAD_SANITIZER_LIB names the runtime that must
+    # be preloaded into this collection process itself (invoking the plain
+    # Python::Interpreter binary directly, as we do below, does not get it
+    # for free the way the old dedicated `pytest` runtime target used to) --
+    # without it the process aborts immediately with "ASan runtime does not
+    # come first in initial library list" and collection never runs at all.
+    if(PRELOAD_SANITIZER_LIB)
+        set(preload_sanitizer env LD_PRELOAD=${PRELOAD_SANITIZER_LIB})
+    endif()
     file(GENERATE OUTPUT ${base_filename}.cmake
         CONTENT "
 set(files_to_hash \${CMAKE_CURRENT_LIST_FILE})
@@ -921,8 +930,26 @@ if(NOT hash STREQUAL old_hash OR NOT EXISTS ${base_filename}.tests.cmake)
     if(NOT DEFINED PREFETCH_PYTEST_TESTS)
         message(\"... collect pytest tests from ${roots_msg}\")
     endif()
+    # LSAN_OPTIONS=detect_leaks=0: --collect-only only imports test modules,
+    # it doesn't run any test bodies, so a real leak surfacing here (e.g. in
+    # a dependency's import-time code) would otherwise fail this whole
+    # execute_process() with a non-zero exit and abort the *entire* configure
+    # via the FATAL_ERROR below -- for every package, not just the leaky one.
+    # Leak detection stays fully on for actual test execution later, this
+    # only disables it for the one-off collection/discovery step.
+    # Note: this must be `env LSAN_OPTIONS=... <run's own args>`, placed
+    # *after* $<TARGET_FILE:run> rather than set via `cmake -E env` before
+    # it. `run` unconditionally sources the project's env.sh, which (see
+    # lcg-toolchains' fragments/sanitizers/settings.cmake) itself exports
+    # LSAN_OPTIONS on every invocation for LSAN/ALUBSAN builds (without
+    # detect_leaks=0) -- so anything set *before* run gets silently
+    # overwritten the moment run sources it. Setting it after run, as part
+    # of what run execs, is the only place late enough to stick. Plain
+    # `env` (not `cmake -E env`) avoids a separate, already-fixed bug where
+    # running the `cmake` binary itself through `run`'s environment broke
+    # cmake's own dynamic linking.
     execute_process(
-        COMMAND $<TARGET_FILE:run> $<TARGET_FILE:Python::Interpreter> -m pytest
+        COMMAND $<TARGET_FILE:run> env LSAN_OPTIONS=detect_leaks=0 ${preload_sanitizer} $<TARGET_FILE:Python::Interpreter> -m pytest
             --collect-only --strict-markers
             ${ARG_OPTIONS_CMD}
             --ctest-output-file=${base_filename}.tests.cmake
@@ -1297,8 +1324,14 @@ function(gaudi_generate_confuserdb)
     string(REPLACE "." "/" modules_path_list "${modules}")
     list(TRANSFORM modules_path_list PREPEND "${CMAKE_CURRENT_SOURCE_DIR}/python/")
     list(TRANSFORM modules_path_list APPEND ".py")
+    # See the matching comment in gaudi_add_pytest(): on sanitizer builds,
+    # genconfuser.py needs the sanitizer runtime preloaded up front or it
+    # aborts with "ASan runtime does not come first in initial library list".
+    if(PRELOAD_SANITIZER_LIB)
+        set(preload_sanitizer env LD_PRELOAD=${PRELOAD_SANITIZER_LIB})
+    endif()
     add_custom_command(OUTPUT "${output_file}"
-        COMMAND run genconfuser.py
+        COMMAND run ${preload_sanitizer} genconfuser.py
                 --build-dir ${CMAKE_BINARY_DIR}
                 --project-name ${PROJECT_NAME}
                 --root ${CMAKE_CURRENT_SOURCE_DIR}/python
