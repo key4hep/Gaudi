@@ -206,26 +206,8 @@ private:
    *  @param caller The name of the caller of the audited event.
    *  @param ctx The EventContext associated with the audited event.
    *
-   *  @note In case of a suspension event, the range for the execution is closed instead of creating a range for
-   * suspension.
-   *
    */
   void before( std::string const& event, std::string const& caller, EventContext const& ctx ) override {
-    // Suspension pauses the execution, so close the currently active
-    // execution range instead of creating a range for the suspension.
-    if ( IAuditor::Suspension == event ) {
-      auto execute_key = make_key( IAuditor::Execute, caller, ctx );
-      auto acc         = decltype( m_ranges )::accessor{};
-      if ( !m_ranges.find( acc, execute_key ) ) {
-        error() << std::format( "Execution range for {} does not exist while suspending", execute_key ) << endmsg;
-      } else {
-        nvtxDomainRangeEnd( s_domain, acc->second );
-        m_ranges.erase( acc );
-        info() << std::format( "Suspended execution range for {}", execute_key ) << endmsg;
-      }
-      return;
-    }
-
     auto key   = make_key( event, caller, ctx );
     auto label = std::format( "{}:{}", caller, event );
     auto id    = start_range( label, ctx );
@@ -245,28 +227,9 @@ private:
    *  @param ctx The EventContext associated with the audited event.
    *  @param status The status code of the audited event.
    *
-   * @note In case of a suspension event, the range for the execution is created to indicate resumption rather than
-   * creating a range for suspension.
-   *
    */
   void after( std::string const& event, std::string const& caller, EventContext const& ctx,
               StatusCode const& = StatusCode::SUCCESS ) override {
-    // Suspension has ended, so resume the execution by creating a new
-    // execution range. Do not create a range for Suspend itself.
-    if ( IAuditor::Suspension == event ) {
-      auto execute_key = make_key( IAuditor::Execute, caller, ctx );
-      auto label       = std::format( "{}:{}", caller, IAuditor::Execute );
-      auto id          = start_range( label, ctx );
-      auto ret         = m_ranges.emplace( execute_key, id );
-      if ( !ret ) {
-        error() << std::format( "Execution range for {} already exists while resuming", execute_key ) << endmsg;
-        nvtxDomainRangeEnd( s_domain, id ); // the newly started range would otherwise never be closed
-      } else {
-        info() << std::format( "Resumed execution range for {}", execute_key ) << endmsg;
-      }
-      return;
-    }
-
     auto key = make_key( event, caller, ctx );
     auto acc = decltype( m_ranges )::accessor{};
     if ( m_ranges.find( acc, key ) ) {
