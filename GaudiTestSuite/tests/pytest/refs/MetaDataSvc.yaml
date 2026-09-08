@@ -39,6 +39,7 @@ stdout: |-
   ApplicationMgr.AuditTools:False
   ApplicationMgr.CreateSvc:[  ]
   ApplicationMgr.Dlls:[  ]
+  ApplicationMgr.EnableROOTThreadSafety:True
   ApplicationMgr.Environment:{  }
   ApplicationMgr.EventLoop:'EventLoopMgr'
   ApplicationMgr.EvtMax:10
