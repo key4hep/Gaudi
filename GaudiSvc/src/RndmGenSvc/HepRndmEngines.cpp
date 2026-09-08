@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -177,7 +177,7 @@ namespace HepRndm {
   template <>
   std::unique_ptr<CLHEP::HepRandomEngine> Engine<RanluxEngine>::createEngine() {
     return m_useTable ? create_engine<RanluxEngine>( m_row, m_col, m_lux )
-                      : create_engine<RanluxEngine>( m_seeds[0], m_lux );
+                      : create_engine<RanluxEngine>( std::abs( m_seeds[0] ), m_lux );
   }
   // Specialized create function for Ranlux64Engine
   template <>
