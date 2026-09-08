@@ -88,6 +88,7 @@ gaudi_add_module(GaudiTestSuiteComponents
                          src/Maps/MapAlg.cpp
                          src/MultipleLogStreams/QotdAlg.cpp
                          src/NTuples/NTupleAlgorithm.cpp
+                         src/NTuples/WideNTupleAlgorithm.cpp
                          src/PluginService/BackwardCompatibleAliases.cpp
                          src/PluginService/SpecialCustomFactory.cpp
                          src/Properties/CustomPropertiesAlg.cpp
@@ -207,6 +208,8 @@ if(NOT GAUDI_USE_AIDA)
         GaudiTestSuite.pytest.test_randomnumber
         GaudiTestSuite.pytest.test_ntuples
         GaudiTestSuite.pytest.test_metadatasvc
+        GaudiTestSuite.pytest.ntuple_diskbuffer.test_write_columnar
+        GaudiTestSuite.pytest.ntuple_diskbuffer.test_write_buffered
         GaudiTestSuite.pytest.test_histograms_py
         GaudiTestSuite.pytest.test_histograms_opts
     )

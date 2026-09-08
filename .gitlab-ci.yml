@@ -99,6 +99,8 @@ variables:
   script:
     - . /cvmfs/sft.cern.ch/lcg/views/LCG_${LCG_VERSION}/${platform}/setup.sh
     - export CONFIGURABLE_DB_IGNORE="/cvmfs/sft.cern.ch/lcg/views/LCG_${LCG_VERSION}/${platform}/lib/Gaudi.confdb,/cvmfs/sft.cern.ch/lcg/views/LCG_${LCG_VERSION}/${platform}/lib/Gaudi.confdb2"
+    # ensure we can access pkg-config modules installed on the system (like zstd)
+    - "[ -e /usr/lib64/pkgconfig ] && export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/usr/lib64/pkgconfig"
     - cmake --version
     - cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_SCAN_FOR_MODULES=NO -DGAUDI_USE_CUDA=${CUDACXX:+ON}
     - ccache -z
@@ -118,6 +120,8 @@ variables:
     # Source the Key4hep nightly setup
     - . /cvmfs/sft-nightlies.cern.ch/lcg/views/devkey-head/latest/x86_64-el9-gcc14-opt/setup.sh
     - export CONFIGURABLE_DB_IGNORE="/cvmfs/sft-nightlies.cern.ch/lcg/views/devkey-head/latest/x86_64-el9-gcc14-opt/lib/Gaudi.confdb,/cvmfs/sft-nightlies.cern.ch/lcg/views/devkey-head/latest/x86_64-el9-gcc14-opt/lib/Gaudi.confdb2"
+    # ensure we can access pkg-config modules installed on the system (like zstd)
+    - "[ -e /usr/lib64/pkgconfig ] && export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/usr/lib64/pkgconfig"
     - cmake --version
     # Build Gaudi
     - echo "=== Building Gaudi ==="
@@ -354,6 +358,8 @@ doxygen:107:x86_64-el9-gcc14-opt:
   image: gitlab-registry.cern.ch/lhcb-docker/os-base/alma9-devel:latest
   script:
     - . /cvmfs/sft.cern.ch/lcg/views/LCG_${LCG_VERSION}/${platform}/setup.sh
+    # ensure we can access pkg-config modules installed on the system (like zstd)
+    - "[ -e /usr/lib64/pkgconfig ] && export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/usr/lib64/pkgconfig"
     - cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
     - cmake --build build --target doc
     - rm -rf public

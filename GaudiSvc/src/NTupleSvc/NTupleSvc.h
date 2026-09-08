@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -124,7 +124,18 @@ protected:
   Gaudi::Property<DBaseEntries> m_input{ this, "Input", {}, "input streams" };
   Gaudi::Property<DBaseEntries> m_output{ this, "Output", {}, "output streams" };
 
-  Gaudi::Property<int> m_basketsize{ this, "BasketSize", 32000, "BasketSize" }; // ROOT default
+  Gaudi::Property<int>  m_basketsize{ this, "BasketSize", 32000, "BasketSize" }; // ROOT default
+  Gaudi::Property<bool> m_diskBuffer{
+      this, "DiskBuffer", false,
+      "Append rows of column-wise tuples to a file on disk during the run and build the TTrees at finalize" };
+  Gaudi::Property<std::string> m_diskBufferDir{ this, "DiskBufferDirectory", "",
+                                                "Where to put the buffer directory; empty = next to the output file" };
+  Gaudi::Property<int>         m_diskBufferCompression{ this, "DiskBufferCompression", 3,
+                                                "zstd level for the disk buffer files, 0 = uncompressed" };
+  Gaudi::Property<int>         m_diskBufferBlockSize{
+      this, "DiskBufferBlockSize", 64 * 1024,
+      "Bytes of rows collected per tuple before a block is compressed and written: the memory held per "
+              "tuple, and what zstd can see at once (only worth raising when consecutive rows are near-copies)" };
   /// Container of connection points
   std::map<std::string, Connection> m_connections;
 };
