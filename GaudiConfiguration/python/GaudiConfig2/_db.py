@@ -23,15 +23,19 @@ class ConfDB2(object):
 
         self._dbs = {}
         ignored_files = set(os.environ.get("CONFIGURABLE_DB_IGNORE", "").split(","))
+        loaded = set()
         for path in GAUDI_DEFAULT_PLUGIN_PATH:
             if not path or not os.path.isdir(path):
                 continue
             dbfiles = [
-                f.absolute().as_posix()
+                fabs
                 for f in Path(path).glob("*.confdb2")
-                if f.absolute().as_posix() not in ignored_files
+                if (fabs := f.absolute().as_posix()) not in ignored_files
+                and fabs not in loaded
             ]
             dbfiles.sort()
+            # Avoid loading same file twice (can happen if entries in search path point to same dir)
+            loaded.update(dbfiles)
             for db in [shelve.open(f, "r") for f in dbfiles]:
                 for key in db:
                     self._dbs.setdefault(key, db)
