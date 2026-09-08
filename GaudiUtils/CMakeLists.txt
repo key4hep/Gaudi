@@ -44,7 +44,7 @@ if(GAUDI_USE_AIDA)
 endif()
 if(GAUDI_USE_ZSTD)
   # Gaudi::NTuple::DiskBuffer compression
-  target_link_libraries(GaudiUtilsLib PRIVATE zstd::libzstd)
+  target_link_libraries(GaudiUtilsLib PRIVATE PkgConfig::zstd)
   target_compile_definitions(GaudiUtilsLib PRIVATE GAUDI_USE_ZSTD)
 endif()
 
