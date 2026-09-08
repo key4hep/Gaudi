@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -26,8 +26,6 @@
 class GPUCruncher : public Gaudi::AsynchronousAlgorithm {
 
 public:
-  using CHM = tbb::concurrent_hash_map<std::string, unsigned int>;
-
   bool isClonable() const override { return true; }
 
   /// the execution of the algorithm
@@ -37,12 +35,10 @@ public:
   /// the finalization of the algorithm
   StatusCode finalize() override;
 
-  double get_runtime() const { return m_avg_runtime; }
-
   GPUCruncher( const std::string& name, // the algorithm instance name
                ISvcLocator*       pSvc );     // the Service Locator
 
-  /// virtual & protected desctrustor
+  /// virtual & protected destructor
   virtual ~GPUCruncher(); // virtual & protected destructor
 
 private:
@@ -50,8 +46,8 @@ private:
   GPUCruncher(); // no default constructor
   /// the copy constructor is disabled
   GPUCruncher( const GPUCruncher& ); // no copy constructor
-  /// the assignement operator is disabled
-  GPUCruncher& operator=( const GPUCruncher& ); // no assignement
+  /// the assignment operator is disabled
+  GPUCruncher& operator=( const GPUCruncher& ); // no assignment
   /// The GPU intensive function
   StatusCode gpuExecute( const std::vector<double>& in, std::vector<double>& out ) const;
 
@@ -61,12 +57,9 @@ private:
   Gaudi::Property<double> m_avg_runtime{ this, "avgRuntime", 1., "Average runtime of the module." };
   Gaudi::Property<double> m_var_runtime{ this, "varRuntime", 0.01, "Variance of the runtime of the module." };
 
-  // For the concurrency
-  const uint MAX_INPUTS  = 40;
-  const uint MAX_OUTPUTS = 10;
-
   std::vector<DataObjectHandle<DataObject>*> m_inputHandles;
   std::vector<DataObjectHandle<DataObject>*> m_outputHandles;
 
+  using CHM = tbb::concurrent_hash_map<std::string, unsigned int>;
   static CHM m_name_ncopies_map;
 };
