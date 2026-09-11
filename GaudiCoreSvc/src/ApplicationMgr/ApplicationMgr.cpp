@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -143,6 +143,18 @@ StatusCode ApplicationMgr::i_startup() {
 
   // Note: we cannot use CommonMessaging methods here because MessageSvc is not there yet
   MsgStream log( nullptr, name() );
+
+  // Enable ROOT thread safety
+  if ( m_enableROOTThreadSafety ) {
+    if ( gROOT ) {
+      ROOT::EnableThreadSafety();
+    } else {
+      log << MSG::WARNING
+          << "ROOT not yet initialized, we cannot enable thread safety "
+             "(EnableROOTThreadSafety==True)"
+          << endmsg;
+    }
+  }
 
   // Create the Message service
   auto msgsvc = svcManager()->createService( Gaudi::Utils::TypeNameString( "MessageSvc", m_messageSvcType ) );
