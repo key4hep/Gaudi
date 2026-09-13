@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -109,7 +109,7 @@ StatusCode ThreadPoolSvc::initPool( const int& poolSize, const int& maxParalleli
     m_tbbgc = std::make_unique<tbb::global_control>( tbb::global_control::max_allowed_parallelism,
                                                      m_threadPoolSize + maxParallelismExtra + 1 );
 
-    Gaudi::Concurrency::ConcurrencyFlags::setNumThreads( m_threadPoolSize );
+    Gaudi::Concurrency::ConcurrencyManager::setNumThreads( m_threadPoolSize );
 
     // Create the task arena to run all algorithms
     m_arena.initialize( m_threadPoolSize + 1 );
@@ -120,7 +120,7 @@ StatusCode ThreadPoolSvc::initPool( const int& poolSize, const int& maxParalleli
 
   } else {
     // don't use a thread pool
-    Gaudi::Concurrency::ConcurrencyFlags::setNumThreads( 1 );
+    Gaudi::Concurrency::ConcurrencyManager::setNumThreads( 1 );
     m_tbbgc = std::make_unique<tbb::global_control>( tbb::global_control::max_allowed_parallelism, 0 );
   }
 

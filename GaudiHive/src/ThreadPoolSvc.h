@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -10,6 +10,7 @@
 \***********************************************************************************/
 #pragma once
 
+#include <GaudiKernel/ConcurrencyFlags.h>
 #include <GaudiKernel/IThreadInitTool.h>
 #include <GaudiKernel/IThreadPoolSvc.h>
 #include <GaudiKernel/Service.h>
@@ -34,7 +35,7 @@
  * threads at the same time.
  *
  */
-class ThreadPoolSvc : public extends<Service, IThreadPoolSvc> {
+class ThreadPoolSvc : public extends<Service, IThreadPoolSvc, Gaudi::Concurrency::ConcurrencyManager> {
 public:
   /// Constructor
   ThreadPoolSvc( const std::string& name, ISvcLocator* svc );

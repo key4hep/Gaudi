@@ -125,7 +125,8 @@ namespace {
  * @author Pere Mato
  * @version 1.0
  */
-class HiveWhiteBoard : public extends<Service, IDataProviderSvc, IDataManagerSvc, IHiveWhiteBoard> {
+class HiveWhiteBoard : public extends<Service, IDataProviderSvc, IDataManagerSvc, IHiveWhiteBoard,
+                                      Gaudi::Concurrency::ConcurrencyManager> {
 protected:
   Gaudi::Property<CLID>                     m_rootCLID{ this, "RootCLID", 110 /*CLID_Event*/, "CLID of root entry" };
   Gaudi::Property<std::string>              m_rootName{ this, "RootName", "/Event", "name of root entry" };
@@ -361,7 +362,7 @@ public:
       return StatusCode::FAILURE;
     }
     m_slots = slots;
-    Gaudi::Concurrency::ConcurrencyFlags::setNumConcEvents( slots );
+    Gaudi::Concurrency::ConcurrencyManager::setNumConcEvents( slots );
     return StatusCode::SUCCESS;
   }
 
