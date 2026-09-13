@@ -8,6 +8,8 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
+import re
+
 import pytest
 from GaudiTesting import GaudiExeTest, platform_matches
 
@@ -62,11 +64,20 @@ class Test(GaudiExeTest):
         b"More than 2s since the beginning of the event (s: 0  e: 0)",
         b"More than 2s since the beginning of the event (s: 1  e: 1)",
         b"More than 2s since the beginning of the event (s: 0  e: 2)",
-        b"An event (s: 0  e: 0) took 7.",
-        b"An event (s: 1  e: 1) took 7.",
-        b"An event (s: 0  e: 2) took 7.",
+    ]
+
+    expected_timeout_reports = [
+        rb"An event \(s: 0  e: 0\) took (\d+\.\d{3})s",
+        rb"An event \(s: 1  e: 1\) took (\d+\.\d{3})s",
+        rb"An event \(s: 0  e: 2\) took (\d+\.\d{3})s",
     ]
 
     @pytest.mark.parametrize("message", expected_messages)
     def test_stdout(self, stdout, message):
         assert message in stdout
+
+    @pytest.mark.parametrize("message", expected_timeout_reports)
+    def test_timeout_report(self, stdout, message):
+        match = re.search(message, stdout)
+        assert match
+        assert float(match.group(1)) == pytest.approx(7, abs=1)
