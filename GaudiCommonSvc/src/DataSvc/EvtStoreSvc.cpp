@@ -233,7 +233,8 @@ namespace {
  * @author Gerhard Raven
  * @version 1.0
  */
-class GAUDI_API EvtStoreSvc : public extends<Service, IDataProviderSvc, IDataManagerSvc, IHiveWhiteBoard> {
+class GAUDI_API EvtStoreSvc : public extends<Service, IDataProviderSvc, IDataManagerSvc, IHiveWhiteBoard,
+                                             Gaudi::Concurrency::ConcurrencyManager> {
   Gaudi::Property<CLID>        m_rootCLID{ this, "RootCLID", 110 /*CLID_Event*/, "CLID of root entry" };
   Gaudi::Property<std::string> m_rootName{ this, "RootName", "/Event", "name of root entry" };
   Gaudi::Property<bool>        m_forceLeaves{ this, "ForceLeaves", false,
@@ -440,7 +441,7 @@ StatusCode EvtStoreSvc::setNumberOfStores( size_t slots ) {
     return StatusCode::FAILURE;
   }
   m_slots = slots;
-  Gaudi::Concurrency::ConcurrencyFlags::setNumConcEvents( slots );
+  Gaudi::Concurrency::ConcurrencyManager::setNumConcEvents( slots );
   return StatusCode::SUCCESS;
 }
 /// Get the partition number corresponding to a given event

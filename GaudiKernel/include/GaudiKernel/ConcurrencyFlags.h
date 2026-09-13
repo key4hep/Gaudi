@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -12,13 +12,14 @@
 
 #include <cstddef>
 
+#include <GaudiKernel/IInterface.h>
 #include <GaudiKernel/Kernel.h>
 
-class ThreadPoolSvc;
-class HiveWhiteBoard;
-class SGHiveMgrSvc;
 class AthMpEvtLoopMgr;
-class EvtStoreSvc;
+
+namespace SG {
+  class HiveMgrSvc;
+}
 
 /** @class ConcurrencyFlags ConcurrencyFlags.h GaudiKernel/ConcurrencyFlags.h
  *
@@ -30,19 +31,15 @@ class EvtStoreSvc;
  *
  */
 
-namespace SG {
-  class HiveMgrSvc;
-}
-
 namespace Gaudi {
 
   namespace Concurrency {
 
+    class ConcurrencyManager;
+
     class ConcurrencyFlags {
 
-      friend class ::ThreadPoolSvc;
-      friend class ::HiveWhiteBoard;
-      friend class ::EvtStoreSvc;
+      friend class ConcurrencyManager;
       friend class SG::HiveMgrSvc;    // ATLAS
       friend class ::AthMpEvtLoopMgr; // ATLAS
 
@@ -73,5 +70,31 @@ namespace Gaudi {
       static std::size_t n_concEvts; // concurrent events for MT
       static std::size_t n_procs;    // child processes for MP
     };
+
+    /** @class ConcurrencyManager ConcurrencyFlags.h GaudiKernel/ConcurrencyFlags.h
+     *
+     * Interface implemented by components that are allowed to set the concurrency
+     * flags of the running job.
+     *
+     * It is a friend of ConcurrencyFlags and exposes its setters as protected
+     * methods, so that only classes deriving from it can modify the number of worker
+     * threads, concurrent events or child processes.
+     */
+    class GAUDI_API ConcurrencyManager : virtual public IInterface {
+    public:
+      /// InterfaceID
+      DeclareInterfaceID( ConcurrencyManager, 1, 0 );
+
+    protected:
+      /// Set the number of worker threads (for MT).
+      static void setNumThreads( const std::size_t& nT ) { ConcurrencyFlags::setNumThreads( nT ); }
+
+      /// Set the number of concurrent events (for MT).
+      static void setNumConcEvents( const std::size_t& nE ) { ConcurrencyFlags::setNumConcEvents( nE ); }
+
+      /// Set the number of forked child processes (for MP).
+      static void setNumProcs( const std::size_t& nP ) { ConcurrencyFlags::setNumProcs( nP ); }
+    };
+
   } // namespace Concurrency
 } // namespace Gaudi
