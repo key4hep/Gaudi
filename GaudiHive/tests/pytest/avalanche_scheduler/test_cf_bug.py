@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 2024-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 2024-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -24,7 +24,6 @@ class Test(GaudiExeTest):
 
     test_block = GaudiExeTest.find_reference_block(
         """
-        AvalancheSchedu...   DEBUG Event 0 finished (slot 0).
         AvalancheSchedu...   DEBUG RootDecisionHub (0), w/ decision: TRUE(1)
           topSeq (1), w/ decision: FALSE(0)
             A1 (2), w/ decision: TRUE(1), in state: EVTACCEPTED
