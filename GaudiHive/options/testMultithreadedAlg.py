@@ -1,6 +1,6 @@
 #!/usr/bin/env gaudirun.py
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -44,7 +44,7 @@ CPUCrunchSvc(shortCalib=True)
 
 a1 = CPUCruncher("A1")
 a1.Cardinality = cardinality
-a1.avgRuntime = 5.0
+a1.avgRuntime = 3.0
 a1.NParallel = 5
 a1.OutputLevel = DEBUG
 
