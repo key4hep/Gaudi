@@ -138,6 +138,12 @@ set(GAUDI_INSTALL_PLUGINDIR "${CMAKE_INSTALL_LIBDIR}" CACHE STRING "Install plug
 set(GAUDI_INSTALL_PYTHONDIR "python" CACHE STRING "Install python packages in <prefix>/\${GAUDI_INSTALL_PYTHONDIR}")
 set(GAUDI_INSTALL_CONFIGDIR "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}" CACHE STRING "Install cmake files in <prefix>/\${GAUDI_INSTALL_CONFIGDIR}")
 
+foreach(var IN ITEMS CMAKE_INSTALL_BINDIR CMAKE_INSTALL_LIBDIR CMAKE_INSTALL_INCLUDEDIR GAUDI_INSTALL_PLUGINDIR GAUDI_INSTALL_PYTHONDIR GAUDI_INSTALL_CONFIGDIR)
+    if(IS_ABSOLUTE "${${var}}")
+        message(FATAL_ERROR "${var} is an absolute path (${${var}}), only relative paths are allowed (see https://gitlab.cern.ch/gaudi/Gaudi/-/work_items/395)")
+    endif()
+endforeach()
+
 # generate a shell script with the configured values of the install directories
 file(CONFIGURE OUTPUT install_dirs.sh
     CONTENT "# Generated file, do not edit
