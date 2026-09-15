@@ -1,6 +1,6 @@
 
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -14,10 +14,6 @@
 #include <boost/fiber/condition_variable.hpp>
 #include <boost/fiber/fiber.hpp>
 #include <boost/fiber/mutex.hpp>
-#include <boost/version.hpp>
-#if ( BOOST_VERSION >= 108400 )
-#  include <boost/fiber/stack_allocator_wrapper.hpp>
-#endif
 /** @class FiberManager FiberManager.h
  *
  * The FiberManager manages a pool of threads used to run boost::fiber fibers.
@@ -38,6 +34,12 @@ public:
    *
    * @param n_threads Number of threads for CPU portion of asynchronous algorithms.
    *                  These are *in addition* to the TBB worker threads used for CPU algorithms.
+   *
+   * @note The calling thread is initialized with fiber scheduler and starts participating in sharing the global work
+   * queue of fibers, the current context becomes the main fiber of the calling thread. The main fiber should not be
+   * suspended, preemptive blocking is allowed. After construction, the calling thread must not be assigned different
+   * fiber scheduling algorithm.
+   *
    *    * */
   FiberManager( int n_threads );
   ~FiberManager();
@@ -49,9 +51,15 @@ public:
    * work to complete.
    *
    * @param func The AlgTask, when used in AvalancheSchedulerSvc
+   *
+   * @note This function should only be called from a thread participating in the global work sharing of fibers, e.g.
+   * the thread that constructed the FiberManager.
+   *
    * */
   template <typename F>
   void schedule( F&& func ) {
+    // Add a new fiber invoking the function to the shared work queue, then notify the workers in case they where
+    // sleeping.
     boost::fibers::fiber( boost::fibers::launch::post, std::forward<F>( func ) ).detach();
     for ( auto* p : m_schedAlgoList ) { p->notify(); }
   }
@@ -60,6 +68,6 @@ private:
   using SchedAlgo = boost::fibers::algo::shared_work;
   boost::fibers::condition_variable m_shuttingDown_cv{};
   boost::fibers::mutex              m_shuttingDown_mtx{};
-  std::vector<std::thread>          m_threads{};
+  std::vector<std::jthread>         m_threads{};
   std::vector<SchedAlgo*>           m_schedAlgoList{};
 };
