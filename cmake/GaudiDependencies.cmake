@@ -60,6 +60,7 @@ Depending on what was used to build Gaudi:
 * XercesC
 * CLHEP>=2.4.1.0
 * HepPDT
+* zstd (pkg-config module libzstd)
 * Doxygen>=1.8.15
 
 Depending on the platform:
@@ -121,11 +122,14 @@ set(_gaudi_CLHEP_MIN_VERSION 2.4.0.1)
 set(_gaudi_Doxygen_MIN_VERSION 1.8.15)
 set(CLHEP_FORCE_MODE CONFIG)
 
-set(deps AIDA HepPDT CLHEP XercesC)
+set(deps AIDA HepPDT CLHEP XercesC zstd)
 if(NOT CMAKE_FIND_PACKAGE_NAME)
   # these build-time only dependencies are not needed downstream
   list(APPEND deps Doxygen)
 endif()
+
+# Identify dependencies using pkgconfig (by the pkgconfig module to use)
+set(zstd_pkgconfig_module "libzstd")
 
 option(GAUDI_ENABLE_GAUDIPARTPROP "Build the subdirectory GaudiPartProp" YES)
 option(GAUDI_BUILD_EXAMPLES "Build the directory GaudiExamples" YES)
