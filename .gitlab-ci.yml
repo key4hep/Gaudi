@@ -180,51 +180,51 @@ variables:
 
 
 ### Regular builds
-lcg:108c:x86_64-el9-gcc13-opt:
+lcg:108c:x86_64-el9-gcc15-opt:
   <<: *template_build
   image: gitlab-registry.cern.ch/lhcb-docker/os-base/alma9-devel:latest
-warnings-check:lcg:108c:x86_64-el9-gcc13-opt:
+warnings-check:lcg:108c:x86_64-el9-gcc15-opt:
   <<: *template_warnings_check
   needs:
-    - job: "lcg:108c:x86_64-el9-gcc13-opt"
+    - job: "lcg:108c:x86_64-el9-gcc15-opt"
       artifacts: true
 
-lcg:108c:x86_64-el9-gcc13-dbg:
+lcg:108c:x86_64-el9-gcc15-dbg:
   <<: *template_build
   image: gitlab-registry.cern.ch/lhcb-docker/os-base/alma9-devel:latest
-warnings-check:lcg:108c:x86_64-el9-gcc13-dbg:
+warnings-check:lcg:108c:x86_64-el9-gcc15-dbg:
   <<: *template_warnings_check
   needs:
-    - job: "lcg:108c:x86_64-el9-gcc13-dbg"
+    - job: "lcg:108c:x86_64-el9-gcc15-dbg"
       artifacts: true
 
 
 ### Special builds
-lcg:108c:x86_64-el9-gcc13-opt:minimal:
+lcg:108c:x86_64-el9-gcc15-opt:minimal:
   <<: *template_build
   image: gitlab-registry.cern.ch/lhcb-docker/os-base/alma9-devel:latest
-warnings-check:lcg:108c:x86_64-el9-gcc13-opt:minimal:
+warnings-check:lcg:108c:x86_64-el9-gcc15-opt:minimal:
   <<: *template_warnings_check
   needs:
-    - job: "lcg:108c:x86_64-el9-gcc13-opt:minimal"
+    - job: "lcg:108c:x86_64-el9-gcc15-opt:minimal"
       artifacts: true
 
-lcg:108c:x86_64-el9-gcc13-opt:no-AIDA:
+lcg:108c:x86_64-el9-gcc15-opt:no-AIDA:
   <<: *template_build
   image: gitlab-registry.cern.ch/lhcb-docker/os-base/alma9-devel:latest
-warnings-check:lcg:108c:x86_64-el9-gcc13-opt:no-AIDA:
+warnings-check:lcg:108c:x86_64-el9-gcc15-opt:no-AIDA:
   <<: *template_warnings_check
   needs:
-    - job: "lcg:108c:x86_64-el9-gcc13-opt:no-AIDA"
+    - job: "lcg:108c:x86_64-el9-gcc15-opt:no-AIDA"
       artifacts: true
 
-lcg:108c:x86_64-el9-gcc13-opt:no-examples:
+lcg:108c:x86_64-el9-gcc15-opt:no-examples:
   <<: *template_build
   image: gitlab-registry.cern.ch/lhcb-docker/os-base/alma9-devel:latest
-warnings-check:lcg:108c:x86_64-el9-gcc13-opt:no-examples:
+warnings-check:lcg:108c:x86_64-el9-gcc15-opt:no-examples:
   <<: *template_warnings_check
   needs:
-    - job: "lcg:108c:x86_64-el9-gcc13-opt:no-examples"
+    - job: "lcg:108c:x86_64-el9-gcc15-opt:no-examples"
       artifacts: true
 
 lcg-view:110:x86_64-el9-gcc15-opt:gpu:
@@ -243,13 +243,13 @@ warnings-check:lcg-view:110:x86_64-el9-gcc15-opt:gpu:
       artifacts: true
 
 # LHCb-style build
-lhcb:108c:x86_64_v3-el9-gcc13-opt+g:
+lhcb:108c:x86_64_v3-el9-gcc15-opt+g:
   <<: *template_lhcb_build
   image: gitlab-registry.cern.ch/lhcb-docker/os-base/alma9-devel:latest
-warnings-check:lhcb:108c:x86_64_v3-el9-gcc13-opt+g:
+warnings-check:lhcb:108c:x86_64_v3-el9-gcc15-opt+g:
   <<: *template_warnings_check
   needs:
-    - job: "lhcb:108c:x86_64_v3-el9-gcc13-opt+g"
+    - job: "lhcb:108c:x86_64_v3-el9-gcc15-opt+g"
       artifacts: true
 
 # Build on LCG View (including CUDA)
@@ -289,7 +289,7 @@ lcg-view:devkey-head:x86_64-el9-gcc15-opt:
 check-unused:
   image: gitlab-registry.cern.ch/lhcb-docker/os-base/alma9-devel:latest
   needs:
-    - job: "lcg:108c:x86_64-el9-gcc13-opt"
+    - job: "lcg:108c:x86_64-el9-gcc15-opt"
       artifacts: true
   script:
     - ci-utils/check-sources compile_commands.json
@@ -397,7 +397,7 @@ deploy-website:
 
 ### Tests for CMake configuration
 
-cmake-toolbox:108c:x86_64-el9-gcc13-opt:
+cmake-toolbox:108c:x86_64-el9-gcc15-opt:
   <<: *template_build
   image: gitlab-registry.cern.ch/lhcb-docker/os-base/alma9-devel:latest
   script:
@@ -405,22 +405,22 @@ cmake-toolbox:108c:x86_64-el9-gcc13-opt:
   artifacts: {}
   cache: {}
 
-cmake-install:108c:x86_64-el9-gcc13-opt:
+cmake-install:108c:x86_64-el9-gcc15-opt:
   <<: *template_build
   image: gitlab-registry.cern.ch/lhcb-docker/os-base/alma9-devel:latest
   needs:
-    - job: "lcg:108c:x86_64-el9-gcc13-opt"
+    - job: "lcg:108c:x86_64-el9-gcc15-opt"
       artifacts: true
   script:
     - ci-utils/test-cmake-install
   artifacts: {}
   cache: {}
 
-cmake-downstream:108c:x86_64-el9-gcc13-opt:minimal:
+cmake-downstream:108c:x86_64-el9-gcc15-opt:minimal:
   <<: *template_build
   image: gitlab-registry.cern.ch/lhcb-docker/os-base/alma9-devel:latest
   needs:
-    - job: "lcg:108c:x86_64-el9-gcc13-opt:minimal"
+    - job: "lcg:108c:x86_64-el9-gcc15-opt:minimal"
       artifacts: true
   script:
     - ci-utils/test-cmake-downstream $LCG_VERSION $platform
