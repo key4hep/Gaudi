@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 2024-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 2024-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -289,7 +289,7 @@ class GaudiExeTest(SubprocessBaseTest):
         """
         Test the standard output against the reference.
         """
-        if not self.reference or reference.get("stdout") is None:
+        if not self.reference or "stdout" not in reference:
             pytest.skip("No stdout reference")
 
         out = self.preprocessor(stdout.decode("utf-8", errors="backslashreplace"))
@@ -302,7 +302,7 @@ class GaudiExeTest(SubprocessBaseTest):
         """
         Test the TTree summaries against the reference.
         """
-        if not self.reference or reference.get("ttrees") is None:
+        if not self.reference or "ttrees" not in reference:
             pytest.skip()
 
         ttrees = filter_dict(
@@ -324,7 +324,7 @@ class GaudiExeTest(SubprocessBaseTest):
         """
         Test the histogram summaries against the reference.
         """
-        if not self.reference or reference.get("histos") is None:
+        if not self.reference or "histos" not in reference:
             pytest.skip()
 
         histos = filter_dict(
@@ -347,7 +347,7 @@ class GaudiExeTest(SubprocessBaseTest):
         Test the standard error output against the reference.
         """
         err = self.preprocessor(stderr.decode("utf-8", errors="backslashreplace"))
-        if self.reference and reference.get("stderr") is not None:
+        if self.reference and "stderr" in reference:
             self.validate_with_reference(err, "stderr", reference, record_property)
 
         else:
