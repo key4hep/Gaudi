@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #####################################################################################
-# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -27,9 +27,9 @@ __version__ = ""
 
 from GaudiPartProp.decorators import Gaudi
 
-pp1 = Gaudi.ParticleProperty("NAME1", Gaudi.ParticleID(121), 1.0, 501.0, 0.1, 0.001)
-pp2 = Gaudi.ParticleProperty("NAME2", Gaudi.ParticleID(122), -1, 502.0, 0.1, 0.001)
-pp3 = Gaudi.ParticleProperty("NAME3", Gaudi.ParticleID(123), 0, 503.0, 0.1, 0.001)
+pp1 = Gaudi.ParticleProperty("e+", Gaudi.ParticleID(-11), 1.0, 0.000511, 1e16, 0.0)
+pp2 = Gaudi.ParticleProperty("e-", Gaudi.ParticleID(11), -1, 0.000511, 1e16, 0.0)
+pp3 = Gaudi.ParticleProperty("gamma", Gaudi.ParticleID(22), 0, 0.0, 1e16, 0.0)
 
 pp1.setAntiParticle(pp2)
 pp2.setAntiParticle(pp1)
