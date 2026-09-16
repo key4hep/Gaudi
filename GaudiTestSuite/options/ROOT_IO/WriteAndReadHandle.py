@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -48,9 +48,11 @@ GaudiPersistency()
 
 writer = WriteHandleAlg("Writer", UseHandle=True, OutputLevel=DEBUG)
 writer.Output.Path = "/Event/MyCollision"
+writer.AdditionalOutputs = ["/Event/MyCollisionA", "/Event/MyCollisionB"]
 
 reader = ReadHandleAlg("Reader", OutputLevel=DEBUG)
 reader.Input.Path = "MyCollision"
+reader.AdditionalInputs = ["MyCollisionA", "MyCollisionB"]
 
 # Application setup
 app = ApplicationMgr()

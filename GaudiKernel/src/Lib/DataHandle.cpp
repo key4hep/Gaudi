@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -31,6 +31,41 @@ namespace Gaudi {
       break;
     }
     ost << "', '" + default_type + "')";
+    return ost.str();
+  }
+
+  std::string DataHandleVectorBase::semantics() const {
+    switch ( mode() ) {
+    case DataHandle::Mode::Reader:
+      return "Gaudi::DataHandleVector<DataObjectReadHandle, " + type() + ">";
+    case DataHandle::Mode::Writer:
+      return "Gaudi::DataHandleVector<DataObjectWriteHandle, " + type() + ">";
+    default:
+      return "Gaudi::DataHandleVector<DataHandle, " + type() + ">";
+    }
+  }
+
+  std::string DataHandleVectorBase::pythonRepr() const {
+    std::ostringstream ost;
+    ost << pythonPropertyClassName() << "([";
+    const char* sep = "";
+    for ( const auto& key : keys() ) {
+      ost << sep << "'" << key.key() << "'";
+      sep = ",";
+    }
+    ost << "], '";
+    switch ( mode() ) {
+    case DataHandle::Mode::Reader:
+      ost << "R";
+      break;
+    case DataHandle::Mode::Writer:
+      ost << "W";
+      break;
+    default:
+      ost << "UNKNOWN";
+      break;
+    }
+    ost << "', '" << type() << "')";
     return ost.str();
   }
 

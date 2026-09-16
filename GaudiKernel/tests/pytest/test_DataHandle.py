@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2020 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -8,7 +8,9 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-from GaudiKernel.DataHandle import DataHandle
+import pytest
+
+from GaudiKernel.DataHandle import DataHandle, DataHandleVector
 
 
 def test_eq():
@@ -69,3 +71,44 @@ def test_repr():
     assert h2.mode() == "W"
     assert h2.type() == "int"
     assert h2.isCondition() is True
+
+
+def test_vector_eq():
+    handle = DataHandleVector(["DH1", "DH2"], "R", "Type1")
+
+    assert handle == DataHandleVector(["DH1", "DH2"], "R", "Type1")
+    assert handle != DataHandleVector(["DH1"], "R", "Type1")
+    assert handle != DataHandleVector(["DH1", "DH2"], "W", "Type1")
+    assert handle != DataHandleVector(["DH1", "DH2"], "R", "Type2")
+    assert handle == ["DH1", "DH2"]
+    assert handle == ("DH1", "DH2")
+    assert handle is not None
+
+    with pytest.raises(ValueError):
+        handle == 5
+
+
+def test_vector_sequence():
+    handle = DataHandleVector(["DH1", "DH2"])
+
+    assert len(handle) == 2
+    assert list(handle) == ["DH1", "DH2"]
+    assert handle[1] == "DH2"
+    assert handle.paths() == ["DH1", "DH2"]
+    assert handle.toStringProperty() == ["DH1", "DH2"]
+
+    with pytest.raises(TypeError):
+        hash(handle)
+
+
+def test_vector_repr():
+    handle = DataHandleVector(["DH1", "DH2"], "W", "Type1", True)
+    namespace = {"DataHandleVector": DataHandleVector}
+
+    exec("copy = " + repr(handle), namespace)
+    copy = namespace["copy"]
+
+    assert copy == handle
+    assert copy.mode() == "W"
+    assert copy.type() == "Type1"
+    assert copy.isCondition() is True

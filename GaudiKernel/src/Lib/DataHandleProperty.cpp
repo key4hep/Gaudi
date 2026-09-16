@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -30,6 +30,72 @@ namespace Gaudi {
     std::ostream& toStream( const Gaudi::DataHandle& v, std::ostream& o ) { return o << v; }
   } // namespace Utils
 } // namespace Gaudi
+
+//---------------------------------------------------------------------------
+
+DataHandleVectorProperty::DataHandleVectorProperty( const std::string& name, Gaudi::DataHandleVectorBase& ref )
+    : PropertyWithHandlers( name, typeid( Gaudi::DataHandleVectorBase ) ), m_pValue( &ref ) {}
+
+//---------------------------------------------------------------------------
+
+StatusCode DataHandleVectorProperty::fromString( const std::string& s ) {
+  DataObjIDVector ids;
+  try {
+    ids = Gaudi::Details::Property::StringConverter<DataObjIDVector>{}.fromString( ids, s );
+  } catch ( const std::invalid_argument& ) { return StatusCode::FAILURE; }
+  m_pValue->setKeys( ids );
+  return useUpdateHandler() ? StatusCode::SUCCESS : StatusCode::FAILURE;
+}
+
+//---------------------------------------------------------------------------
+
+bool DataHandleVectorProperty::setValue( const Gaudi::DataHandleVectorBase& value ) {
+  m_pValue->setKeys( value.keys() );
+  return useUpdateHandler();
+}
+
+//---------------------------------------------------------------------------
+
+std::string DataHandleVectorProperty::toString() const {
+  useReadHandler();
+  return Gaudi::Utils::toString( m_pValue->keys() );
+}
+
+//---------------------------------------------------------------------------
+void DataHandleVectorProperty::toStream( std::ostream& out ) const {
+  useReadHandler();
+  Gaudi::Utils::toStream( m_pValue->keys(), out );
+}
+
+//---------------------------------------------------------------------------
+
+DataHandleVectorProperty& DataHandleVectorProperty::operator=( const Gaudi::DataHandleVectorBase& value ) {
+  setValue( value );
+  return *this;
+}
+
+//---------------------------------------------------------------------------
+
+DataHandleVectorProperty* DataHandleVectorProperty::clone() const { return new DataHandleVectorProperty( *this ); }
+
+//---------------------------------------------------------------------------
+
+bool DataHandleVectorProperty::load( Gaudi::Details::PropertyBase& destination ) const {
+  return destination.assign( *this );
+}
+
+//---------------------------------------------------------------------------
+
+bool DataHandleVectorProperty::assign( const Gaudi::Details::PropertyBase& source ) {
+  return fromString( source.toString() ).isSuccess();
+}
+
+//---------------------------------------------------------------------------
+
+const Gaudi::DataHandleVectorBase& DataHandleVectorProperty::value() const {
+  useReadHandler();
+  return *m_pValue;
+}
 
 //---------------------------------------------------------------------------
 

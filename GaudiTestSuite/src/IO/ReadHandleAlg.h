@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -11,6 +11,7 @@
 #pragma once
 
 #include <GaudiKernel/Algorithm.h>
+#include <GaudiKernel/DataHandle.h>
 #include <GaudiKernel/DataObjectHandle.h>
 #include <GaudiTestSuite/Counter.h>
 #include <GaudiTestSuite/Event.h>
@@ -19,7 +20,8 @@
 namespace Gaudi::TestSuite {
   class ReadHandleAlg : public ::Algorithm {
 
-    DataObjectReadHandle<Collision> m_inputHandle{ this, "Input", "/Event/MyCollision" };
+    DataObjectReadHandle<Collision>                          m_inputHandle{ this, "Input", "/Event/MyCollision" };
+    Gaudi::DataHandleVector<DataObjectReadHandle, Collision> m_additionalInputs{ this, "AdditionalInputs", {} };
 
   public:
     ReadHandleAlg( const std::string& n, ISvcLocator* l ) : Algorithm( n, l ) {}

@@ -667,7 +667,7 @@ void configGenerator::genHeader( std::ostream& py, std::ostream& db )
 
   if ( m_importGaudiHandles ) { py << "from GaudiKernel.GaudiHandles import *\n"; }
 
-  if ( m_importDataHandles ) { py << "from GaudiKernel.DataHandle import DataHandle\n"; }
+  if ( m_importDataHandles ) { py << "from GaudiKernel.DataHandle import DataHandle, DataHandleVector\n"; }
 
   genImport( py, "from {}.Configurable import *" );
 
@@ -856,6 +856,13 @@ void configGenerator::pythonizeValue( const PropertyBase* p, string& pvalue, str
     const Gaudi::DataHandle& base = hdl->value();
 
     pvalue              = base.pythonRepr();
+    m_importDataHandles = true;
+  } else if ( ti == typeIndex<Gaudi::DataHandleVectorBase>() ) {
+    const auto& hdl  = dynamic_cast<const DataHandleVectorProperty&>( *p );
+    const auto& base = hdl.value();
+
+    pvalue              = base.pythonRepr();
+    ptype               = base.semantics();
     m_importDataHandles = true;
   } else {
     std::ostringstream v_str;

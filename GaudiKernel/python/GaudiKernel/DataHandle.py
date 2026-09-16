@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2021 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -76,3 +76,73 @@ class DataHandle(object):
 
     def __opt_value__(self):
         return repr(str(self))
+
+
+class DataHandleVector(object):
+    __slots__ = ("Paths", "Mode", "Type", "IsCondition")
+
+    __hash__ = None
+
+    def __init__(self, paths, mode="R", _type="unknown_t", isCond=False):
+        object.__init__(self)
+        self.Paths = list(paths)
+        self.Mode = mode
+        self.Type = _type
+        self.IsCondition = isCond
+
+    def __getstate__(self):
+        return {s: getattr(self, s) for s in self.__slots__}
+
+    def __setstate__(self, state):
+        for s in state:
+            setattr(self, s, state[s])
+
+    def __eq__(self, other):
+        if isinstance(other, DataHandleVector):
+            return self.__getstate__() == other.__getstate__()
+        if isinstance(other, (list, tuple)):
+            return self.Paths == list(other)
+        if other is None:
+            return False
+        raise ValueError(
+            "Unknown equality check: type=%r, repr=%r" % (type(other), other)
+        )
+
+    def __ne__(self, other):
+        return not self == other
+
+    def __iter__(self):
+        return iter(self.Paths)
+
+    def __len__(self):
+        return len(self.Paths)
+
+    def __getitem__(self, index):
+        return self.Paths[index]
+
+    def __str__(self):
+        return str(self.Paths)
+
+    def __repr__(self):
+        args = "%r,'%s','%s'" % (self.Paths, self.Mode, self.Type)
+        if self.IsCondition:
+            args += ",%s" % self.IsCondition
+        return "%s(%s)" % (self.__class__.__name__, args)
+
+    def toStringProperty(self):
+        return self.Paths
+
+    def paths(self):
+        return self.Paths
+
+    def mode(self):
+        return self.Mode
+
+    def type(self):
+        return self.Type
+
+    def isCondition(self):
+        return self.IsCondition
+
+    def __opt_value__(self):
+        return repr([str(path) for path in self.Paths])

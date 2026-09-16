@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -17,7 +17,8 @@
 
 namespace Gaudi {
   class DataHandle;
-}
+  class DataHandleVectorBase;
+} // namespace Gaudi
 
 //---------------------------------------------------------------------------
 
@@ -30,6 +31,27 @@ namespace Gaudi {
  */
 
 //---------------------------------------------------------------------------
+
+class GAUDI_API DataHandleVectorProperty : public PropertyWithHandlers<> {
+public:
+  DataHandleVectorProperty( const std::string& name, Gaudi::DataHandleVectorBase& ref );
+  DataHandleVectorProperty& operator=( const Gaudi::DataHandleVectorBase& value );
+
+  DataHandleVectorProperty*          clone() const override;
+  bool                               load( Gaudi::Details::PropertyBase& destination ) const override;
+  bool                               assign( const Gaudi::Details::PropertyBase& source ) override;
+  std::string                        toString() const override;
+  void                               toStream( std::ostream& out ) const override;
+  StatusCode                         fromString( const std::string& s ) override;
+  const Gaudi::DataHandleVectorBase& value() const;
+  bool                               setValue( const Gaudi::DataHandleVectorBase& value );
+
+protected:
+  /** Pointer to the real property. Reference would be better,
+   *  but Reflex does not support references yet
+   */
+  Gaudi::DataHandleVectorBase* m_pValue = nullptr;
+};
 
 class GAUDI_API DataHandleProperty : public PropertyWithHandlers<> {
 public:

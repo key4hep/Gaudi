@@ -33,9 +33,6 @@
 
 namespace Gaudi::Functional::details {
 
-  template <template <typename> class Handle, typename I>
-  class HandleVector;
-
   inline std::vector<DataObjID> to_DataObjID( const std::vector<std::string>& in ) {
     std::vector<DataObjID> out;
     out.reserve( in.size() );
@@ -110,8 +107,15 @@ namespace Gaudi::Functional::details {
   }
 
   template <template <typename> class Handle, typename Out, typename Value>
-  auto put( const HandleVector<Handle, Out>& out_handle, Value&& out ) {
-    return out_handle.put( std::forward<Value>( out ) );
+  void put( const Gaudi::DataHandleVector<Handle, Out>& out_handle, Value&& out ) {
+    auto const n = out_handle.size();
+    if ( out.size() != n ) {
+      throw GaudiException( "Error during transform in " +
+                                std::string{ std::source_location::current().function_name() } + ": expected " +
+                                std::to_string( n ) + " containers, got " + std::to_string( out.size() ) + " instead",
+                            "Gaudi::Functional::details::put", StatusCode::FAILURE );
+    }
+    for ( std::size_t i = 0; i != n; ++i ) details::put( out_handle.handles()[i], std::move( out[i] ) );
   }
 
   // optional put
@@ -353,70 +357,6 @@ namespace Gaudi::Functional::details {
     size_type        size() const { return m_containers.size(); }
   };
 
-  template <template <typename> class Handle, typename I>
-  class HandleVector {
-    struct Payload {
-      std::vector<Handle<I>>                  handles;
-      Gaudi::Property<std::vector<DataObjID>> property;
-
-      template <typename Algorithm>
-      Payload( Algorithm* parent, std::pair<std::string, std::vector<std::string>> const& keys )
-          : property{ parent, keys.first, details::to_DataObjID( keys.second ),
-                      [ptr = &handles, parent]( auto& self_ ) {
-                        auto& self = dynamic_cast<Gaudi::Property<std::vector<DataObjID>>&>( self_ );
-                        ptr->clear();
-                        ptr->reserve( self.value().size() );
-                        std::ranges::transform( self.value(), std::back_inserter( *ptr ),
-                                                [&]( const auto& location ) -> Handle<I> {
-                                                  return { location, parent };
-                                                } );
-                      },
-                      Gaudi::Details::Property::ImmediatelyInvokeHandler{ true } } {}
-
-      Payload( Payload&& )                 = delete;
-      Payload& operator=( Payload&& )      = delete;
-      Payload( Payload const& )            = delete;
-      Payload& operator=( Payload const& ) = delete;
-    };
-    std::unique_ptr<Payload> m_payload; // need a stable rendez-vous for the callback & property to work
-
-  public:
-    template <typename Algorithm>
-    HandleVector( Algorithm* parent, std::pair<std::string, std::vector<std::string>> const& keys )
-        : m_payload{ std::make_unique<Payload>( parent, keys ) } {}
-
-    // allow construction by DataHandleMixin
-    template <typename A, typename K>
-    HandleVector( std::tuple<A, K>&& tup ) : HandleVector{ std::get<0>( tup ), std::get<1>( tup ) } {}
-    template <typename A, typename Name, typename Keys>
-    HandleVector( std::tuple<A, Name, Keys>&& tup )
-        : HandleVector{ std::get<0>( tup ),
-                        std::pair<std::string, std::vector<std::string>>{ std::get<1>( tup ), std::get<2>( tup ) } } {}
-
-    vector_of_const_<I> get( EventContext const& ) const {
-      vector_of_const_<I> ins;
-      ins.reserve( m_payload->handles.size() );
-      std::ranges::transform( m_payload->handles, std::back_inserter( ins ), details2::get_from_handle<I>{} );
-      return ins;
-    }
-    template <typename Out>
-    void put( Out&& out ) const {
-      auto const n = size();
-      if ( out.size() != n ) {
-        throw GaudiException( "Error during transform in " +
-                                  std::string{ std::source_location::current().function_name() } + ": expected " +
-                                  std::to_string( n ) + " containers, got " + std::to_string( out.size() ) + " instead",
-                              "Gaudi::Functional::details::HandleVector::put", StatusCode::FAILURE );
-      }
-      for ( std::size_t i = 0; i != n; ++i ) details::put( handles()[i], std::move( out[i] ) );
-    }
-
-    std::vector<Handle<I>> const& handles() const { return m_payload->handles; }
-    std::vector<DataObjID> const& locations() const { return m_payload->property.value(); }
-    DataObjID const&              at( size_t i ) const { return m_payload->property.value().at( i ); }
-    auto                          size() const { return m_payload->handles.size(); }
-  };
-
   template <typename T>
   struct vector_of_output_ {};
   template <typename T>
@@ -449,10 +389,9 @@ namespace Gaudi::Functional::details {
   };
 
   template <typename Vectors>
-  decltype( auto ) getLocations( Vectors const& vectors, unsigned int i ) {
+  decltype( auto ) getKeys( Vectors const& vectors, unsigned int i ) {
     return std::apply(
-        [i]( auto const&... elems ) -> decltype( auto ) { return *std::array{ &elems.locations()... }.at( i ); },
-        vectors );
+        [i]( auto const&... elems ) -> decltype( auto ) { return *std::array{ &elems.keys()... }.at( i ); }, vectors );
   }
 
   template <typename F>
@@ -503,7 +442,7 @@ namespace Gaudi::Functional::details {
     };
     template <typename T, typename Tr, template <typename...> typename Default>
     struct OutputHandle<vector_of_output_<T>, Tr, Default> {
-      using type = HandleVector<OutputHandleFor<Tr, Default>::template type, T>;
+      using type = Gaudi::DataHandleVector<OutputHandleFor<Tr, Default>::template type, T>;
     };
 
     template <typename T, typename Tr, template <typename...> typename Default>
@@ -522,7 +461,7 @@ namespace Gaudi::Functional::details {
     };
     template <typename T, typename Tr, template <typename...> typename Default>
     struct InputHandle<vector_of_input_<T>, Tr, Default> {
-      using type = HandleVector<InputHandleFor<Tr, Default>::template type, T>;
+      using type = Gaudi::DataHandleVector<InputHandleFor<Tr, Default>::template type, T>;
     };
 
     template <typename T>
@@ -722,8 +661,11 @@ namespace Gaudi::Functional::details {
   }
 
   template <template <typename> class Handle, typename In, typename Algo>
-  auto get( const HandleVector<Handle, In>& handle, const Algo&, const EventContext& ctx ) {
-    return handle.get( ctx );
+  auto get( const Gaudi::DataHandleVector<Handle, In>& handle, const Algo&, const EventContext& ) {
+    vector_of_const_<In> ins;
+    ins.reserve( handle.handles().size() );
+    std::ranges::transform( handle.handles(), std::back_inserter( ins ), details2::get_from_handle<In>{} );
+    return ins;
   }
 
   template <typename IFace, typename Algo>
@@ -737,8 +679,8 @@ namespace Gaudi::Functional::details {
   }
 
   template <template <typename> class Handle, typename T>
-  auto getKey( const HandleVector<Handle, T>& h ) -> decltype( h.locations() ) {
-    return h.locations();
+  auto getKey( const Gaudi::DataHandleVector<Handle, T>& h ) -> decltype( h.keys() ) {
+    return h.keys();
   }
 
   template <typename OutputSpec, typename InputSpec, typename Traits_>
@@ -860,7 +802,7 @@ namespace Gaudi::Functional::details {
     decltype( auto ) inputLocation( unsigned int i, unsigned int j ) const
       requires( N_input_locations > 0 && all_input_locations_are_vectors )
     {
-      return getLocations( input_location_handles( std::make_index_sequence<N_input_locations>{} ), i ).at( j ).key();
+      return getKeys( input_location_handles( std::make_index_sequence<N_input_locations>{} ), i ).at( j ).key();
     }
     unsigned int inputLocationSize( unsigned int i ) const
       requires( N_input_locations > 0 )

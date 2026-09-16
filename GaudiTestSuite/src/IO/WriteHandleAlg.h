@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -11,6 +11,7 @@
 #pragma once
 
 #include <GaudiKernel/Algorithm.h>
+#include <GaudiKernel/DataHandle.h>
 #include <GaudiKernel/DataObjectHandle.h>
 #include <GaudiTestSuite/Counter.h>
 #include <GaudiTestSuite/Event.h>
@@ -29,6 +30,7 @@ namespace Gaudi::TestSuite {
   private:
     Gaudi::Property<bool> m_useHandle{ this, "UseHandle", true, "Specify the usage of the handle to write" };
 
-    DataObjectWriteHandle<Collision> m_output_handle{ this, "Output", "/Event/MyCollision" };
+    DataObjectWriteHandle<Collision>                          m_output_handle{ this, "Output", "/Event/MyCollision" };
+    Gaudi::DataHandleVector<DataObjectWriteHandle, Collision> m_additionalOutputs{ this, "AdditionalOutputs", {} };
   };
 } // namespace Gaudi::TestSuite
