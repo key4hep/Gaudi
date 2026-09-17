@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -62,9 +62,10 @@ TEST_CASE( "Current time test", "[GaudiTiming]" ) {
   long long later = System::currentTime( System::microSec );
   CHECK( later ); // non-zero
 
-  CHECK( later > now );
-  float seconds = float( later - now ) / 1000000;
-  CHECK( fabs( seconds - 1.f ) < 0.01 );
+  // sleep_for only guarantees that it sleeps for at least the specified duration.
+  // The 1.5 s upper bound is arbitrary, but makes unexpected delays visible.
+  CHECK( later - now >= 1000000 );
+  CHECK( later - now < 1500000 );
 }
 
 TEST_CASE( "ProcessTime test", "[GaudiTiming]" ) {
