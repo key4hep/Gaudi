@@ -76,7 +76,7 @@ class Application(ConfigurableUserTest):
 calledActions = []
 
 
-class Action(object):
+class Action:
     def __init__(self, msg):
         self.msg = msg
 

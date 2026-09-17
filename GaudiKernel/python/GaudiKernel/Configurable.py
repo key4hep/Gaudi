@@ -114,7 +114,7 @@ class Error(RuntimeError):
 # Allow references to options  as in old style
 
 
-class PropertyReference(object):
+class PropertyReference:
     def __init__(self, propname):
         self.name = propname
 
@@ -1082,7 +1082,7 @@ class Configurable(metaclass=ConfigurableMeta.ConfigurableMeta):
 # classes for generic Gaudi component ===========
 
 
-class DummyDescriptor(object):
+class DummyDescriptor:
     def __init__(self, name):
         self.__name__ = name  # conventional
 
@@ -1781,7 +1781,7 @@ def purge():
     _included_files.clear()
 
 
-class CreateSequencesVisitor(object):
+class CreateSequencesVisitor:
     def __init__(self):
         self.stack = []
 
@@ -1922,7 +1922,7 @@ class SuperAlgorithm(ControlFlowNode):
             # do not propagate internal data members
             return
 
-        class PropSetter(object):
+        class PropSetter:
             def enter(self, node):
                 try:
                     setattr(node, name, value)

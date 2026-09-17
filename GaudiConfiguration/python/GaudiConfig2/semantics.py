@@ -25,7 +25,7 @@ _log = logging.getLogger(__name__)
 is_64bits = sys.maxsize > 2**32
 
 
-class PropertySemantics(object):
+class PropertySemantics:
     """
     Basic property semantics implementation, with no validation/transformation.
 

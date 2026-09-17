@@ -560,7 +560,7 @@ if __name__ == "__main__":
         options.insert(pos, l)
 
     # prevent the usage of GaudiPython
-    class FakeModule(object):
+    class FakeModule:
         def __init__(self, exception):
             self.exception = exception
 

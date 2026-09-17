@@ -97,7 +97,7 @@ class _CfgDb(dict):
         f.close()
 
 
-class _Singleton(object):
+class _Singleton:
     # the object this singleton is holding
     # No other object will be created...
     __obj = _CfgDb()

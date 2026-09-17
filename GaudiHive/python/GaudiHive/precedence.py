@@ -58,7 +58,7 @@ def _buildFilePath(filePath):
     return __fullFilePath__
 
 
-class UniformTimeValue(object):
+class UniformTimeValue:
     """A class to manage uniform algorithm timing"""
 
     def __init__(self, avgRuntime, varRuntime=0):
@@ -71,7 +71,7 @@ class UniformTimeValue(object):
         return self.avgRuntime, self.varRuntime
 
 
-class RealTimeValue(object):
+class RealTimeValue:
     """A class to manage real algorithm timing"""
 
     def __init__(self, path, defaultTime, factor=1):
@@ -110,7 +110,7 @@ class RealTimeValue(object):
         return time, self.varRuntime
 
 
-class UniformBooleanValue(object):
+class UniformBooleanValue:
     def __init__(self, value):
         self.value = value
 
@@ -118,7 +118,7 @@ class UniformBooleanValue(object):
         return self.value
 
 
-class RndBiasedBooleanValue(object):
+class RndBiasedBooleanValue:
     """Provides randomly ordered set of boolean values with requested proportion of True and False."""
 
     def __init__(self, pattern, seed=None):
@@ -163,7 +163,7 @@ class RndBiasedBooleanValue(object):
         return self.pattern
 
 
-class CruncherSequence(object):
+class CruncherSequence:
     """Constructs the sequence tree of CPUCrunchers with provided control flow and data flow precedence rules."""
 
     unique_sequencers = []

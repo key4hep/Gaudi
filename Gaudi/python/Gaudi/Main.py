@@ -18,8 +18,8 @@ from Gaudi import Configuration
 log = logging.getLogger(__name__)
 
 
-class BootstrapHelper(object):
-    class StatusCode(object):
+class BootstrapHelper:
+    class StatusCode:
         def __init__(self, value):
             self.value = value
 
@@ -37,7 +37,7 @@ class BootstrapHelper(object):
         def ignore(self):
             pass
 
-    class Property(object):
+    class Property:
         def __init__(self, value):
             self.value = value
 
@@ -47,7 +47,7 @@ class BootstrapHelper(object):
 
         toString = __str__
 
-    class AppMgr(object):
+    class AppMgr:
         def __init__(self, ptr, lib):
             self.ptr = ptr
             self.lib = lib
@@ -316,7 +316,7 @@ def parseOpt(s):
     return eval(s)
 
 
-class gaudimain(object):
+class gaudimain:
     def __init__(self):
         from Configurables import ApplicationMgr
 

@@ -86,7 +86,7 @@ def _registerConfigurables(allConfigurables, c):
     return
 
 
-class PropertyProxy(object):
+class PropertyProxy:
     def __init__(self, descr, docString=None, default=None):
         self.history = {}
         self.descr = descr

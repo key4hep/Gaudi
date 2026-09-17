@@ -25,7 +25,7 @@ def clear_instances():
     Configurable.instances.clear()
 
 
-class InternalType(object):
+class InternalType:
     """
     Weird option value that accepts only objects of length 3, with option
     string representation that is the reversed list of value items.

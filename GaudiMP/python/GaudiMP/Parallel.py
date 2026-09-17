@@ -52,7 +52,7 @@ def _ppfunction(args):
     return (copy.deepcopy(task.output), stat)
 
 
-class Statistics(object):
+class Statistics:
     def __init__(self):
         self.name = os.getenv("HOSTNAME")
         self.start = time.time()
@@ -63,7 +63,7 @@ class Statistics(object):
         self.time = time.time() - self.start
 
 
-class Task(object):
+class Task:
     """Basic base class to encapsulate any processing that is going to be porcessed in parallel.
     User class much inherit from it and implement the methods initializeLocal,
     initializeRemote, process and finalize."""
@@ -137,7 +137,7 @@ class Task(object):
                 o.Reset()
 
 
-class WorkManager(object):
+class WorkManager:
     """Class to in charge of managing the tasks and distributing them to
     the workers. They can be local (using other cores) or remote
     using other nodes in the local cluster"""
@@ -225,7 +225,7 @@ class WorkManager(object):
         s.njob += 1
 
 
-class SshSession(object):
+class SshSession:
     def __init__(self, hostname):
         import pp
         import pyssh

@@ -15,7 +15,7 @@
 from GaudiMP.FdsRegistry import FdsDict
 
 
-class IoRegistry(object):
+class IoRegistry:
     """Singleton class to hold I/O registration and fds information"""
 
     instances = dict()  # { 'io-comp-name' : {'oldfname':'newfname',...},... }

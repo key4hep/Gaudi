@@ -107,7 +107,7 @@ WRITERTYPES = {
 # =============================================================================
 
 
-class MiniWriter(object):
+class MiniWriter:
     """
     A class to represent a writer in the GaudiPython configuration
     It can be non-trivial to access the name of the output file; it may be
@@ -261,7 +261,7 @@ class CollectHistograms(PyAlgorithm):
 # =============================================================================
 
 
-class EventCommunicator(object):
+class EventCommunicator:
     # This class is responsible for communicating Gaudi Events via Queues
     # Events are communicated as TBufferFiles, filled either by the
     # TESSerializer, or the GaudiSvc, "IPCSvc"
@@ -356,7 +356,7 @@ class EventCommunicator(object):
 # =============================================================================
 
 
-class TESSerializer(object):
+class TESSerializer:
     def __init__(self, gaudiTESSerializer, evtDataSvc, nodeType, nodeID, log):
         self.T = gaudiTESSerializer
         self.evt = evtDataSvc
@@ -437,7 +437,7 @@ class TESSerializer(object):
 # =============================================================================
 
 
-class GMPComponent(object):
+class GMPComponent:
     # This class will be the template for Reader, Worker and Writer
     # containing all common components
     # nodeId will be a numerical identifier for the node
@@ -1316,7 +1316,7 @@ class Writer(GMPComponent):
 # =============================================================================
 
 
-class Coord(object):
+class Coord:
     def __init__(self, nWorkers, config, log):
         self.log = log
         self.config = config

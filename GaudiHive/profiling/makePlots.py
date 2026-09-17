@@ -48,7 +48,7 @@ def instancesVsTime(filename):
     plt.savefig("test.pdf")
 
 
-class TimingInfo(object):
+class TimingInfo:
     def __init__(self, name, time):
         name = name.rstrip(".time")
         threads, events, algos = name.split("_")[1:]

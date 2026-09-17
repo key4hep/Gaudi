@@ -15,7 +15,7 @@ Classes for the implementation of the Control Flow Structure Syntax.
 """
 
 
-class ControlFlowNode(object):
+class ControlFlowNode:
     """
     Basic entry in the control flow graph.
     """
@@ -208,7 +208,7 @@ class seq(ControlFlowNode):
         self.item.visitNode(visitor)
 
 
-class line(object):
+class line:
     def __init__(self, name, item):
         self.name = name
         self.item = item
@@ -220,7 +220,7 @@ class line(object):
         self.item.visitNode(visitor)
 
 
-class _TestVisitor(object):
+class _TestVisitor:
     def __init__(self):
         self.depths = 0
 
@@ -246,7 +246,7 @@ class _TestAlgorithm(ControlFlowLeaf):
         return self._name
 
 
-class DotVisitor(object):
+class DotVisitor:
     def __init__(self):
         self.nodes = []
         self.edges = []

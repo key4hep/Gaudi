@@ -28,7 +28,7 @@ __doc__ = """The python module holding python bindings to XyzHandles"""
 _log = logging.getLogger("GaudiHandles")
 
 
-class GaudiHandle(object):
+class GaudiHandle:
     componentType = "Unspecified"  # must be overridden by derived class
     isPublic = True  # can be overridden by derived class
 

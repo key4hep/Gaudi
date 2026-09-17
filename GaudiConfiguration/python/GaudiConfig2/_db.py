@@ -14,7 +14,7 @@ import os
 import sys
 
 
-class ConfDB2(object):
+class ConfDB2:
     def __init__(self):
         import shelve
         from pathlib import Path
@@ -91,7 +91,7 @@ def split_namespace(typename):
     return (head, tail)
 
 
-class ConfigurablesDB(object):
+class ConfigurablesDB:
     """
     Helper to expose Configurables classes (from Configurables database) as
     a tree of subpackages, each mapped to a namespace.

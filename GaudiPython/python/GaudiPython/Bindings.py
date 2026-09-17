@@ -137,7 +137,7 @@ def deprecation(message):
 # ----InterfaceCast class -----------------------------------------------------
 
 
-class InterfaceCast(object):
+class InterfaceCast:
     """Helper class to obtain the adequate interface from a component
     by using the Gaudi queryInterface() mechanism"""
 
@@ -232,7 +232,7 @@ def getClass(name, libs=[]):
 # ----PropertyEntry class------------------------------------------------------
 
 
-class PropertyEntry(object):
+class PropertyEntry:
     """holds the value and the documentation string of a property"""
 
     def __init__(self, prop):
@@ -279,7 +279,7 @@ class PropertyEntry(object):
 # ----iProperty class----------------------------------------------------------
 
 
-class iProperty(object):
+class iProperty:
     """Python equivalent to the C++ Property interface"""
 
     def __init__(self, name, ip=cppyy.nullptr):

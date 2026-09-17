@@ -28,7 +28,7 @@ def useGlobalInstances(enable):
     _GLOBAL_INSTANCES = enable
 
 
-class Property(object):
+class Property:
     """
     Descriptor class to implement validation of Configurable properties.
     """

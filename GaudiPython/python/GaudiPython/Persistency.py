@@ -56,7 +56,7 @@ def add(instance):
     _implementations.insert(0, instance)
 
 
-class FileDescription(object):
+class FileDescription:
     def __init__(self, filename, opt, svc, sel=None, collection=None, fun=None):
         """
         Class to hold/manipulate the file description.
@@ -96,7 +96,7 @@ class FileDescription(object):
         return " ".join(["%s='%s'" % (k, v) for k, v in self.__data__() if v])
 
 
-class PersistencyHelper(object):
+class PersistencyHelper:
     """
     Base class for extensions to persistency configuration in GaudiPython.
     """

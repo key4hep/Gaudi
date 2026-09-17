@@ -588,7 +588,7 @@ class PackedCaloHypo:
 # =============================================================================
 
 
-class SyncMini(object):
+class SyncMini:
     def __init__(self, event, lastEvent=None):
         self.event = event
         self.t = 0.0
@@ -625,7 +625,7 @@ class SyncMini(object):
 # =============================================================================
 
 
-class Syncer(object):
+class Syncer:
     def __init__(
         self, nWorkers, log, manyEvents=False, limit=None, step=None, firstEvent=None
     ):
