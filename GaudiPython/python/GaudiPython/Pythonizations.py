@@ -440,7 +440,7 @@ def __mapbase_str__(self):
         _val = self.at(_key)
         if 0 != i:
             _result += " , "
-        _result += " %s : %s " % (str(_key), str(_val))
+        _result += f" {_key} : {_val} "
     _result += " } "
     return _result
 

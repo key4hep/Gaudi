@@ -123,5 +123,5 @@ while 1 > 0:
     if N > 100000:
         break
 end = update()
-print("Read %d events" % N)
+print(f"Read {N} events")
 printDelta(start, end)

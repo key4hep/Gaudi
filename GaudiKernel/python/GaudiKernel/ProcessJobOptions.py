@@ -27,7 +27,7 @@ class LogFormatter(logging.Formatter):
         fmsg = logging.Formatter.format(self, record)
         prefix = self.prefix
         if self.with_time:
-            prefix += "%f " % time.time()
+            prefix += f"{time.time():f} "
         if record.levelno >= logging.WARNING:
             prefix += record.levelname + ": "
         s = "\n".join([prefix + line for line in fmsg.splitlines()])
@@ -156,7 +156,7 @@ def _find_file(f):
     # find the full path to the option file
     candidates = [d for d in path if os.path.isfile(os.path.join(d, f))]
     if not candidates:
-        raise ParserError("Cannot find '%s' in %s" % (f, path))
+        raise ParserError(f"Cannot find '{f}' in {path}")
     return os.path.realpath(os.path.join(candidates[0], f))
 
 
@@ -550,7 +550,7 @@ def importOptions(optsfile):
             _import_function_mapping[ext](optsfile)
             _log.info("<-- End of file '%s'", optsfile)
     else:
-        raise ParserError("Unknown file type '%s' ('%s')" % (ext, optsfile))
+        raise ParserError(f"Unknown file type '{ext}' ('{optsfile}')")
 
 
 # Import a file containing declaration of units.

@@ -46,10 +46,10 @@ def _buildFilePath(filePath):
             )
             if not os.path.exists(__fullFilePath__):
                 print(
-                    "\nERROR: invalid file path '%s'. "
+                    f"\nERROR: invalid file path '{filePath}'. "
                     "It must be either absolute, or relative to "
                     "'$ENV_PROJECT_SOURCE_DIR/GaudiHive/data/' or to "
-                    "'$ENV_PROJECT_SOURCE_DIR/Gaudi/GaudiHive/data/'." % filePath
+                    "'$ENV_PROJECT_SOURCE_DIR/Gaudi/GaudiHive/data/'."
                 )
                 sys.exit(1)
     else:
@@ -101,8 +101,7 @@ class RealTimeValue:
             else:
                 time = self.defaultTime
                 print(
-                    "WARNING: Timing for %s (or %s) not found in the provided library, using default one: %s"
-                    % (algoName, capAlgoName, time)
+                    f"WARNING: Timing for {algoName} (or {capAlgoName}) not found in the provided library, using default one: {time}"
                 )
 
         time = time * self.factor

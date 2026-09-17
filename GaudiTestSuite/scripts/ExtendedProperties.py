@@ -130,20 +130,20 @@ if "__main__" == __name__:
     #
     props = alg.properties()
 
-    print("All Properties of %s " % alg.name())
+    print(f"All Properties of {alg.name()} ")
     for p in props:
         v = props[p].value()
         t = type(v).__name__
-        print("Python: Name/Value:  '%s' / '%s' " % (p, v))
+        print(f"Python: Name/Value:  '{p}' / '{v}' ")
 
     # get the properties in the form of python dictionary:
-    print("All Properties of %s " % alg.name())
+    print(f"All Properties of {alg.name()} ")
     properties = {}
     for p in props:
         properties[p] = props[p].value()
 
     for p in properties:
-        print("Python: Name/Value:  '%s' / '%s' " % (p, properties[p]))
+        print(f"Python: Name/Value:  '{p}' / '{properties[p]}' ")
 
 # =============================================================================
 # The END

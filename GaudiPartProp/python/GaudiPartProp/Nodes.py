@@ -313,6 +313,6 @@ Symbol = Decays.Nodes.Symbol  # type
 NodeList = Decays.NodeList
 
 if "__main__" == __name__:
-    print(" decorated objects: %s " % str(_decorated))
+    print(f" decorated objects: {_decorated} ")
     print(_decorated)
     print(dir())

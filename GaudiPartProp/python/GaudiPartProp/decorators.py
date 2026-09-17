@@ -160,7 +160,7 @@ def _get_attr_from_PID_(self, attr):
     _pid = self.pid()
     if hasattr(_pid, attr):
         return getattr(_pid, attr)
-    raise AttributeError("Unknown attribute: %s " % attr)
+    raise AttributeError(f"Unknown attribute: {attr} ")
 
 
 ## decorate the vector of properties

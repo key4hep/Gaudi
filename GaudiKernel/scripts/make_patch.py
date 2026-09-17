@@ -128,7 +128,7 @@ def diff_pkg(name, cmtdir, exclusions=[]):
         # out += "diff -u -p -N %s\n" % os.path.basename(f)
         # out += command("diff", "-upN", "/dev/null", f,
         #               cwd = rootdir)[0]
-        out += "Index: %s\n" % f
+        out += f"Index: {f}\n"
         out += "===================================================================\n"
         out += command("diff", "-upN", "/dev/null", f, cwd=rootdir)[0]
     # extract removed files
@@ -139,16 +139,16 @@ def diff_pkg(name, cmtdir, exclusions=[]):
         logging.info("Removed file %r", f)
         # retrieve the original content from CVS
         orig = cvs("up", "-p", f, cwd=rootdir)[0]
-        out += "diff -u -p -N %s\n" % os.path.basename(f)
-        out += "--- %s\t1 Jan 1970 00:00:00 -0000\n" % f
+        out += f"diff -u -p -N {os.path.basename(f)}\n"
+        out += f"--- {f}\t1 Jan 1970 00:00:00 -0000\n"
         out += "+++ /dev/null\t1 Jan 1970 00:00:00 -0000\n"
         lines = orig.splitlines()
         out += "@@ -1,%d +0,0 @@\n" % len(lines)
         for l in lines:
-            out += "-%s\n" % l
+            out += f"-{l}\n"
     # Fix the paths to have the package names
     rex = re.compile(r"^(Index: |\? |\+\+\+ |--- (?!/dev/null))", re.MULTILINE)
-    out = rex.sub(r"\1%s/" % name, out)
+    out = rex.sub(rf"\1{name}/", out)
     return out
 
 

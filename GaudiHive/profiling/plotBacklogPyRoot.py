@@ -113,7 +113,7 @@ def getText(x, y, text, scale, angle, colour, font, NDC=False):
     lat = TLatex(
         float(x),
         float(y),
-        "#scale[%s]{#color[%s]{#font[%s]{%s}}}" % (scale, colour, font, text),
+        f"#scale[{scale}]{{#color[{colour}]{{#font[{font}]{{{text}}}}}}}",
     )
     if NDC:
         lat.SetNDC()
@@ -153,7 +153,7 @@ def doPlot(logfilename, logfilename_copy):
         12,
     )
     eventInFlightLabel.Draw()
-    nThreadsLabel = getText(0.15, 0.7, "%s Threads" % NThreads, 0.6, 0, 2, 12, True)
+    nThreadsLabel = getText(0.15, 0.7, f"{NThreads} Threads", 0.6, 0, 2, 12, True)
     nThreadsLabel.Draw()
 
     # Build a Legend

@@ -115,7 +115,7 @@ class OrderedNode(ControlFlowNode):
         self.rhs = rhs
 
     def __repr__(self):
-        return "(%r >> %r)" % (self.lhs, self.rhs)
+        return f"({self.lhs!r} >> {self.rhs!r})"
 
     def _visitSubNodes(self, visitor):
         self.lhs.visitNode(visitor)
@@ -132,7 +132,7 @@ class AndNode(ControlFlowNode):
         self.rhs = rhs
 
     def __repr__(self):
-        return "(%r & %r)" % (self.lhs, self.rhs)
+        return f"({self.lhs!r} & {self.rhs!r})"
 
     def _visitSubNodes(self, visitor):
         self.lhs.visitNode(visitor)
@@ -149,7 +149,7 @@ class OrNode(ControlFlowNode):
         self.rhs = rhs
 
     def __repr__(self):
-        return "(%r | %r)" % (self.lhs, self.rhs)
+        return f"({self.lhs!r} | {self.rhs!r})"
 
     def _visitSubNodes(self, visitor):
         self.lhs.visitNode(visitor)
@@ -165,7 +165,7 @@ class InvertNode(ControlFlowNode):
         self.item = item
 
     def __repr__(self):
-        return "~%r" % self.item
+        return f"~{self.item!r}"
 
     def _visitSubNodes(self, visitor):
         self.item.visitNode(visitor)
@@ -180,7 +180,7 @@ class ignore(ControlFlowNode):
         self.item = item
 
     def __repr__(self):
-        return "ignore(%r)" % self.item
+        return f"ignore({self.item!r})"
 
     def _visitSubNodes(self, visitor):
         self.item.visitNode(visitor)
@@ -191,7 +191,7 @@ class par(ControlFlowNode):
         self.item = item
 
     def __repr__(self):
-        return "par(%r)" % self.item
+        return f"par({self.item!r})"
 
     def _visitSubNodes(self, visitor):
         self.item.visitNode(visitor)
@@ -202,7 +202,7 @@ class seq(ControlFlowNode):
         self.item = item
 
     def __repr__(self):
-        return "seq(%r)" % self.item
+        return f"seq({self.item!r})"
 
     def _visitSubNodes(self, visitor):
         self.item.visitNode(visitor)
@@ -214,7 +214,7 @@ class line:
         self.item = item
 
     def __repr__(self):
-        return "line(%r, %r)" % (self.name, self.item)
+        return f"line({self.name!r}, {self.item!r})"
 
     def _visitSubNodes(self, visitor):
         self.item.visitNode(visitor)
@@ -226,12 +226,12 @@ class _TestVisitor:
 
     def enter(self, visitee):
         self.depths += 1
-        print("%sEntering %s" % (self.depths * " ", type(visitee)))
+        print("{}Entering {}".format(self.depths * " ", type(visitee)))
         if isinstance(visitee, ControlFlowLeaf):
-            print("%s Algorithm name: %s" % (" " * self.depths, visitee))
+            print("{} Algorithm name: {}".format(" " * self.depths, visitee))
 
     def leave(self, visitee):
-        print("%sLeaving %s" % (self.depths * " ", type(visitee)))
+        print("{}Leaving {}".format(self.depths * " ", type(visitee)))
         self.depths -= 1
 
 
@@ -257,32 +257,32 @@ class DotVisitor:
     def enter(self, visitee):
         if visitee not in self.ids:
             self.number += 1
-            dot_id = self.ids[visitee] = "T%s" % self.number
+            dot_id = self.ids[visitee] = f"T{self.number}"
         dot_id = self.ids[visitee]
         mother = None
         if self.is_needed(visitee):
             if isinstance(visitee, ControlFlowLeaf):
-                entry = '%s [label="%s", shape=box]' % (dot_id, visitee.name())
+                entry = f'{dot_id} [label="{visitee.name()}", shape=box]'
             elif isinstance(visitee, OrNode):
-                entry = '%s [label="OR", shape=invhouse]' % dot_id
+                entry = f'{dot_id} [label="OR", shape=invhouse]'
             elif isinstance(visitee, AndNode):
-                entry = '%s [label="AND", shape=invhouse]' % dot_id
+                entry = f'{dot_id} [label="AND", shape=invhouse]'
             elif isinstance(visitee, OrderedNode):
-                entry = '%s [label=">>", shape=point]' % dot_id
+                entry = f'{dot_id} [label=">>", shape=point]'
             elif isinstance(visitee, InvertNode):
-                entry = '%s [label="NOT", shape=circle, color=red]' % dot_id
+                entry = f'{dot_id} [label="NOT", shape=circle, color=red]'
             elif isinstance(visitee, par):
-                entry = '%s [label="PAR", shape=circle]' % dot_id
+                entry = f'{dot_id} [label="PAR", shape=circle]'
             elif isinstance(visitee, seq):
-                entry = '%s [label="SEQ", shape=circle]' % dot_id
+                entry = f'{dot_id} [label="SEQ", shape=circle]'
             else:
-                entry = '%s [label="%s", shape=circle]' % (dot_id, type(visitee))
+                entry = f'{dot_id} [label="{type(visitee)}", shape=circle]'
             self.nodes.append(entry)
             if len(self.stack) != 0:
                 mother = self.collapse_identical_ancestors(type(self.stack[-1][0]))
                 if not mother:
                     mother = self.stack[-1][1]
-                edge = "%s->%s" % (dot_id, mother)
+                edge = f"{dot_id}->{mother}"
                 self.edges.append(edge)
         self.stack.append((visitee, dot_id))
 
@@ -313,15 +313,15 @@ class DotVisitor:
 
     def write(self, filename):
         output = """
-digraph graphname {
+digraph graphname {{
 rankdir=LR
 
-%s
+{}
 
-%s
+{}
 
-}
-""" % (
+}}
+""".format(
             "\n".join(self.nodes),
             "\n".join(self.edges),
         )

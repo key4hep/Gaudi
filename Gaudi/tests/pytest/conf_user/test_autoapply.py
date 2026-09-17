@@ -142,10 +142,6 @@ def test():
     # check property values
     allConfs = Configurable.allConfigurables
     for name, (prop, value) in expected.items():
-        assert allConfs[name].getProp(prop) == value, "%s.%s != %s" % (
-            name,
-            prop,
-            value,
-        )
+        assert allConfs[name].getProp(prop) == value, f"{name}.{prop} != {value}"
 
     print("Success.")

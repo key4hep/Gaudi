@@ -25,7 +25,7 @@ class TestCase(unittest.TestCase):
         try:
             import GaudiTestSuite.PyExample  # noqa: F401
         except ImportError:
-            self.fail("Cannot import GaudiTestSuite.PyExample from %s" % sys.path)
+            self.fail(f"Cannot import GaudiTestSuite.PyExample from {sys.path}")
 
     def test_010_Function(self):
         import GaudiTestSuite.PyExample

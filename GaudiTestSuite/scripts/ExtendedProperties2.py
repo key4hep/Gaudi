@@ -54,7 +54,7 @@ if "__main__" == __name__:
         warnings.simplefilter("ignore")
         import cppyy
     for h in ("GaudiKernel/SVectorAsProperty.h", "GaudiKernel/VectorsAsProperty.h"):
-        cppyy.gbl.gInterpreter.Declare('#include "%s"' % h)
+        cppyy.gbl.gInterpreter.Declare(f'#include "{h}"')
 
     from GaudiPython.Bindings import AppMgr
 

@@ -77,7 +77,7 @@ def getText(x, y, text, scale, angle, colour, font, NDC=False):
     lat = TLatex(
         float(x),
         float(y),
-        "#scale[%s]{#color[%s]{#font[%s]{%s}}}" % (scale, colour, font, text),
+        f"#scale[{scale}]{{#color[{colour}]{{#font[{font}]{{{text}}}}}}}",
     )
 
     lat.SetNDC(NDC)
@@ -124,8 +124,7 @@ def doPlot(logfilename):
     evtsIf = getText(
         0.6,
         0.365,
-        "#splitline{#splitline{%s Simultaneous Events}{%s Threads}}{%s Algorithms}"
-        % (NEventsInFlight, NThreads, nalgorithms),
+        f"#splitline{{#splitline{{{NEventsInFlight} Simultaneous Events}}{{{NThreads} Threads}}}}{{{nalgorithms} Algorithms}}",
         0.8,
         0,
         2,

@@ -135,7 +135,7 @@ class BootstrapHelper:
         ]
 
         for name, restype, argtypes in functions:
-            f = getattr(gkl, "py_bootstrap_%s" % name)
+            f = getattr(gkl, f"py_bootstrap_{name}")
             f.restype, f.argtypes = restype, argtypes
             # create a delegate method if not already present
             # (we do not want to use hasattr because it calls "properties")
@@ -150,7 +150,7 @@ class BootstrapHelper:
             "finalize",
             "terminate",
         ):
-            f = getattr(gkl, "py_bootstrap_fsm_%s" % name)
+            f = getattr(gkl, f"py_bootstrap_fsm_{name}")
             f.restype, f.argtypes = c_bool, [IInterface_p]
         gkl.py_bootstrap_app_run.restype = c_bool
         gkl.py_bootstrap_app_run.argtypes = [IInterface_p, c_int]
@@ -341,7 +341,7 @@ class gaudimain:
 
         datetime = ctime()
         datetime = datetime.replace(" ", "_")
-        outfile = open("gaudirun-%s.log" % (datetime), "w")
+        outfile = open(f"gaudirun-{datetime}.log", "w")
         # two handlers, one for a log file, one for terminal
         streamhandler = logging.StreamHandler(stream=outfile)
         console = logging.StreamHandler()
@@ -554,7 +554,7 @@ class gaudimain:
         Parall = gpp.Coord(ncpus, c, self.log)
         sysStart = time()
         sc = Parall.Go()
-        self.log.info("MAIN.PY : received %s from Coordinator" % (sc))
+        self.log.info(f"MAIN.PY : received {sc} from Coordinator")
         if sc.isFailure():
             return 1
         sysTime = time() - sysStart

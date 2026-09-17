@@ -81,7 +81,7 @@ def invokeConfig(func, *args, **kwargs):
                 )
                 func = globals[m.group("callable")]
             else:
-                raise ValueError("invalid callable id %r" % func)
+                raise ValueError(f"invalid callable id {func!r}")
         else:
             raise TypeError("expected either a callable or a string as first argument")
     return _makeConfigDict(func(*args, **kwargs))

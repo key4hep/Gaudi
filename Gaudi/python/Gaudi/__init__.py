@@ -69,8 +69,7 @@ class _ConfigurablesModule:
             # We raise an AttributeError exception if the configurable could not be found
             # to respect the Python semantic.
             raise AttributeError(
-                "module '%s' does not have attribute '%s'"
-                % (__configurables_module_fullname__, name)
+                f"module '{__configurables_module_fullname__}' does not have attribute '{name}'"
             )
         return retval
 

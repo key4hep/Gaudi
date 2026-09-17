@@ -117,10 +117,10 @@ if "__main__" == __name__:
     alg = gaudi.algorithm("PropertyAlg")
 
     props = alg.properties()
-    print("Properties of %s " % alg.name())
+    print(f"Properties of {alg.name()} ")
     for p in props:
         v = props[p].value()
-        print("Python: Name/Value:  '%s' / '%s' " % (p, v))
+        print(f"Python: Name/Value:  '{p}' / '{v}' ")
 
 # =============================================================================
 # The END

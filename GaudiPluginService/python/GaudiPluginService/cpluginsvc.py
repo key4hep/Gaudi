@@ -261,16 +261,16 @@ GAUDI_DEFAULT_PLUGIN_PATH = [
 
 
 if __name__ == "__main__":
-    print("instance: %s" % registry())
+    print(f"instance: {registry()}")
     print("factories: %d" % len(factories()))
     for _, f in factories().items():
         try:
             f.load()
         except Exception:
-            print("** could not load [%s] for factory [%s]" % (f.library, f.name))
+            print(f"** could not load [{f.library}] for factory [{f.name}]")
             continue
         print(f)
         for k, v in f.properties.items():
-            print("\t%s: %s" % (k, v))
+            print(f"\t{k}: {v}")
 
 # EOF

@@ -194,16 +194,16 @@ class MiniWriter:
         s = ""
         line = "-" * 80
         s += line + "\n"
-        s += "Writer         : %s\n" % (self.wName)
-        s += "Writer Type    : %s\n" % (self.wType)
-        s += "Writer Output  : %s\n" % (self.output)
-        s += "DataSvc        : %s\n" % (self.datasvcName)
-        s += "DataSvc Output : %s\n" % (self.svcOutput)
+        s += f"Writer         : {self.wName}\n"
+        s += f"Writer Type    : {self.wType}\n"
+        s += f"Writer Output  : {self.output}\n"
+        s += f"DataSvc        : {self.datasvcName}\n"
+        s += f"DataSvc Output : {self.svcOutput}\n"
         s += "\n"
-        s += "Key for config : %s\n" % (self.key)
-        s += "Output File    : %s\n" % (self.output)
-        s += "ItemList       : %s\n" % (self.ItemList)
-        s += "OptItemList    : %s\n" % (self.OptItemList)
+        s += f"Key for config : {self.key}\n"
+        s += f"Output File    : {self.output}\n"
+        s += f"ItemList       : {self.ItemList}\n"
+        s += f"OptItemList    : {self.OptItemList}\n"
         s += line + "\n"
         return s
 
@@ -231,7 +231,7 @@ class CollectHistograms(PyAlgorithm):
         return SUCCESS
 
     def finalize(self):
-        self.log.info("CollectHistograms Finalise (%s)" % (self._gmpc.nodeType))
+        self.log.info(f"CollectHistograms Finalise ({self._gmpc.nodeType})")
         self._gmpc.hDict = self._gmpc.dumpHistograms()
         ks = list(self._gmpc.hDict.keys())
         self.log.info("%i Objects in Histogram Store" % (len(ks)))
@@ -318,13 +318,13 @@ class EventCommunicator:
             self.qin.task_done()
         except Exception:
             self._gmpc.log.warning(
-                "TASK_DONE called too often by : %s" % (self._gmpc.nodeType)
+                f"TASK_DONE called too often by : {self._gmpc.nodeType}"
             )
         return itemIn
 
     def finalize(self):
         self.log.info(
-            "Finalize Event Communicator : %s %s" % (self._gmpc, self._gmpc.nodeType)
+            f"Finalize Event Communicator : {self._gmpc} {self._gmpc.nodeType}"
         )
         # Reader sends one flag for each worker
         # Workers send one flag each
@@ -349,8 +349,8 @@ class EventCommunicator:
         self.log.info("Items Received : %i" % (self.nRecv))
         self.log.info("Data  Sent     : %i" % (self.sizeSent))
         self.log.info("Data  Received : %i" % (self.sizeRecv))
-        self.log.info("Q-out Time     : %5.2f" % (self.qoutTime))
-        self.log.info("Q-in  Time     : %5.2f" % (self.qinTime))
+        self.log.info(f"Q-out Time     : {self.qoutTime:5.2f}")
+        self.log.info(f"Q-in  Time     : {self.qinTime:5.2f}")
 
 
 # =============================================================================
@@ -411,8 +411,8 @@ class TESSerializer:
         else:
             avgOut = "Avg Buf Dumped   : N/A"
             maxOut = "Max Buf Dumped   : N/A"
-        dumpTime = "Total Dump Time  : %5.2f" % (self.tDump)
-        loadTime = "Total Load Time  : %5.2f" % (self.tLoad)
+        dumpTime = f"Total Dump Time  : {self.tDump:5.2f}"
+        loadTime = f"Total Load Time  : {self.tLoad:5.2f}"
 
         lines = (
             evIn,
@@ -620,7 +620,7 @@ class GMPComponent:
                 writerType = WRITERTYPES[v.__class__.__name__]
                 d[writerType].append(MiniWriter(v, writerType, self.config))
                 if self.nodeID == 0:
-                    self.log.info("Writer Found : %s" % (v.name()))
+                    self.log.info(f"Writer Found : {v.name()}")
 
         # Now Check for the Histogram Service
         if "HistogramPersistencySvc" in self.config.keys():
@@ -676,11 +676,11 @@ class GMPComponent:
 
     def Report(self):
         self.log.name = "%s-%i Audit" % (self.nodeType, self.nodeID)
-        allTime = "Alive Time     : %5.2f" % (self.tTime)
-        initTime = "Init Time      : %5.2f" % (self.iTime)
-        frstTime = "1st Event Time : %5.2f" % (self.firstEvTime)
-        runTime = "Run Time       : %5.2f" % (self.rTime)
-        finTime = "Finalise Time  : %5.2f" % (self.fTime)
+        allTime = f"Alive Time     : {self.tTime:5.2f}"
+        initTime = f"Init Time      : {self.iTime:5.2f}"
+        frstTime = f"1st Event Time : {self.firstEvTime:5.2f}"
+        runTime = f"Run Time       : {self.rTime:5.2f}"
+        finTime = f"Finalise Time  : {self.fTime:5.2f}"
         tup = (allTime, initTime, frstTime, runTime, finTime)
         for t in tup:
             self.log.info(t)
@@ -904,7 +904,7 @@ class Subworker(GMPComponent):
             self.eventLoopSyncer.set()
             self.evt.clearStore()
         self.log.name = "Worker-%i" % (self.nodeID)
-        self.log.info("Setting <Last> Event %s" % (self.nodeID))
+        self.log.info(f"Setting <Last> Event {self.nodeID}")
         self.lastEvent.set()
 
         self.evcom.finalize()
@@ -963,7 +963,7 @@ class Subworker(GMPComponent):
         """
         passed = False
 
-        self.log.debug("self.acceptAlgs is %s" % (str(self.acceptAlgs)))
+        self.log.debug(f"self.acceptAlgs is {self.acceptAlgs}")
         if self.acceptAlgs:
             for name in self.acceptAlgs:
                 if self.checkExecutedPassed(name):
@@ -972,20 +972,20 @@ class Subworker(GMPComponent):
         else:
             passed = True
 
-        self.log.debug("self.requireAlgs is %s" % (str(self.requireAlgs)))
+        self.log.debug(f"self.requireAlgs is {self.requireAlgs}")
         for name in self.requireAlgs:
             if self.checkExecutedPassed(name):
                 pass
             else:
-                self.log.info("Evt declined (requireAlgs) : %s" % (name))
+                self.log.info(f"Evt declined (requireAlgs) : {name}")
                 passed = False
 
-        self.log.debug("self.vetoAlgs is %s" % (str(self.vetoAlgs)))
+        self.log.debug(f"self.vetoAlgs is {self.vetoAlgs}")
         for name in self.vetoAlgs:
             if self.checkExecutedPassed(name):
                 pass
             else:
-                self.log.info("Evt declined : (vetoAlgs) : %s" % (name))
+                self.log.info(f"Evt declined : (vetoAlgs) : {name}")
                 passed = False
         return passed
 
@@ -1080,10 +1080,10 @@ class Worker(GMPComponent):
             # If an item is mandatory and optional, keep it only in the optional list
             itemList -= optItemList
             for item in sorted(itemList):
-                self.log.info(" adding ItemList Item to ts : %s" % (item))
+                self.log.info(f" adding ItemList Item to ts : {item}")
                 self.ts.addItem(item)
             for item in sorted(optItemList):
-                self.log.info(" adding Optional Item to ts : %s" % (item))
+                self.log.info(f" adding Optional Item to ts : {item}")
                 self.ts.addOptItem(item)
         else:
             self.log.info("There is no Event Output for this app")
@@ -1203,7 +1203,7 @@ class Worker(GMPComponent):
         """
         passed = False
 
-        self.log.debug("self.acceptAlgs is %s" % (str(self.acceptAlgs)))
+        self.log.debug(f"self.acceptAlgs is {self.acceptAlgs}")
         if self.acceptAlgs:
             for name in self.acceptAlgs:
                 if self.checkExecutedPassed(name):
@@ -1212,20 +1212,20 @@ class Worker(GMPComponent):
         else:
             passed = True
 
-        self.log.debug("self.requireAlgs is %s" % (str(self.requireAlgs)))
+        self.log.debug(f"self.requireAlgs is {self.requireAlgs}")
         for name in self.requireAlgs:
             if self.checkExecutedPassed(name):
                 pass
             else:
-                self.log.info("Evt declined (requireAlgs) : %s" % (name))
+                self.log.info(f"Evt declined (requireAlgs) : {name}")
                 passed = False
 
-        self.log.debug("self.vetoAlgs is %s" % (str(self.vetoAlgs)))
+        self.log.debug(f"self.vetoAlgs is {self.vetoAlgs}")
         for name in self.vetoAlgs:
             if self.checkExecutedPassed(name):
                 pass
             else:
-                self.log.info("Evt declined : (vetoAlgs) : %s" % (name))
+                self.log.info(f"Evt declined : (vetoAlgs) : {name}")
                 passed = False
         return passed
 

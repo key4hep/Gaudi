@@ -94,7 +94,7 @@ class PropertySemantics:
         derived semantics to, for example, append to the two lists.
         """
         if self.store(a) != self.store(b):
-            raise ValueError("cannot merge values %r and %r" % (a, b))
+            raise ValueError(f"cannot merge values {a!r} and {b!r}")
         return a
 
 

@@ -37,6 +37,6 @@ try:
     # house cleaning...
     del _fillCfgDb
 except Exception as err:
-    print("Py:ConfigurableDb   ERROR Problem with [%s] content!" % __name__)
+    print(f"Py:ConfigurableDb   ERROR Problem with [{__name__}] content!")
     print("Py:ConfigurableDb   ERROR", err)
     print("Py:ConfigurableDb   ERROR   ==> culprit is package [Test] !")

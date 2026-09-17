@@ -41,7 +41,7 @@ class DataHandle:
         if other is None:
             return False
         raise ValueError(
-            "Unknown equality check: type=%r, repr=%r" % (type(other), other)
+            f"Unknown equality check: type={type(other)!r}, repr={other!r}"
         )
 
     def __ne__(self, other):
@@ -54,10 +54,10 @@ class DataHandle:
         return self.Path
 
     def __repr__(self):
-        args = "'%s','%s','%s'" % (self.Path, self.Mode, self.Type)
+        args = f"'{self.Path}','{self.Mode}','{self.Type}'"
         if self.IsCondition:
-            args += ",%s" % self.IsCondition
-        return "%s(%s)" % (self.__class__.__name__, args)
+            args += f",{self.IsCondition}"
+        return f"{self.__class__.__name__}({args})"
 
     def toStringProperty(self):
         return self.__str__()
@@ -105,7 +105,7 @@ class DataHandleVector:
         if other is None:
             return False
         raise ValueError(
-            "Unknown equality check: type=%r, repr=%r" % (type(other), other)
+            f"Unknown equality check: type={type(other)!r}, repr={other!r}"
         )
 
     def __ne__(self, other):
@@ -124,10 +124,10 @@ class DataHandleVector:
         return str(self.Paths)
 
     def __repr__(self):
-        args = "%r,'%s','%s'" % (self.Paths, self.Mode, self.Type)
+        args = f"{self.Paths!r},'{self.Mode}','{self.Type}'"
         if self.IsCondition:
-            args += ",%s" % self.IsCondition
-        return "%s(%s)" % (self.__class__.__name__, args)
+            args += f",{self.IsCondition}"
+        return f"{self.__class__.__name__}({args})"
 
     def toStringProperty(self):
         return self.Paths

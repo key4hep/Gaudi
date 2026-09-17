@@ -29,7 +29,7 @@ class UnknownPersistency(PersistencyError):
     """
 
     def __init__(self, type_):
-        super().__init__("Unknown persistency type %r" % type_)
+        super().__init__(f"Unknown persistency type {type_!r}")
         self.type = type_
 
 
@@ -93,7 +93,7 @@ class FileDescription:
         Return the string representation of the file description to be passed
         to the application.
         """
-        return " ".join(["%s='%s'" % (k, v) for k, v in self.__data__() if v])
+        return " ".join([f"{k}='{v}'" for k, v in self.__data__() if v])
 
 
 class PersistencyHelper:
@@ -176,7 +176,7 @@ class RootPersistency(PersistencyHelper):
             raise PersistencyError("Persistency not configured")
         retval = str(FileDescription(filename, "RECREATE", "Gaudi::RootCnvSvc"))
         if "lun" in kwargs:
-            retval = "%s %s" % (kwargs["lun"], retval)
+            retval = "{} {}".format(kwargs["lun"], retval)
         return retval
 
 

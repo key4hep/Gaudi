@@ -121,7 +121,7 @@ class HistoAgent:
                     try:
                         aida2root(obj).Add(o)
                     except Exception:
-                        self.log.warning("FAILED TO ADD : %s" % (str(obj)))
+                        self.log.warning(f"FAILED TO ADD : {obj}")
                         errors += 1
                     added += 1
                 else:
@@ -130,14 +130,12 @@ class HistoAgent:
                             self.bookingDict[o.__class__.__name__](n, o)
                         except Exception:
                             self.log.warning(
-                                "FAILED TO REGISTER : %s\tto%s"
-                                % (o.__class__.__name__, n)
+                                f"FAILED TO REGISTER : {o.__class__.__name__}\tto{n}"
                             )
                             errors += 1
                     else:
                         self.log.warning(
-                            "No booking method for: %s\t%s\t%s"
-                            % (n, type(o), o.__class__.__name__)
+                            f"No booking method for: {n}\t{type(o)}\t{o.__class__.__name__}"
                         )
                         errors += 1
                     booked += 1
@@ -305,14 +303,14 @@ class FileRecordsAgent:
                         tup = (self._gmpc.nodeID, l, pickle.dumps(o))
                         self.objectsOut.append(tup)
                 else:
-                    self.log.info("Ignoring %s in FSR" % o.__class__.__name__)
+                    self.log.info(f"Ignoring {o.__class__.__name__} in FSR")
 
         self.log.debug("Done with FSR store, just to send to Writer.")
 
         if self.objectsOut:
             self.log.debug("%i FSR objects to Writer" % (len(self.objectsOut)))
             for ob in self.objectsOut:
-                self.log.debug("\t%s" % (ob[0]))
+                self.log.debug(f"\t{ob[0]}")
             self.q.put(self.objectsOut)
         else:
             self.log.info("Valid FSR Store, but no data to send to Writer")
@@ -343,7 +341,7 @@ class FileRecordsAgent:
     def Rebuild(self):
         # objects is a list of (path, serializedObject) tuples
         for sourceNode, path, serialob in self.objectsIn:
-            self.log.debug("Working with %s" % (path))
+            self.log.debug(f"Working with {path}")
             ob = pickle.loads(serialob)
             if hasattr(ob, "update"):
                 ob.update()
@@ -353,10 +351,10 @@ class FileRecordsAgent:
                     "\t %s has containedObjects : %i" % (type(ob).__name__, nCont)
                 )
             if sourceNode == 0:
-                self.log.debug("Registering Object to : %s" % (path))
+                self.log.debug(f"Registering Object to : {path}")
                 self.fsr.registerObject(path, ob)
             else:
-                self.log.debug("Merging Object to : %s" % (path))
+                self.log.debug(f"Merging Object to : {path}")
                 self.MergeFSRobject(sourceNode, path, ob)
         # As RecordStream has been split into Worker and Writer parts, the
         # count for output is wrong... fix that here, as every event received
@@ -385,7 +383,7 @@ class FileRecordsAgent:
                             "\t%s (cont. objects : %i)" % (l, ob.numberOfObjects())
                         )
                     else:
-                        self.log.debug("\t%s" % (l))
+                        self.log.debug(f"\t{l}")
         self.log.info("FSR Store fully rebuilt.")
         return SUCCESS
 
@@ -405,7 +403,7 @@ class FileRecordsAgent:
             # Keyed Container of LumiFSRs : extract and re-register
             self.MergeLumiFSR(path, ob)
         else:
-            self.log.info("Skipping Merge of %s at %s" % (ob.__class__.__name__, path))
+            self.log.info(f"Skipping Merge of {ob.__class__.__name__} at {path}")
 
     def ProcessTimeSpanFSR(self, path, ob):
         ob2 = self.fsr.retrieveObject(path)
@@ -533,7 +531,7 @@ class LumiFSR:
             s += "\t\t%i\n" % (r)
         s += "\tFiles : \n"
         for f in self.files:
-            s += "\t\t%s\n" % (f)
+            s += f"\t\t{f}\n"
         s += "\tInfo : \n"
         for k in self.keys:
             increment, integral = self.info[k]
@@ -566,21 +564,21 @@ class PackedCaloHypo:
 
     def __repr__(self):
         s = "PackedCaloHypo : \n"
-        s += "\tcentX        : %s\n" % (str(self.centX))
-        s += "\tcentY        : %s\n" % (str(self.centY))
-        s += "\tcerr         : %s\n" % (str(self.cerr))
-        s += "\tcov          : %s\n" % (str(self.cov))
-        s += "\tfirstCluster : %s\n" % (str(self.firstCluster))
-        s += "\tfirstDigit   : %s\n" % (str(self.firstDigit))
-        s += "\tfirstHypo    : %s\n" % (str(self.firstHypo))
-        s += "\thypothesis   : %s\n" % (str(self.hypothesis))
-        s += "\tkey          : %s\n" % (str(self.key))
-        s += "\tlastCluster  : %s\n" % (str(self.lastCluster))
-        s += "\tlastDigit    : %s\n" % (str(self.lastDigit))
-        s += "\tlastHypo     : %s\n" % (str(self.lastHypo))
-        s += "\tlh           : %s\n" % (str(self.lh))
-        s += "\tpos          : %s\n" % (str(self.pos))
-        s += "\tz            : %s\n" % (str(self.z))
+        s += f"\tcentX        : {self.centX}\n"
+        s += f"\tcentY        : {self.centY}\n"
+        s += f"\tcerr         : {self.cerr}\n"
+        s += f"\tcov          : {self.cov}\n"
+        s += f"\tfirstCluster : {self.firstCluster}\n"
+        s += f"\tfirstDigit   : {self.firstDigit}\n"
+        s += f"\tfirstHypo    : {self.firstHypo}\n"
+        s += f"\thypothesis   : {self.hypothesis}\n"
+        s += f"\tkey          : {self.key}\n"
+        s += f"\tlastCluster  : {self.lastCluster}\n"
+        s += f"\tlastDigit    : {self.lastDigit}\n"
+        s += f"\tlastHypo     : {self.lastHypo}\n"
+        s += f"\tlh           : {self.lh}\n"
+        s += f"\tpos          : {self.pos}\n"
+        s += f"\tz            : {self.z}\n"
         s += "---------------------------------------\n"
         return s
 
@@ -614,10 +612,10 @@ class SyncMini:
 
     def __repr__(self):
         s = "---------- SyncMini --------------\n"
-        s += "    Status : %s\n" % (self.event.is_set())
-        s += "         t : %5.2f\n" % (self.t)
+        s += f"    Status : {self.event.is_set()}\n"
+        s += f"         t : {self.t:5.2f}\n"
         if self.lastEvent:
-            s += "Last Event : %s\n" % (self.lastEvent.is_set())
+            s += f"Last Event : {self.lastEvent.is_set()}\n"
         s += "----------------------------------\n"
         return s
 
@@ -662,10 +660,10 @@ class Syncer:
 
         # Now the time limit is up... check the status one final time
         if self.checkAll():
-            self.log.info("All processes : %s ok." % (step))
+            self.log.info(f"All processes : {step} ok.")
             return SUCCESS
         else:
-            self.log.critical("Some process is hanging on : %s" % (step))
+            self.log.critical(f"Some process is hanging on : {step}")
             for k in self.keys:
                 hangString = "%s : Proc/Stat : %i/%s" % (step, k, self.d[k].check())
                 self.log.critical(hangString)
@@ -711,7 +709,7 @@ class Syncer:
                         firstEv[k] = True
                     if cond:
                         # It is hanging!
-                        self.log.critical("Single event wait : %5.2f" % (wait))
+                        self.log.critical(f"Single event wait : {wait:5.2f}")
                         self.processHang()
                         return FAILURE
 

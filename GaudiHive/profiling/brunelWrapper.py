@@ -71,21 +71,11 @@ def replaceValues(cfg_name, n, eif, aif, nthreads, scale, clone, dumpQueues, ver
     cfg_name = cfg_name.replace(".py", "")
     verb = ""
     if verbosity != 6:
-        verb = "_v%s" % verbosity
+        verb = f"_v{verbosity}"
     scale_s = ""
     if scale != 1:
-        scale_s = "_s%s" % scale
-    newcfgname = "measurement_%s_n%s_eif%s_aif%s_nthreads%s_c%s_dq%s%s%s.py" % (
-        cfg_name,
-        n,
-        eif,
-        aif,
-        nthreads,
-        clone,
-        dumpQueues,
-        scale_s,
-        verb,
-    )
+        scale_s = f"_s{scale}"
+    newcfgname = f"measurement_{cfg_name}_n{n}_eif{eif}_aif{aif}_nthreads{nthreads}_c{clone}_dq{dumpQueues}{scale_s}{verb}.py"
     newcfg = open(newcfgname, "w")
     for line in newcfglines:
         if (
@@ -132,11 +122,8 @@ if __name__ == "__main__":
     gaudirun = (
         "/afs/cern.ch/user/d/dpiparo/Gaudi/build.x86_64-slc5-gcc46-opt/run gaudirun.py"
     )
-    command = "/usr/bin/time -f %%S -o timing_%s %s %s >& %s  " % (
-        logfile,
-        gaudirun,
-        newcfg,
-        logfile,
+    command = (
+        f"/usr/bin/time -f %S -o timing_{logfile} {gaudirun} {newcfg} >& {logfile}  "
     )
     if options.bg:
         command += " &"

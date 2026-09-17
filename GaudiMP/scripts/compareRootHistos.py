@@ -146,7 +146,7 @@ def comparePaths(t1, t2):
     )
     if uSer:
         for n in uSer:
-            print("\t%s : \t%s" % (ds[n], n))
+            print(f"\t{ds[n]} : \t{n}")
     uPar = pset - sset
     uniqueTestHistos = 0
     for n in uPar:
@@ -157,7 +157,7 @@ def comparePaths(t1, t2):
     )
     if uPar:
         for n in uPar:
-            print("\t%s : \t%s" % (dp[n], n))
+            print(f"\t{dp[n]} : \t{n}")
     print("Matching Histos to test : %i" % (matchingHistos))
     print("=" * 80 + "\n")
     return (
@@ -344,9 +344,7 @@ def compareHistos(t1, t2, state, checkBin2BinIdentity):
         diffKols.sort()
         for e in diffKols:
             result = kTestResults[e]  # DP Calculated twice ARGH!!
-            print(
-                "%s\t\t%s :\tK-Test Result :\t %5.16f" % (ds[e].ClassName(), e, result)
-            )
+            print(f"{ds[e].ClassName()}\t\t{e} :\tK-Test Result :\t {result:5.16f}")
     print("-" * 60)
 
     # report on Failed Integral Checks
@@ -359,8 +357,7 @@ def compareHistos(t1, t2, state, checkBin2BinIdentity):
             diff = dp[e].Integral() - ds[e].Integral()
             pc = (diff * 100) / ds[e].Integral()
             print(
-                "%s\t\t%s:\t Diff = %5.6f\tPercent Diff to Reference : %5.6f "
-                % (ds[e].ClassName(), e, diff, pc)
+                f"{ds[e].ClassName()}\t\t{e}:\t Diff = {diff:5.6f}\tPercent Diff to Reference : {pc:5.6f} "
             )
     print("-" * 60 + "\n")
     print("=" * 80 + "\n")
@@ -407,7 +404,7 @@ def compareHistos(t1, t2, state, checkBin2BinIdentity):
     print("\nMatching Histograms valid for Comparison : %i" % (mh))
     print("\nOmissions' patterns : ")
     for entry in gRegexBlackList:
-        print("\t%s" % (entry))
+        print(f"\t{entry}")
     print(
         "\nHistograms for Comparison (after Omissions) : %i"
         % (mh - len(gRegexBlackList))
@@ -474,9 +471,9 @@ if __name__ == "__main__":
     testFile, referenceFile = args
 
     tfs = TFile(testFile, "REC")
-    print("opening Test File : %s" % (testFile))
+    print(f"opening Test File : {testFile}")
     tfp = TFile(referenceFile, "REC")
-    print("opening Reference File : %s" % (referenceFile))
+    print(f"opening Reference File : {referenceFile}")
 
     # get structure of TFiles in a list of (path, object) tuples
     lref = rec(tfs)

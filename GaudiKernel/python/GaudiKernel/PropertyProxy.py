@@ -168,8 +168,7 @@ class PropertyProxy:
             except ValueError as e:
                 if allowcompat:
                     log.error(
-                        "inconsistent value types for %s.%s (%s)"
-                        % (obj.getName(), self.descr.__name__, str(e))
+                        f"inconsistent value types for {obj.getName()}.{self.descr.__name__} ({e})"
                     )
                 else:
                     raise
@@ -203,13 +202,7 @@ class GaudiHandlePropertyProxyBase(PropertyProxy):
         # check that default is of allowed type for this proxy
         if not isinstance(default, allowedType):
             raise TypeError(
-                "%s: %s default: %r is not a %s"
-                % (
-                    descr.__name__,
-                    self.__class__.__name__,
-                    default,
-                    allowedType.__name__,
-                )
+                f"{descr.__name__}: {self.__class__.__name__} default: {default!r} is not a {allowedType.__name__}"
             )
         PropertyProxy.__init__(self, descr, docString, default)
         self._handleType = handleType
@@ -308,19 +301,12 @@ class GaudiHandlePropertyProxyBase(PropertyProxy):
                     raise RuntimeError(*e.args)
                 if conf is None:
                     raise RuntimeError(
-                        "%s: Default configurable for class %s not found in ConfigurableDb.CfgDb"
-                        % (self.fullPropertyName(obj), default.getType())
+                        f"{self.fullPropertyName(obj)}: Default configurable for class {default.getType()} not found in ConfigurableDb.CfgDb"
                     )
                 return conf
         else:  # not a config, not a handle, not a string
             raise TypeError(
-                "%s: default value %r is not of type %s or %s"
-                % (
-                    self.fullPropertyName(obj),
-                    default,
-                    self._confTypeName,
-                    self._handleType.__name__,
-                )
+                f"{self.fullPropertyName(obj)}: default value {default!r} is not of type {self._confTypeName} or {self._handleType.__name__}"
             )
 
         return default
@@ -348,16 +334,14 @@ class GaudiHandlePropertyProxyBase(PropertyProxy):
                             + "ToolSvc += "
                         )
                         if value.getName() == value.getType():  # using default name
-                            suggestion += "%s()" % value.__class__.__name__
+                            suggestion += f"{value.__class__.__name__}()"
                         else:  # using user-defined name
-                            suggestion += "%s(%r)" % (
-                                value.__class__.__name__,
-                                value.getName(),
+                            suggestion += (
+                                f"{value.__class__.__name__}({value.getName()!r})"
                             )
                         raise RuntimeError(
                             self.fullPropertyName(obj)
-                            + ": Public tool %s is not yet in ToolSvc. %s"
-                            % (value.getJobOptName(), suggestion)
+                            + f": Public tool {value.getJobOptName()} is not yet in ToolSvc. {suggestion}"
                         )
                 # make it read-only
                 return self._handleType(value.toStringProperty())
@@ -373,13 +357,7 @@ class GaudiHandlePropertyProxyBase(PropertyProxy):
                 return value
         else:
             raise TypeError(
-                "Property %s value %r is not a %s nor a %s nor a string"
-                % (
-                    self.fullPropertyName(obj),
-                    value,
-                    self._confTypeName,
-                    self._handleType.__name__,
-                )
+                f"Property {self.fullPropertyName(obj)} value {value!r} is not a {self._confTypeName} nor a {self._handleType.__name__} nor a string"
             )
 
         return value
@@ -406,8 +384,7 @@ class GaudiHandleArrayPropertyProxy(GaudiHandlePropertyProxyBase):
     def checkType(self, obj, value):
         if not isinstance(value, list) and not isinstance(value, self.arrayType):
             raise TypeError(
-                "%s: Value %r is not a list nor a %s"
-                % (self.fullPropertyName(obj), value, self.arrayType.__name__)
+                f"{self.fullPropertyName(obj)}: Value {value!r} is not a list nor a {self.arrayType.__name__}"
             )
 
     def convertDefaultToBeSet(self, obj, default):
@@ -471,8 +448,9 @@ class DataHandlePropertyProxy(PropertyProxy):
             return DataHandle(value.__str__(), mode, _type)
         else:
             raise ValueError(
-                "received an instance of %s, but %s expected"
-                % (type(value), "str or DataHandle")
+                "received an instance of {}, but {} expected".format(
+                    type(value), "str or DataHandle"
+                )
             )
 
 
@@ -496,14 +474,14 @@ class DataHandleVectorPropertyProxy(DataHandlePropertyProxy):
                     path = str(path)
                 if not isinstance(path, str):
                     raise ValueError(
-                        "received an instance of %s, but str or DataHandle expected"
-                        % type(path)
+                        f"received an instance of {type(path)}, but str or DataHandle expected"
                     )
                 paths.append(path)
             return DataHandleVector(paths, mode, _type)
         raise ValueError(
-            "received an instance of %s, but %s expected"
-            % (type(value), "list, tuple or DataHandleVector")
+            "received an instance of {}, but {} expected".format(
+                type(value), "list, tuple or DataHandleVector"
+            )
         )
 
 

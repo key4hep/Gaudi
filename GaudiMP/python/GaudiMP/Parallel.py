@@ -235,19 +235,18 @@ class SshSession:
         self.session = pyssh.Ssh(host=hostname)
         self.session.open()
         self.session.read_lazy()
-        self.session.write("cd %s\n" % os.getcwd())
+        self.session.write(f"cd {os.getcwd()}\n")
         self.session.read_lazy()
-        self.session.write("setenv PYTHONPATH %s\n" % os.environ["PYTHONPATH"])
+        self.session.write("setenv PYTHONPATH {}\n".format(os.environ["PYTHONPATH"]))
         self.session.read_lazy()
         self.session.write(
-            "setenv LD_LIBRARY_PATH %s\n" % os.environ["LD_LIBRARY_PATH"]
+            "setenv LD_LIBRARY_PATH {}\n".format(os.environ["LD_LIBRARY_PATH"])
         )
         self.session.read_lazy()
-        self.session.write("setenv ROOTSYS %s\n" % os.environ["ROOTSYS"])
+        self.session.write("setenv ROOTSYS {}\n".format(os.environ["ROOTSYS"]))
         self.session.read_lazy()
         self.session.write(
-            "%s %s/scripts-%s/ppserver.py \n"
-            % (sys.executable, ppprefix, sys.version.split()[0])
+            f"{sys.executable} {ppprefix}/scripts-{sys.version.split()[0]}/ppserver.py \n"
         )
         self.session.read_lazy()
         self.session.read_lazy()

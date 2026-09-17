@@ -41,13 +41,12 @@ class GaudiHandle:
             typeAndName = typeAndName.toStringProperty()
         if not isinstance(typeAndName, str):
             raise TypeError(
-                "Argument to %s must be a string. Got a %s instead"
-                % (self.__class__.__name__, type(typeAndName).__name__)
+                f"Argument to {self.__class__.__name__} must be a string. Got a {type(typeAndName).__name__} instead"
             )
         self.typeAndName = typeAndName
 
     def __repr__(self):
-        return "%s(%r)" % (self.__class__.__name__, self.toStringProperty())
+        return f"{self.__class__.__name__}({self.toStringProperty()!r})"
 
     def __str__(self):
         # FIXME: (Patch #1668) this creates problem with 2.5
@@ -143,8 +142,7 @@ class GaudiHandleArray(MutableSequence):
             typesAndNames = []
         elif not isinstance(typesAndNames, list):
             raise TypeError(
-                "Argument to %s must be a list. Got a %s instead"
-                % (self.__class__.__name__, type(typesAndNames).__name__)
+                f"Argument to {self.__class__.__name__} must be a list. Got a {type(typesAndNames).__name__} instead"
             )
         # add entries to list
         self.extend(typesAndNames)
@@ -190,8 +188,7 @@ class GaudiHandleArray(MutableSequence):
         except TypeError as e:
             if isinstance(index, slice):
                 raise TypeError(
-                    "Setting elements of %s via slice is not supported"
-                    % self.__class__.__name__
+                    f"Setting elements of {self.__class__.__name__} via slice is not supported"
                 )
             else:
                 raise e
@@ -203,8 +200,7 @@ class GaudiHandleArray(MutableSequence):
                 return self._items[index]
             except KeyError:
                 raise IndexError(
-                    "%s does not have a %s with instance name %s"
-                    % (self.__class__.__name__, self.handleType.componentType, index)
+                    f"{self.__class__.__name__} does not have a {self.handleType.componentType} with instance name {index}"
                 )
         else:
             if isinstance(index, slice):
@@ -246,31 +242,19 @@ class GaudiHandleArray(MutableSequence):
         elif isinstance(value, GaudiHandle):
             # do not allow different type of handles
             raise TypeError(
-                "Can not add a %s to a %s"
-                % (value.__class__.__name__, self.__class__.__name__)
+                f"Can not add a {value.__class__.__name__} to a {self.__class__.__name__}"
             )
         elif value.getGaudiType() != self.__class__.handleType.componentType:
             # assume it is a configurable: allow only correct types
             raise TypeError(
-                "Can not append %s (%s) to a %s"
-                % (
-                    value.__class__.__name__,
-                    value.getGaudiType(),
-                    self.__class__.__name__,
-                )
+                f"Can not append {value.__class__.__name__} ({value.getGaudiType()}) to a {self.__class__.__name__}"
             )
         elif hasattr(value, "isPublic"):
             # check public vs private if applicable for this configurable
             pop = value.isPublic() and "Public" or "Private"
             if value.isPublic() != self.__class__.handleType.isPublic:
                 raise TypeError(
-                    "Can not append %s (%s %s) to a %s"
-                    % (
-                        value.__class__.__name__,
-                        pop,
-                        value.getGaudiType(),
-                        self.__class__.__name__,
-                    )
+                    f"Can not append {value.__class__.__name__} ({pop} {value.getGaudiType()}) to a {self.__class__.__name__}"
                 )
 
         # check that an instance name appears only once in the list

@@ -48,6 +48,7 @@ if __name__ == "__main__":
             )
             # config.replace(".py",".log"))
             print(
-                "/usr/bin/time -f %%S -o %s.time `alias gaudirun` %s > %s"
-                % (config.replace(".py", ""), config, "/dev/null")
+                "/usr/bin/time -f %S -o {}.time `alias gaudirun` {} > {}".format(
+                    config.replace(".py", ""), config, "/dev/null"
+                )
             )

@@ -432,19 +432,19 @@ if __name__ == "__main__":
         if profilerName == "igprof":
             if not opts.profilerOutput:
                 profilerOutput += ".profile.gz"
-            profilerOptions = "-d -z -o %s" % profilerOutput
+            profilerOptions = f"-d -z -o {profilerOutput}"
             profilerExecName = "igprof"
 
         elif profilerName == "igprofPerf":
             if not opts.profilerOutput:
                 profilerOutput += ".pp.gz"
-            profilerOptions = "-d -pp -z -o %s" % profilerOutput
+            profilerOptions = f"-d -pp -z -o {profilerOutput}"
             profilerExecName = "igprof"
 
         elif profilerName == "igprofMem":
             if not opts.profilerOutput:
                 profilerOutput += ".mp.gz"
-            profilerOptions = "-d -mp -z -o %s" % profilerOutput
+            profilerOptions = f"-d -mp -z -o {profilerOutput}"
             profilerExecName = "igprof"
 
         elif "valgrind" in profilerName:
@@ -454,21 +454,21 @@ if __name__ == "__main__":
             toolname = profilerName.replace("valgrind", "")
             outoption = "--log-file"
             if toolname in ("massif", "callgrind", "cachegrind"):
-                outoption = "--%s-out-file" % toolname
-            profilerOptions = "--tool=%s %s=%s" % (toolname, outoption, profilerOutput)
+                outoption = f"--{toolname}-out-file"
+            profilerOptions = f"--tool={toolname} {outoption}={profilerOutput}"
             profilerExecName = "valgrind"
 
         elif profilerName == "jemalloc":
             opts.preload.insert(0, os.environ.get("JEMALLOCLIB", "libjemalloc.so"))
             os.environ["MALLOC_CONF"] = "prof:true,prof_leak:true"
         else:
-            root_logger.warning("Profiler %s not recognized!" % profilerName)
+            root_logger.warning(f"Profiler {profilerName} not recognized!")
 
         # Add potential extra options
         if opts.profilerExtraOptions != "":
             profilerExtraOptions = opts.profilerExtraOptions
             profilerExtraOptions = profilerExtraOptions.replace("__", "--")
-            profilerOptions += " %s" % profilerExtraOptions
+            profilerOptions += f" {profilerExtraOptions}"
 
         # now we look for the full path of the profiler: is it really there?
         if profilerExecName:
@@ -476,15 +476,14 @@ if __name__ == "__main__":
 
             profilerPath = distutils.spawn.find_executable(profilerExecName)
             if not profilerPath:
-                root_logger.error("Cannot locate profiler %s" % profilerExecName)
+                root_logger.error(f"Cannot locate profiler {profilerExecName}")
                 sys.exit(1)
 
         root_logger.info(
             "------ Profiling options are on ------ \n"
-            " o Profiler: %s\n"
-            " o Options: '%s'.\n"
-            " o Output: %s"
-            % (profilerExecName or profilerName, profilerOptions, profilerOutput)
+            f" o Profiler: {profilerExecName or profilerName}\n"
+            f" o Options: '{profilerOptions}'.\n"
+            f" o Output: {profilerOutput}"
         )
 
         # allow preloading of libraries
@@ -663,7 +662,7 @@ if __name__ == "__main__":
                 # These options can be used only on unix platforms
                 run_info["exe"] = os.readlink("/proc/self/exe")
 
-            logging.info("Saving run info to: %s" % opts.run_info_file)
+            logging.info(f"Saving run info to: {opts.run_info_file}")
             with open(opts.run_info_file, "w") as f:
                 json.dump(run_info, f)
 

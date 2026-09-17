@@ -103,7 +103,7 @@ def make_plot(runtimes, cloneFlag):
     if cloneFlag:
         clone_string = "_clone"
         title += " (Cloning)"
-    plotname = "runtime%s.pdf" % clone_string
+    plotname = f"runtime{clone_string}.pdf"
 
     canvas = ROOT.TCanvas(plotname, "plot", 500, 400)
     canvas.SetGrid()
@@ -132,7 +132,7 @@ def make_plot(runtimes, cloneFlag):
     legend.SetFillColor(ROOT.kWhite)
     # evil
     for graph, n in zip(graphs, n_evts_in_flight_l):
-        legend.AddEntry(graph, "%s" % n)
+        legend.AddEntry(graph, f"{n}")
     legend.Draw()
 
     # Add some text
