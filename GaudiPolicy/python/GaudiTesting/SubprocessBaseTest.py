@@ -18,7 +18,7 @@ import threading
 from datetime import datetime
 from pathlib import Path
 from string import Template
-from typing import Callable, Optional, Union
+from typing import Callable
 
 import pytest
 
@@ -51,12 +51,12 @@ class SubprocessBaseTest:
     ]
 
     @property
-    def cwd(self) -> Optional[Path]:
+    def cwd(self) -> Path | None:
         cwd = self.popen_kwargs.get("cwd")
         return Path(cwd) if cwd else None
 
     @classmethod
-    def resolve_path(cls, path: Union[Path, str]) -> str:
+    def resolve_path(cls, path: Path | str) -> str:
         """
         Resolve the given path to an absolute path,
         expanding environment variables.
@@ -284,7 +284,7 @@ class SubprocessBaseTest:
         self,
         record_property: Callable[[str, str], None],
         fixture_result: FixtureResult,
-        reference_path: Optional[Path],
+        reference_path: Path | None,
     ) -> None:
         """
         Record properties and handle any failures during fixture setup.

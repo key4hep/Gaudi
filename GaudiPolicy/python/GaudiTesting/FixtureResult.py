@@ -10,7 +10,6 @@
 #####################################################################################
 import datetime
 import subprocess
-from typing import Union
 
 from GaudiTesting.utils import CodeWrapper
 
@@ -37,7 +36,7 @@ class FixtureResult:
         completed_process: subprocess.CompletedProcess,
         start_time: datetime,
         end_time: datetime,
-        run_exception: Union[ProcessTimeoutError, ExceededStreamError, None],
+        run_exception: ProcessTimeoutError | ExceededStreamError | None,
         command: list[str],
         expanded_command: list[str],
         env: dict,

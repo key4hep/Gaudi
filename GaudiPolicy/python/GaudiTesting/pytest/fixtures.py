@@ -13,7 +13,7 @@ import os
 import subprocess
 from collections import defaultdict
 from pathlib import Path
-from typing import Callable, Generator, Optional
+from typing import Callable, Generator
 
 import pytest
 import yaml
@@ -83,7 +83,7 @@ def pytest_collection_modifyitems(config, items):
             results[f"{name}.source_code"] = source_code
 
 
-def _get_shared_cwd_id(cls: type) -> Optional[str]:
+def _get_shared_cwd_id(cls: type) -> str | None:
     """
     Extract the id of the shared cwd directory needed by the class, if any.
 
@@ -184,7 +184,7 @@ def capture_class_docstring(
 
 
 @pytest.fixture(scope="class")
-def reference_path(request) -> Generator[Optional[Path], None, None]:
+def reference_path(request) -> Generator[Path | None, None, None]:
     cls = request.cls
 
     if not hasattr(cls, "reference") or cls.reference is None:
@@ -208,7 +208,7 @@ def reference_path(request) -> Generator[Optional[Path], None, None]:
 
 
 @pytest.fixture(scope="class")
-def reference(request, reference_path: Optional[Path]) -> Generator[dict, None, None]:
+def reference(request, reference_path: Path | None) -> Generator[dict, None, None]:
     cls = request.cls
     original_reference_data = None
     current_reference_data = None

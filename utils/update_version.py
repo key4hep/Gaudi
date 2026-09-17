@@ -16,7 +16,6 @@ import sys
 from collections.abc import Callable, Iterable
 from difflib import unified_diff
 from subprocess import run
-from typing import Union
 
 import click
 
@@ -83,8 +82,8 @@ class ReplacementRule:
 
     def __init__(
         self,
-        pattern: Union[str, re.Pattern],
-        replace: Union[str, Callable[[str, Fields], str]],
+        pattern: str | re.Pattern,
+        replace: str | Callable[[str, Fields], str],
     ):
         self.pattern = re.compile(pattern)
         if isinstance(replace, str):
@@ -101,7 +100,7 @@ class ReplacementRule:
 
 class FileUpdater:
     def __init__(
-        self, filename: str, rules: Iterable[Union[ReplacementRule, tuple[str, str]]]
+        self, filename: str, rules: Iterable[ReplacementRule | tuple[str, str]]
     ):
         self.filename = filename
         self.rules = [
