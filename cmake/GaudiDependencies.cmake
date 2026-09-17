@@ -129,7 +129,7 @@ if(NOT CMAKE_FIND_PACKAGE_NAME)
 endif()
 
 # Identify dependencies using pkgconfig (by the pkgconfig module to use)
-set(zstd_pkgconfig_module "libzstd")
+# set(zstd_pkgconfig_module "libzstd") # we should find zstd via pkg-config, but it's not available in LCG views
 
 option(GAUDI_ENABLE_GAUDIPARTPROP "Build the subdirectory GaudiPartProp" YES)
 option(GAUDI_BUILD_EXAMPLES "Build the directory GaudiExamples" YES)
