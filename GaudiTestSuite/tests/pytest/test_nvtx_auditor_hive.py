@@ -11,13 +11,13 @@
 from GaudiTesting import GaudiExeTest
 
 
-class TestNVTXAudit(GaudiExeTest):
+class TestNVTXAuditHive(GaudiExeTest):
     command = [
         "nsys",
         "profile",
         "--trace=nvtx",
         "-o",
-        "NVTXAudit.nsys-rep",
+        "NVTXAuditHive.nsys-rep",
         "gaudirun.py",
-        "../../../GaudiCUDA/tests/options/NVTXAudit.py",
+        "../../../GaudiCUDA/tests/options/NVTXAuditHive.py",
     ]
