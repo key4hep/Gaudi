@@ -294,9 +294,9 @@ class GaudiHandlePropertyProxyBase(PropertyProxy):
                 # (make sure the name used to instantiate the private tool
                 # includes the name of the owner, see https://gitlab.cern.ch/gaudi/Gaudi/-/issues/141)
                 if "/" in typeAndName:
-                    typeAndName = typeAndName.replace("/", "/{}.".format(obj.name()), 1)
+                    typeAndName = typeAndName.replace("/", f"/{obj.name()}.", 1)
                 else:
-                    typeAndName = "{0}/{1}.{0}".format(typeAndName, obj.name())
+                    typeAndName = f"{typeAndName}/{obj.name()}.{typeAndName}"
                 try:
                     conf = self.getDefaultConfigurable(
                         typeAndName, self.fullPropertyName(obj)

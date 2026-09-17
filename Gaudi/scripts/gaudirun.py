@@ -374,8 +374,8 @@ if __name__ == "__main__":
         os.environ["PRELOAD_SANITIZER_LIB"] = ""
         if preload and sanitizers != preload:
             logging.warning(
-                "Ignoring PRELOAD_SANITIZER_LIB (={}) as LD_PRELOAD (={}) is "
-                "different and takes precedence.".format(sanitizers, preload)
+                f"Ignoring PRELOAD_SANITIZER_LIB (={sanitizers}) as LD_PRELOAD (={preload}) is "
+                "different and takes precedence."
             )
         else:
             for sanitizer in reversed(sanitizers.split(":")):
@@ -550,7 +550,7 @@ if __name__ == "__main__":
     # Prepare the "configuration script" to parse (like this it is easier than
     # having a list with files and python commands, with an if statements that
     # decides to do importOptions or exec)
-    options = ["process({!r})".format(arg) for arg in args]
+    options = [f"process({arg!r})" for arg in args]
     # The option lines are inserted into the list of commands using their
     # position on the command line
     optlines = list(opts.options)

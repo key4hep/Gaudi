@@ -348,9 +348,9 @@ class iProperty:
                 return prop.value()
         else:
             opts = self._svcloc.getOptsSvc()
-            if opts.has("{}.{}".format(self._name, name)):
+            if opts.has(f"{self._name}.{name}"):
                 # from JobOptionsSvc we always have only strings
-                return eval(opts.get("{}.{}".format(self._name, name)), {}, {})
+                return eval(opts.get(f"{self._name}.{name}"), {}, {})
             raise AttributeError("property %s does not exist" % name)
 
     def properties(self):
@@ -1349,7 +1349,7 @@ class AppMgr(iService):
 def _getFIDandEvents(pfn):
     tfile = gbl.TFile.Open(pfn)
     if not tfile:
-        raise IOError("Cannot open ROOT file {0}".format(pfn))
+        raise IOError(f"Cannot open ROOT file {pfn}")
     tree = tfile.Get("##Params")
     tree.GetEvent(0)
     text = tree.db_string

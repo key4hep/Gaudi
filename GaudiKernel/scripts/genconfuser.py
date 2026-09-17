@@ -85,8 +85,7 @@ def loadConfigurableDb(build_dir=None, project_name=None):
     #  - load the confdb files
     for confDb in set(confDbFiles):
         if confDb in ignored_files or (
-            project_name
-            and os.path.basename(confDb) == ("{}.confdb".format(project_name))
+            project_name and os.path.basename(confDb) == (f"{project_name}.confdb")
         ):
             # skip ignored files and the project's own confdb
             log.debug("\t-ignoring [%s]", confDb)

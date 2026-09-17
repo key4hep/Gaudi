@@ -189,9 +189,7 @@ class ConfigurablesDB:
         elif name == "__package__":  # pragma no cover
             entry = self.__name__
         else:
-            raise AttributeError(
-                "module {!r} has no attribute {!r}".format(self.__name__, name)
-            )
+            raise AttributeError(f"module {self.__name__!r} has no attribute {name!r}")
         setattr(self, name, entry)
         return entry
 

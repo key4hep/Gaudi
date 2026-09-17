@@ -277,7 +277,7 @@ def toOpt(value):
         return '"{0}"'.format(value.replace('"', '\\"'))
     elif isinstance(value, dict):
         return "{{{0}}}".format(
-            ", ".join("{0}: {1}".format(toOpt(k), toOpt(v)) for k, v in value.items())
+            ", ".join(f"{toOpt(k)}: {toOpt(v)}" for k, v in value.items())
         )
     elif hasattr(value, "__iter__"):
         return "[{0}]".format(", ".join(map(toOpt, value)))
@@ -385,9 +385,7 @@ class gaudimain:
     def generateOptsOutput(self, all=False):
         opts = getAllOpts(all)
         keys = sorted(opts)
-        return "\n".join(
-            "{} = {};".format(key, toOpt(parseOpt(opts[key]))) for key in keys
-        )
+        return "\n".join(f"{key} = {toOpt(parseOpt(opts[key]))};" for key in keys)
 
     def _writepickle(self, filename):
         # --- Lets take the first file input file as the name of the pickle file

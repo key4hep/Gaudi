@@ -972,7 +972,7 @@ class Configurable(metaclass=ConfigurableMeta.ConfigurableMeta):
         return indentStr + "\\%s (End of %s) %s" % (preLen * "-", title, postLen * "-")
 
     def __repr__(self):
-        return "{0}({1!r})".format(self.__class__.__name__, self.name())
+        return f"{self.__class__.__name__}({self.name()!r})"
 
     def __str__(self, indent=0, headerLastIndentUnit=indentUnit):
         global log  # to print some info depending on output level
@@ -1861,10 +1861,10 @@ class SuperAlgorithm(ControlFlowNode):
         if name in Configurable.allConfigurables:
             instance = Configurable.allConfigurables[name]
             assert type(instance) is cls, (
-                "trying to reuse {0!r} as name of a {1} instance while it"
+                f"trying to reuse {name!r} as name of a {cls.__name__} instance while it"
                 "s "
-                "already used for an instance of {2}"
-            ).format(name, cls.__name__, type(instance).__name__)
+                f"already used for an instance of {type(instance).__name__}"
+            )
             return instance
         else:
             instance = super(SuperAlgorithm, cls).__new__(cls)
@@ -1910,7 +1910,7 @@ class SuperAlgorithm(ControlFlowNode):
         raise NotImplementedError()
 
     def __repr__(self):
-        return "{0}({1!r})".format(self.getType(), self.name)
+        return f"{self.getType()}({self.name!r})"
 
     def _visitSubNodes(self, visitor):
         if self.graph:

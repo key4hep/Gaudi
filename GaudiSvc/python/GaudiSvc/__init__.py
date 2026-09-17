@@ -21,7 +21,7 @@ def getMetaData(path):
 
     f = TFile.Open(path)
     if not f:
-        raise RuntimeError("cannot open {0}".format(path))
+        raise RuntimeError(f"cannot open {path}")
     try:
         if version < (6, 32):
             return dict(f.info)

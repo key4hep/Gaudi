@@ -21,7 +21,7 @@ class TestGlobalDefaults(GaudiExeTest):
 
         app = ApplicationMgr(EvtSel="NONE", EvtMax=1)
 
-        app.TopAlg = [HelloWorld("alg{}".format(i)) for i in range(10)]
+        app.TopAlg = [HelloWorld(f"alg{i}") for i in range(10)]
         app.TopAlg[5].OutputLevel = 4
 
         JobOptionsSvc(

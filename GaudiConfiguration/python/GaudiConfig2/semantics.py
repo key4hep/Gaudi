@@ -56,7 +56,7 @@ class PropertySemantics:
             h.match(value) if hasattr(h, "match") else h == value
             for h in self.__handled_types__
         ):
-            raise TypeError("C++ type {!r} not supported".format(value))
+            raise TypeError(f"C++ type {value!r} not supported")
         self._cpp_type = value
 
     def load(self, value):
@@ -184,7 +184,7 @@ class StringSemantics(PropertySemantics):
 
     def store(self, value):
         if not isinstance(value, str):
-            raise TypeError("cannot set property {} to {!r}".format(self.name, value))
+            raise TypeError(f"cannot set property {self.name} to {value!r}")
         return value
 
 
@@ -203,7 +203,7 @@ class FloatSemantics(PropertySemantics):
 
         if not isinstance(value, Number):
             raise TypeError(
-                "number expected, got {!r} in assignment to {}".format(value, self.name)
+                f"number expected, got {value!r} in assignment to {self.name}"
             )
         return float(value)
 
@@ -234,7 +234,7 @@ class IntSemantics(PropertySemantics):
 
         if not isinstance(value, Number):
             raise TypeError(
-                "number expected, got {!r} in assignment to {}".format(value, self.name)
+                f"number expected, got {value!r} in assignment to {self.name}"
             )
         v = int(value)
         if v != value:
@@ -242,15 +242,13 @@ class IntSemantics(PropertySemantics):
         min_value, max_value = self.INT_RANGES[self.cpp_type]
         if v < min_value or v > max_value:
             raise ValueError(
-                "value {} outside limits for {!r} {}".format(
-                    v, self.cpp_type, self.INT_RANGES[self.cpp_type]
-                )
+                f"value {v} outside limits for {self.cpp_type!r} {self.INT_RANGES[self.cpp_type]}"
             )
         return v
 
 
 _IDENTIFIER_RE = r"[a-zA-Z_][a-zA-Z0-9_]*"
-_NS_IDENT_RE = r"{ident}(::{ident})*".format(ident=_IDENTIFIER_RE)
+_NS_IDENT_RE = rf"{_IDENTIFIER_RE}(::{_IDENTIFIER_RE})*"
 _COMMA_SEPARATION_RE = r"{exp}(,{exp})*"
 
 
@@ -258,12 +256,8 @@ class ComponentSemantics(PropertySemantics):
     __handled_types__ = (
         "Algorithm",
         "Auditor",
-        re.compile(
-            r"AlgTool(:{})?$".format(_COMMA_SEPARATION_RE.format(exp=_NS_IDENT_RE))
-        ),
-        re.compile(
-            r"Service(:{})?$".format(_COMMA_SEPARATION_RE.format(exp=_NS_IDENT_RE))
-        ),
+        re.compile(rf"AlgTool(:{_COMMA_SEPARATION_RE.format(exp=_NS_IDENT_RE)})?$"),
+        re.compile(rf"Service(:{_COMMA_SEPARATION_RE.format(exp=_NS_IDENT_RE)})?$"),
     )
 
     def __init__(self, cpp_type):
@@ -291,24 +285,18 @@ class ComponentSemantics(PropertySemantics):
                 value = Configurables.getByType(t).getInstance(n)
         else:
             raise TypeError(
-                "cannot assign {!r} to {!r}, requested string or {!r}".format(
-                    value, self.name, self.cpp_type
-                )
+                f"cannot assign {value!r} to {self.name!r}, requested string or {self.cpp_type!r}"
             )
         if value.__component_type__ != self.cpp_type:
             raise TypeError(
-                "wrong type for {!r}: expected {!r}, got {!r}".format(
-                    self.name, self.cpp_type, value.__component_type__
-                )
+                f"wrong type for {self.name!r}: expected {self.cpp_type!r}, got {value.__component_type__!r}"
             )
         try:
             # if no interface is declared we cannot check
             if value.__interfaces__:
                 if not self.interfaces.issubset(value.__interfaces__):
                     raise TypeError(
-                        "wrong interfaces for {!r}: required {}".format(
-                            self.name, list(self.interfaces)
-                        )
+                        f"wrong interfaces for {self.name!r}: required {list(self.interfaces)}"
                     )
         except AttributeError:
             pass  # no interfaces declared by the configrable, cannot check
@@ -535,14 +523,12 @@ class SequenceSemantics(PropertySemantics):
     @name.setter
     def name(self, value):
         self._name = value
-        self.value_semantics.name = "{} element".format(self._name)
+        self.value_semantics.name = f"{self._name} element"
 
     def store(self, value):
         if not isinstance(value, (list, _ListHelper, tuple)):
             raise TypeError(
-                "list or tuple expected, got {!r} in assignment to {}".format(
-                    value, self.name
-                )
+                f"list or tuple expected, got {value!r} in assignment to {self.name}"
             )
         new_value = _ListHelper(self.value_semantics)
         new_value.extend(value)
@@ -677,14 +663,12 @@ class SetSemantics(PropertySemantics):
     @name.setter
     def name(self, value):
         self._name = value
-        self.value_semantics.name = "{} element".format(self._name)
+        self.value_semantics.name = f"{self._name} element"
 
     def store(self, value):
         # We support assignment from list for backwards compatibility
         if not isinstance(value, (set, _SetHelper, list, _ListHelper)):
-            raise TypeError(
-                "set expected, got {!r} in assignment to {}".format(value, self.name)
-            )
+            raise TypeError(f"set expected, got {value!r} in assignment to {self.name}")
 
         new_value = _SetHelper(self.value_semantics)
         new_value |= value
@@ -820,8 +804,8 @@ class MappingSemantics(PropertySemantics):
     @name.setter
     def name(self, value):
         self._name = value
-        self.key_semantics.name = "{} key".format(self._name)
-        self.value_semantics.name = "{} value".format(self._name)
+        self.key_semantics.name = f"{self._name} key"
+        self.value_semantics.name = f"{self._name} value"
 
     def store(self, value):
         # No explicit type checking as anything else than dict fails in update call
