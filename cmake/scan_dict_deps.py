@@ -10,7 +10,6 @@
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
 
-import io
 import re
 from os.path import exists, isabs, isdir, join
 
@@ -54,7 +53,7 @@ def find_deps(filename, searchpath, deps=None):
         f
         for f in [
             find_file(m.group(1), searchpath)
-            for m in [INCLUDE_RE.match(l) for l in io.open(filename, encoding="utf-8")]
+            for m in [INCLUDE_RE.match(l) for l in open(filename, encoding="utf-8")]
             if m
         ]
         if f and f not in deps and not isdir(f)
