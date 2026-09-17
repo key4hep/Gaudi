@@ -312,7 +312,15 @@ namespace Gaudi::Accumulators {
     std::vector<std::string> m_labels;
 
     void recomputeRatio() {
-      m_ratio = ( m_maxValue == m_minValue ) ? Arithmetic{} : nBins / ( m_maxValue - m_minValue );
+      if constexpr ( std::is_floating_point_v<Arithmetic> ) {
+        // For floating-point types, use epsilon comparison to avoid -Wfloat_equal warning
+        m_ratio = ( std::abs( m_maxValue - m_minValue ) < std::numeric_limits<Arithmetic>::epsilon() )
+                      ? Arithmetic{}
+                      : nBins / ( m_maxValue - m_minValue );
+      } else {
+        // For integer types, direct comparison is safe
+        m_ratio = ( m_maxValue == m_minValue ) ? Arithmetic{} : nBins / ( m_maxValue - m_minValue );
+      }
     }
   };
 

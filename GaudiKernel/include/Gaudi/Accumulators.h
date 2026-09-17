@@ -544,10 +544,20 @@ namespace Gaudi::Accumulators {
     template <atomicity ato>
     AccumulatorSet( construct_empty_t, const AccumulatorSet<Arithmetic, ato, InputType, Bases...>& )
         : AccumulatorSet() {}
+
+// This pragma is only required when Arithmetic is a floating point while `Bases::poerator+=`
+// expects a boolean as the conversion implies calling `== 0` on the floating-point
+// This should never happen, but does in StatEntity.h
+// `StatEntity` is only present for backward compatibility and should be ultimately removed
+// At that moment, the pragma can be dropped
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wfloat-equal"
     AccumulatorSet& operator+=( const InputType by ) {
       ( Bases<Atomicity, Arithmetic>::operator+=( by ), ... );
       return *this;
     }
+#pragma GCC diagnostic pop
+
     OutputType value() const { return std::make_tuple( Bases<Atomicity, Arithmetic>::value()... ); }
     void       reset() { ( Bases<Atomicity, Arithmetic>::reset(), ... ); }
     template <atomicity Ato>

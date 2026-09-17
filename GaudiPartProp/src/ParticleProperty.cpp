@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -88,23 +88,23 @@ std::ostream& Gaudi::ParticleProperty::fillStream( std::ostream& s ) const {
 #  pragma warning( push )
 #endif
   // charge
-  if ( 0 == charge() ) {
+  if ( 0 == threeCharge() ) {
     s << " Q:   0";
-  } else if ( 1.0 == charge() ) {
+  } else if ( 3 == threeCharge() ) {
     s << " Q:  +1";
-  } else if ( -1.0 == charge() ) {
+  } else if ( -3 == threeCharge() ) {
     s << " Q:  -1";
-  } else if ( 2.0 == charge() ) {
+  } else if ( 6 == threeCharge() ) {
     s << " Q:  +2";
-  } else if ( -2.0 == charge() ) {
+  } else if ( -6 == threeCharge() ) {
     s << " Q:  -2";
-  } else if ( 0.3 == charge() ) {
+  } else if ( 1 == threeCharge() ) {
     s << " Q:+1/3";
-  } else if ( -0.3 == charge() ) {
+  } else if ( -1 == threeCharge() ) {
     s << " Q:-1/3";
-  } else if ( 0.7 == charge() ) {
+  } else if ( 2 == threeCharge() ) {
     s << " Q:+2/3";
-  } else if ( -0.7 == charge() ) {
+  } else if ( -2 == threeCharge() ) {
     s << " Q:-2/3";
   } else {
     s << BF( " Q:%|+3.1f|," ) % float( charge() );
@@ -123,7 +123,7 @@ std::ostream& Gaudi::ParticleProperty::fillStream( std::ostream& s ) const {
   // lifetime
   if ( 1 * Gaudi::Units::km < ctau() ) {
     s << ", lifetime: infinity  ";
-  } else if ( 0 == lifeTime() ) {
+  } else if ( lifeTime() <= std::numeric_limits<double>::min() ) {
   } // ATTENTION!!
   else if ( 1 * Gaudi::Units::meter < ctau() ) {
     s << BF( ",  ctau:%|12.6g| m" ) % ( ctau() / Gaudi::Units::meter );
@@ -236,15 +236,15 @@ std::ostream& Gaudi::ParticleProperties::printAsTable_( const std::vector<const 
 #  pragma warning( disable : 1572 ) // Floating-point equality and inequality comparisons are unreliable
 #  pragma warning( push )
 #endif
-    if ( 0 == pp->charge() ) {
+    if ( 0 == pp->threeCharge() ) {
       line % "0";
-    } else if ( 0.3 == pp->charge() ) {
+    } else if ( 1 == pp->threeCharge() ) {
       line % "+1/3";
-    } else if ( -0.3 == pp->charge() ) {
+    } else if ( -1 == pp->threeCharge() ) {
       line % "-1/3";
-    } else if ( 0.7 == pp->charge() ) {
+    } else if ( 2 == pp->threeCharge() ) {
       line % "+2/3";
-    } else if ( -0.7 == pp->charge() ) {
+    } else if ( -2 == pp->threeCharge() ) {
       line % "-2/3";
     } else {
       line % pp->charge();
