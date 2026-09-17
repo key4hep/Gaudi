@@ -29,7 +29,7 @@ FiberManager::FiberManager( int n_threads ) {
   m_schedAlgoList.resize( n_threads );
   m_threads.reserve( n_threads );
   for ( int i = 0; i < n_threads; ++i ) {
-    m_threads.emplace_back( [this, i, sleep_while_idle]() {
+    m_threads.emplace_back( [this, i]() {
       // Save handle to the scheduler of this thread so it can be manually notified.
       auto* algo_ptr          = new SchedAlgo( sleep_while_idle );
       m_schedAlgoList.at( i ) = algo_ptr;
