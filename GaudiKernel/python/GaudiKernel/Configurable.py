@@ -1903,7 +1903,7 @@ class SuperAlgorithm(ControlFlowNode):
         Instantiate and algorithm of type 'typ' with a name suitable for use
         inside a SuperAlgorithm.
         """
-        name = "{0}_{1}".format(self.name, kwargs.pop("name", typ.getType()))
+        name = "{}_{}".format(self.name, kwargs.pop("name", typ.getType()))
         return typ(name, **kwargs)
 
     def _initGraph(self):

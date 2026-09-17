@@ -274,13 +274,13 @@ def toOpt(value):
     {"a": [1, 2, "3"]}
     """
     if isinstance(value, str):
-        return '"{0}"'.format(value.replace('"', '\\"'))
+        return '"{}"'.format(value.replace('"', '\\"'))
     elif isinstance(value, dict):
-        return "{{{0}}}".format(
+        return "{{{}}}".format(
             ", ".join(f"{toOpt(k)}: {toOpt(v)}" for k, v in value.items())
         )
     elif hasattr(value, "__iter__"):
-        return "[{0}]".format(", ".join(map(toOpt, value)))
+        return "[{}]".format(", ".join(map(toOpt, value)))
     else:
         return repr(value)
 
