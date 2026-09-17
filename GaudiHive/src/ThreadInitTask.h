@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -16,7 +16,6 @@
 #include <GaudiKernel/ToolHandle.h>
 
 #include <boost/thread.hpp>
-#include <string>
 #include <vector>
 
 /** @class ThreadInitTask
@@ -31,7 +30,10 @@ class ThreadInitTask {
 public:
   ThreadInitTask( ToolHandleArray<IThreadInitTool>& tools, boost::barrier* b, ISvcLocator* svcLocator,
                   bool terminate = false )
-      : m_tools( tools ), m_barrier( b ), m_serviceLocator( svcLocator ), m_terminate( terminate ){};
+      : m_barrier( b ), m_serviceLocator( svcLocator ), m_terminate( terminate ) {
+    m_tools.reserve( tools.size() );
+    for ( auto& tool : tools ) { m_tools.push_back( tool.get() ); }
+  }
 
   /** @brief Execute the task
    *
@@ -42,7 +44,7 @@ public:
   static bool execFailed() { return m_execFailed; }
 
 private:
-  ToolHandleArray<IThreadInitTool> m_tools;
+  std::vector<IThreadInitTool*> m_tools;
 
   boost::barrier*      m_barrier = nullptr;
   SmartIF<ISvcLocator> m_serviceLocator;

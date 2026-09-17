@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -41,55 +41,44 @@ void ThreadInitTask::operator()() const {
         << endmsg;
   }
 
-  // copy the tools array not to violate the const contract of the method
-  ToolHandleArray<IThreadInitTool> tools( m_tools );
-
-  if ( tools.retrieve().isFailure() ) {
-    log << MSG::ERROR << "unable to retrieve ToolHandleArray " << tools << endmsg;
-    m_execFailed = true;
+  if ( m_tools.empty() ) {
+    log << MSG::DEBUG << "no entries in Tool Array" << endmsg;
+    if ( !m_terminate ) { Gaudi::Concurrency::ThreadInitDone = true; }
   } else {
+    if ( debug ) log << MSG::DEBUG << "executing in thread 0x" << std::hex << pthread_self() << std::dec << endmsg;
 
-    if ( tools.empty() ) {
-      log << MSG::DEBUG << "no entries in Tool Array" << endmsg;
-      if ( !m_terminate ) { Gaudi::Concurrency::ThreadInitDone = true; }
+    // only call terminate for threads that have been initialized
+    if ( m_terminate && !Gaudi::Concurrency::ThreadInitDone ) {
+      log << MSG::INFO << "Not calling terminateThread for thread 0x" << std::hex << pthread_self()
+          << " as it has not been initialized" << endmsg;
     } else {
-      if ( debug ) log << MSG::DEBUG << "executing in thread 0x" << std::hex << pthread_self() << std::dec << endmsg;
 
-      // only call terminate for threads that have been initialized
-      if ( m_terminate && !Gaudi::Concurrency::ThreadInitDone ) {
-        log << MSG::INFO << "Not calling terminateThread for thread 0x" << std::hex << pthread_self()
-            << " as it has not been initialized" << endmsg;
-      } else {
+      for ( auto* tool : m_tools ) {
+        try {
 
-        for ( auto& t : tools ) {
-          try {
+          if ( debug ) log << MSG::DEBUG << "calling IThreadInitTool " << tool->name() << endmsg;
 
-            if ( debug ) log << MSG::DEBUG << "calling IThreadInitTool " << t << endmsg;
-
-            if ( !m_terminate ) {
-              t->initThread();
-              Gaudi::Concurrency::ThreadInitDone = true;
-            } else {
-              t->terminateThread();
-            }
-
-          } catch ( const GaudiException& exc ) {
-            log << MSG::ERROR << "ThreadInitTool " << t << " in thread 0x" << std::hex << pthread_self() << std::dec
-                << " threw GaudiException: " << exc << endmsg;
-            m_execFailed = true;
-          } catch ( const std::exception& exc ) {
-            log << MSG::ERROR << "ThreadInitTool " << t << " in thread 0x" << std::hex << pthread_self() << std::dec
-                << " threw std::exception: " << exc.what() << endmsg;
-            m_execFailed = true;
-          } catch ( ... ) {
-            log << MSG::ERROR << "ThreadInitTool " << t << " in thread 0x" << std::hex << pthread_self() << std::dec
-                << " threw unknown exception" << endmsg;
-            m_execFailed = true;
+          if ( !m_terminate ) {
+            tool->initThread();
+            Gaudi::Concurrency::ThreadInitDone = true;
+          } else {
+            tool->terminateThread();
           }
+
+        } catch ( const GaudiException& exc ) {
+          log << MSG::ERROR << "ThreadInitTool " << tool->name() << " in thread 0x" << std::hex << pthread_self()
+              << std::dec << " threw GaudiException: " << exc << endmsg;
+          m_execFailed = true;
+        } catch ( const std::exception& exc ) {
+          log << MSG::ERROR << "ThreadInitTool " << tool->name() << " in thread 0x" << std::hex << pthread_self()
+              << std::dec << " threw std::exception: " << exc.what() << endmsg;
+          m_execFailed = true;
+        } catch ( ... ) {
+          log << MSG::ERROR << "ThreadInitTool " << tool->name() << " in thread 0x" << std::hex << pthread_self()
+              << std::dec << " threw unknown exception" << endmsg;
+          m_execFailed = true;
         }
       }
-
-      tools.release().ignore();
     }
   }
 
