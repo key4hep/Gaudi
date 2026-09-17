@@ -17,9 +17,6 @@
 # =============================================================================
 """Demo-file for interactive work with new Particle Property Service"""
 
-# =============================================================================
-from builtins import range
-
 __author__ = "Vanya BELYAEV Ivan.Belyaev@nikhef.nl"
 import GaudiPartProp.decorators
 
