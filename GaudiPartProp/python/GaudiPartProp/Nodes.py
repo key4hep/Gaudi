@@ -19,8 +19,6 @@
 Simple 'decorator for nodes'
 """
 
-from __future__ import print_function
-
 # =============================================================================
 __author__ = "Vanya BELYAEV <Ivan.Belyaev@nikhef.nl>"
 __version__ = ""
