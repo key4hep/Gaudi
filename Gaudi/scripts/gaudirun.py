@@ -343,7 +343,7 @@ if __name__ == "__main__":
 
         sys_cpus = cpu_count()
         if opts.ncpus > sys_cpus:
-            s = "Invalid value : --ncpus : only %i cpus available" % sys_cpus
+            s = f"Invalid value : --ncpus : only {sys_cpus} cpus available"
             parser.error(s)
         elif opts.ncpus < -1:
             s = "Invalid value : --ncpus must be integer >= -1"

@@ -55,24 +55,8 @@ def test():
         c = pps.find("chi_c1(1P)")
 
         ## redefine properties
-        line1 = "%s 0 %d 0.0 %g %20.12g %s %d %g " % (
-            c.name(),
-            c.pid().pid(),
-            c.mass() / GeV,
-            c.lifetime() / second,
-            c.evtGen(),
-            c.pythia(),
-            c.maxWidth() / GeV,
-        )
-        line2 = "%s 0 %d 0.0 %g %20.12g %s %d %g " % (
-            c.name(),
-            c.pid().pid(),
-            c.mass() / GeV,
-            -c.width() / GeV,
-            c.evtGen(),
-            c.pythia(),
-            c.maxWidth() / GeV,
-        )
+        line1 = f"{c.name()} 0 {c.pid().pid()} 0.0 {c.mass() / GeV} {c.lifetime() / second:20.12} {c.evtGen()} {c.pythia()} {c.maxWidth() / GeV} "
+        line2 = f"{c.name()} 0 {c.pid().pid()} 0.0 {c.mass() / GeV} {-c.width() / GeV:20.12} {c.evtGen()} {c.pythia()} {c.maxWidth() / GeV} "
 
         pps.Particles = [line1]
         pps.Particles = [line2]

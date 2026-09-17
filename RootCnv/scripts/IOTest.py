@@ -95,9 +95,9 @@ def update():
 def printDelta(s0, s1):
     for s in s1:
         if s == "time":
-            print("%15s : %10.2F sec" % (s, (s1[s] - s0[s])))
+            print(f"{s:>15s} : {(s1[s] - s0[s]):10.2F} sec")
         else:
-            print("%15s : %10.2F MB" % (s, (s1[s] - s0[s]) / 1.0e6))
+            print(f"{s:>15s} : {(s1[s] - s0[s])/ 1.0e6:10.2F} MB")
 
 
 import GaudiPython

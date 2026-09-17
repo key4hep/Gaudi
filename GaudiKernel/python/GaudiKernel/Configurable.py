@@ -368,9 +368,7 @@ class Configurable(metaclass=ConfigurableMeta.ConfigurableMeta):
             fdefaults = f.__defaults__
             ndefaults = fdefaults and len(fdefaults) or 0
             if not nargcount - ndefaults <= nArgs <= nargcount:
-                raise TypeError(
-                    "%s.%s requires exactly %d arguments" % (klass, meth, nArgs)
-                )
+                raise TypeError(f"{klass}.{meth} requires exactly {nArgs} arguments")
 
         # for using this Configurable as a (Gaudi) sequence
         self.__children = []
@@ -987,7 +985,7 @@ class Configurable(metaclass=ConfigurableMeta.ConfigurableMeta):
         props = self.getProperties()
         defs = self.getDefaultProperties()
         if not props:
-            rep += indentStr + "|-<no properties>" + os.linesep
+            rep += f"{indentStr}|-<no properties>{os.linesep}"
         else:
             # get property name with
             nameWidth = 0
@@ -995,13 +993,13 @@ class Configurable(metaclass=ConfigurableMeta.ConfigurableMeta):
                 nameWidth = max(nameWidth, len(p))
             for p, v in props.items():
                 # start with indent and property name
-                prefix = indentStr + "|-%-*s" % (nameWidth, p)
+                prefix = f"{indentStr}|-{p:<{nameWidth}}"
                 # add memory address for debugging (not for defaults)
                 if log.isEnabledFor(logging.DEBUG):
                     if v != Configurable.propertyNoValue:
-                        address = " @%11s" % hex(id(v))
+                        address = f" @{id(v):#018x}"
                     else:
-                        address = 13 * " "
+                        address = 20 * " "
                     prefix += address
                 # add value and default
                 default = defs.get(p)

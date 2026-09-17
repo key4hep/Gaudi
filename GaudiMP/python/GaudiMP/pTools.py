@@ -141,8 +141,8 @@ class HistoAgent:
                     booked += 1
         hs = self.hvt.getHistoNames()
         self.log.info("Histo Store Rebuilt : ")
-        self.log.info("  Contains %i objects." % (len(hs)))
-        self.log.info("  Errors in Rebuilding : %i" % (errors))
+        self.log.info(f"  Contains {len(hs)} objects.")
+        self.log.info(f"  Errors in Rebuilding : {errors}")
         return SUCCESS
 
     def bookDataObject(self, n, o):
@@ -297,9 +297,7 @@ class FileRecordsAgent:
                     # It's a Keyed Container
                     nObjects = o.numberOfObjects()
                     if nObjects:
-                        self.log.debug(
-                            "Keyed Container %s with %i objects" % (l, nObjects)
-                        )
+                        self.log.debug(f"Keyed Container {l} with {nObjects} objects")
                         tup = (self._gmpc.nodeID, l, pickle.dumps(o))
                         self.objectsOut.append(tup)
                 else:
@@ -308,7 +306,7 @@ class FileRecordsAgent:
         self.log.debug("Done with FSR store, just to send to Writer.")
 
         if self.objectsOut:
-            self.log.debug("%i FSR objects to Writer" % (len(self.objectsOut)))
+            self.log.debug(f"{len(self.objectsOut)} FSR objects to Writer")
             for ob in self.objectsOut:
                 self.log.debug(f"\t{ob[0]}")
             self.q.put(self.objectsOut)
@@ -347,9 +345,7 @@ class FileRecordsAgent:
                 ob.update()
             if hasattr(ob, "numberOfObjects"):
                 nCont = ob.numberOfObjects()
-                self.log.debug(
-                    "\t %s has containedObjects : %i" % (type(ob).__name__, nCont)
-                )
+                self.log.debug(f"\t {type(ob).__name__} has containedObjects : {nCont}")
             if sourceNode == 0:
                 self.log.debug(f"Registering Object to : {path}")
                 self.fsr.registerObject(path, ob)
@@ -366,8 +362,7 @@ class FileRecordsAgent:
             if self.fsr[ecount]:
                 self.fsr[ecount].setOutput(self._gmpc.nIn)
                 self.log.info(
-                    "Event Counter Output set : %s : %i"
-                    % (ecount, self.fsr[ecount].output())
+                    f"Event Counter Output set : {ecount} : {self.fsr[ecount].output()}"
                 )
             # Do some reporting
             self.log.debug("FSR store reconstructed!")
@@ -380,7 +375,7 @@ class FileRecordsAgent:
                     if hasattr(ob, "containedObjects"):
                         # if ob.numberOfObjects() :
                         self.log.debug(
-                            "\t%s (cont. objects : %i)" % (l, ob.numberOfObjects())
+                            f"\t{l} (cont. objects : {ob.numberOfObjects()})"
                         )
                     else:
                         self.log.debug(f"\t{l}")
@@ -528,14 +523,14 @@ class LumiFSR:
         s = "LumiFSR Python class\n"
         s += "\tRuns : \n"
         for r in self.runs:
-            s += "\t\t%i\n" % (r)
+            s += f"\t\t{r}\n"
         s += "\tFiles : \n"
         for f in self.files:
             s += f"\t\t{f}\n"
         s += "\tInfo : \n"
         for k in self.keys:
             increment, integral = self.info[k]
-            s += "\t\t%i\t%i\t%i\n" % (k, increment, integral)
+            s += f"\t\t{k}\t{increment}\t{integral}\n"
         return s
 
 
@@ -653,7 +648,7 @@ class Syncer:
         # Regular version ----------------------------
         for i in range(0, self.limit, self.step):
             if self.checkAll():
-                self.log.info("%s : All procs done @ %i s" % (step, i))
+                self.log.info(f"{step} : All procs done @ {i} s")
                 break
             else:
                 time.sleep(self.step)
@@ -665,8 +660,7 @@ class Syncer:
         else:
             self.log.critical(f"Some process is hanging on : {step}")
             for k in self.keys:
-                hangString = "%s : Proc/Stat : %i/%s" % (step, k, self.d[k].check())
-                self.log.critical(hangString)
+                self.log.critical(f"{step} : Proc/Stat : {k}/{self.d[k].check()}")
             return FAILURE
 
     def syncAllRolling(self):
@@ -696,7 +690,7 @@ class Syncer:
                         # if last Event set,then event loop finished
                         active.remove(k)
                         alive = time.time() - begin
-                        self.log.info("Audit : Node %i alive for %5.2f" % (k, alive))
+                        self.log.info(f"Audit : Node {k} alive for {alive:5.2}")
                     else:
                         sMini.reset()
                 else:
@@ -727,7 +721,7 @@ class Syncer:
     def processHang(self):
         self.log.critical("Some proc is hanging during Event processing!")
         for k in self.keys:
-            self.log.critical("Proc/Stat : %i / %s" % (k, self.d[k].check()))
+            self.log.critical(f"Proc/Stat : {k} / {self.d[k].check()}")
         return
 
     def checkAll(self):

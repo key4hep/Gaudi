@@ -207,14 +207,7 @@ class WorkManager:
         print("job count | % of all jobs | job time sum | time per job | job server")
         for name, stat in self.stats.items():
             print(
-                "       %d |        %6.2f |     %8.3f |    %8.3f | %s"
-                % (
-                    stat.njob,
-                    100.0 * stat.njob / njobs,
-                    stat.time,
-                    stat.time / stat.njob,
-                    name,
-                )
+                f"       {stat.njob} |        {100.0 * stat.njob / njobs:6.2f} |     {stat.time:8.3f} |    {stat.time / stat.njob:8.3f} | {name}"
             )
 
     def _mergeStatistics(self, stat):

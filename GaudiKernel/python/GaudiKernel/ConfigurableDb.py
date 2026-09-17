@@ -93,7 +93,7 @@ class _CfgDb(dict):
                 self.add(cname, pkg, module, lib)
             except IndexError:
                 f.close()
-                raise Exception("invalid line format: %s:%d: %r" % (fname, i + 1, ll))
+                raise Exception(f"invalid line format: {fname}:{i + 1}: {ll}")
         f.close()
 
 

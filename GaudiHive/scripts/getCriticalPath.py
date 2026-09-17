@@ -39,7 +39,7 @@ def get_critical_path(path_to_trace_file):
 
     cpath = nx.algorithms.dag.dag_longest_path(trace, weight="Runtime")
 
-    print("Algorithms on the critical path (%i): " % len(cpath))
+    print(f"Algorithms on the critical path ({len(cpath)}): ")
 
     print("  {:<40} Runtime (us)".format("Name"))
     print("  -----------------------------------------------------")

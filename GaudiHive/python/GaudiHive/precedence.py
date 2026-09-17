@@ -133,7 +133,7 @@ class RndBiasedBooleanValue:
 
             length = proportion[True] + proportion[False]
             if length <= 0:
-                raise "ERROR: Wrong set length requested: %i " % length
+                raise ValueError(f"Wrong set length requested: {length}")
 
             self.pattern = [False for i in range(proportion[False])] + [
                 True for i in range(proportion[True])

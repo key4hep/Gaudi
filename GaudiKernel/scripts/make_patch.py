@@ -143,7 +143,7 @@ def diff_pkg(name, cmtdir, exclusions=[]):
         out += f"--- {f}\t1 Jan 1970 00:00:00 -0000\n"
         out += "+++ /dev/null\t1 Jan 1970 00:00:00 -0000\n"
         lines = orig.splitlines()
-        out += "@@ -1,%d +0,0 @@\n" % len(lines)
+        out += f"@@ -1,{len(lines)} +0,0 @@\n"
         for l in lines:
             out += f"-{l}\n"
     # Fix the paths to have the package names

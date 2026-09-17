@@ -151,13 +151,7 @@ class Factory(ctypes.Structure):
         return ctypes.CDLL(self.library, ctypes.RTLD_GLOBAL)
 
     def __repr__(self):
-        return "<Factory id=%s library=%s type=%s class=%s props=%d>" % (
-            self.name,
-            self.library,
-            self.type,
-            self.classname,
-            len(self.properties),
-        )
+        return f"<Factory id={self.name} library={self.library} type={self.type} class={self.classname} props={len(self.properties)}>"
 
     pass
 
@@ -262,7 +256,7 @@ GAUDI_DEFAULT_PLUGIN_PATH = [
 
 if __name__ == "__main__":
     print(f"instance: {registry()}")
-    print("factories: %d" % len(factories()))
+    print(f"factories: {len(factories())}")
     for _, f in factories().items():
         try:
             f.load()

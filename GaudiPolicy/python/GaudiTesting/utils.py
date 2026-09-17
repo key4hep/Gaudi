@@ -340,7 +340,7 @@ def _parse_histos_summary(lines, pos):
                     cont[values[0]] = values
                     pos += 1
             else:  # not interpreted
-                raise RuntimeError("Cannot understand line %d: '%s'" % (pos, l))
+                raise RuntimeError(f"Cannot understand line {pos}: '{l}'")
             if d not in summ:
                 summ[d] = {}
             summ[d][t] = cont
