@@ -1349,7 +1349,7 @@ class AppMgr(iService):
 def _getFIDandEvents(pfn):
     tfile = gbl.TFile.Open(pfn)
     if not tfile:
-        raise IOError(f"Cannot open ROOT file {pfn}")
+        raise OSError(f"Cannot open ROOT file {pfn}")
     tree = tfile.Get("##Params")
     tree.GetEvent(0)
     text = tree.db_string

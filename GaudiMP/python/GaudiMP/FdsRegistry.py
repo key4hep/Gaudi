@@ -127,7 +127,7 @@ class FdsDict(dict):
 
             try:
                 realname = os.path.realpath(os.path.join(procfd, i))
-            except (OSError, IOError, TypeError):
+            except (OSError, TypeError):
                 # can fail because the symlink resolution (why is that needed
                 # anyway?) may follow while a temp file disappears
                 msg.debug("failed to resolve: %s ... skipping", os.path.join(procfd, i))
@@ -142,7 +142,7 @@ class FdsDict(dict):
                         iomode = "<OUTPUT>"
 
                     self.add(fd, realname, iomode, flags)
-                except (OSError, IOError):
+                except OSError:
                     # likely saw a temoorary file; for now log a debug
                     # message, but this is fine if silently ignored
                     msg.debug("failed access to: %s ... skipping", realname)
