@@ -153,8 +153,7 @@ class RndBiasedBooleanValue:
         self.generator = self._create_generator(self.pattern)
 
     def _create_generator(self, pattern):
-        for b in pattern:
-            yield b
+        yield from pattern
 
     def get(self):
         return next(self.generator)
