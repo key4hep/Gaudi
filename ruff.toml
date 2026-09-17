@@ -8,9 +8,12 @@ select = [
     "E101",
     "W6",
     # isort
-    "I001"
+    "I001",
+    # pyupgrade
+    "UP",
 ]
 ignore = [
     "E741", # Ambiguous variable name
+    "UP038", # removed since ruff 0.13.0, see https://docs.astral.sh/ruff/rules/non-pep604-isinstance/
 ]
 exclude = [ "*/options/*" ]
