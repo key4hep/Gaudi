@@ -10,8 +10,8 @@
 #####################################################################################
 import os
 from ast import literal_eval
+from collections.abc import Generator
 from pathlib import Path
-from typing import Generator
 
 import pytest
 from GaudiTesting import GaudiExeTest

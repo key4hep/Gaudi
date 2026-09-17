@@ -14,9 +14,9 @@ import json
 import os
 import re
 import time
+from collections.abc import Callable
 from pathlib import Path
 from textwrap import dedent
-from typing import Callable
 
 import pytest
 

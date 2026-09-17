@@ -15,10 +15,10 @@ import shutil
 import signal
 import subprocess
 import threading
+from collections.abc import Callable
 from datetime import datetime
 from pathlib import Path
 from string import Template
-from typing import Callable
 
 import pytest
 

@@ -35,7 +35,7 @@ def _makeConfigDict(iterable):
     try:  # pragma no cover
         from collections.abc import Mapping
     except ImportError:  # pragma no cover
-        from collections import Mapping
+        from collections.abc import Mapping
 
     if iterable is None:
         return {}
