@@ -10,7 +10,7 @@
 #####################################################################################
 import datetime
 import subprocess
-from typing import List, Union
+from typing import Union
 
 from GaudiTesting.utils import CodeWrapper
 
@@ -38,8 +38,8 @@ class FixtureResult:
         start_time: datetime,
         end_time: datetime,
         run_exception: Union[ProcessTimeoutError, ExceededStreamError, None],
-        command: List[str],
-        expanded_command: List[str],
+        command: list[str],
+        expanded_command: list[str],
         env: dict,
         cwd: str,
     ):

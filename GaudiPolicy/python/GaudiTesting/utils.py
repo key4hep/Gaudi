@@ -17,7 +17,7 @@ import sys
 import xml.sax.saxutils as XSS
 from pathlib import Path
 from subprocess import PIPE, Popen
-from typing import Any, Dict, List
+from typing import Any
 
 
 class CodeWrapper:
@@ -29,7 +29,7 @@ class CodeWrapper:
         return f'<pre><code class="language-{self.language}">{XSS.escape(self.code)}</code></pre>'
 
 
-def platform_matches(unsupported_platforms: List[str]):
+def platform_matches(unsupported_platforms: list[str]):
     platform_id = get_platform()
     return any(re.search(p, platform_id) for p in unsupported_platforms)
 
@@ -168,7 +168,7 @@ def expand_reference_file_name(reference):
     return os.path.join(dirname, basename)
 
 
-def filter_dict(d: Dict[str, Any], ignore_re: re.Pattern) -> Dict[str, Any]:
+def filter_dict(d: dict[str, Any], ignore_re: re.Pattern) -> dict[str, Any]:
     """
     Recursively filter out keys from the dictionary that match the ignore pattern.
     """
@@ -182,7 +182,7 @@ def filter_dict(d: Dict[str, Any], ignore_re: re.Pattern) -> Dict[str, Any]:
     return filteredDict
 
 
-def compare_dicts(d1: Dict[str, Any], d2: Dict[str, Any], ignore_re: str = None) -> str:
+def compare_dicts(d1: dict[str, Any], d2: dict[str, Any], ignore_re: str = None) -> str:
     """
     Compare two dictionaries and return the diff as a string, ignoring keys that match the regex.
     """
@@ -402,7 +402,7 @@ def file_path_for_class(cls):
     return Path(sys.modules[cls.__module__].__file__)
 
 
-def _format_path(path: List[str]) -> str:
+def _format_path(path: list[str]) -> str:
     """Format a path list as a bracket-notation string for error messages."""
     if not path:
         return "root"
@@ -424,11 +424,11 @@ def _floats_close(a: float, b: float, rtol: float, atol: float) -> bool:
 def _compare(
     obj1: Any,
     obj2: Any,
-    path: List[str],
+    path: list[str],
     rtol: float,
     atol: float,
     max_differences: int,
-    differences: List[str],
+    differences: list[str],
 ) -> None:
     """
     Recursively compare two objects and append difference descriptions to the list.
@@ -522,7 +522,7 @@ def assert_objects_equal(
     # pytest will hide this frame from the reported traceback
     __tracebackhide__ = True
 
-    differences: List[str] = []
+    differences: list[str] = []
     _compare(obj1, obj2, [], rtol, atol, max_differences, differences)
     if differences:
         truncated = len(differences) >= max_differences

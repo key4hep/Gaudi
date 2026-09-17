@@ -11,7 +11,7 @@
 import os
 from ast import literal_eval
 from pathlib import Path
-from typing import Generator, List
+from typing import Generator
 
 import pytest
 from GaudiTesting import GaudiExeTest
@@ -30,7 +30,7 @@ class OptParseTest(GaudiExeTest):
     expected_dump = None
 
     @classmethod
-    def _prepare_command(cls, tmp_path=Path()) -> List[str]:
+    def _prepare_command(cls, tmp_path=Path()) -> list[str]:
         command = super()._prepare_command(tmp_path=tmp_path)
         command.extend(
             ["--output", os.path.join(cls.popen_kwargs.get("cwd"), "opts.dump.py")]
