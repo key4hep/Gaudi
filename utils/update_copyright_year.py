@@ -66,7 +66,7 @@ def main():
 
     missing_copyright = []
     for file in args.files:
-        with open(file, "r") as f:
+        with open(file) as f:
             content = f.readlines()
 
         if not any(COPYRIGHT_SIGNATURE.search(line) for line in content):

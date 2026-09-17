@@ -42,7 +42,7 @@ def getRuntime(n_algos_in_flight, n_evts_in_flight, cloneFlag):
     filename = filename_scheleton % (n_evts_in_flight, n_algos_in_flight, cloneFlag)
     print(filename)
     rt = 0.0
-    for line in open(filename, "r").readlines():
+    for line in open(filename).readlines():
         rt = float(line[:-1])
         # print filename
         # print rt

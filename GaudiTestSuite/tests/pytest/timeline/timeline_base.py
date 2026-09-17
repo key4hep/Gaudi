@@ -35,7 +35,7 @@ class TimelineBase:
 
     def test_stdout(self, monkeypatch):
         monkeypatch.chdir(self.cwd)
-        with open(self.resolve_path(self.reference), "r") as ref_file:
+        with open(self.resolve_path(self.reference)) as ref_file:
             data = yaml.safe_load(ref_file)
         assert self.preprocessor(open(self.result_file).read()) == self.preprocessor(
             data["stdout"]

@@ -29,7 +29,7 @@ def main():
     args = parser.parse_args()
 
     if not args.opts_dump:
-        args.opts_dump = open(os.environ["JOBOPTSDUMPFILE"], "r")
+        args.opts_dump = open(os.environ["JOBOPTSDUMPFILE"])
 
     known = set()
     unused = set()

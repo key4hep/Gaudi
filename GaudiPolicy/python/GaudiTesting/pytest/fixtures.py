@@ -215,7 +215,7 @@ def reference(request, reference_path: Optional[Path]) -> Generator[dict, None, 
 
     if reference_path:
         if reference_path.exists() and reference_path.stat().st_size > 0:
-            with open(reference_path, "r") as f:
+            with open(reference_path) as f:
                 original_reference_data = yaml.safe_load(f)
         else:
             # if the file does not exist we may have a relative path, so

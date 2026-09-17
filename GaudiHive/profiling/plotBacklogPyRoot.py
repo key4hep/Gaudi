@@ -52,7 +52,7 @@ def parseLog(logfilename):
     # "HiveSlimEventLoopMgr  SUCCESS Event backlog (max= 3, min= 0 ) = 3"
     global NEventsInFlight
     global NThreads
-    ifile = open(logfilename, "r")
+    ifile = open(logfilename)
     lines = ifile.readlines()
     ifile.close()
     content = []

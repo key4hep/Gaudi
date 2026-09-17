@@ -32,7 +32,7 @@ class Data:
 def read(f, regex=".*", skipevents=0):
     data = []
     regex = re.compile(regex)
-    for l in open(f, "r"):
+    for l in open(f):
         if l.startswith("#"):  # e.g. #start end algorithm thread slot event
             names = l.lstrip("#").split()
             continue

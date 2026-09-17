@@ -67,7 +67,7 @@ def createParser():
 
 
 def replaceValues(cfg_name, n, eif, aif, nthreads, scale, clone, dumpQueues, verbosity):
-    newcfglines = open(cfg_name, "r").readlines()
+    newcfglines = open(cfg_name).readlines()
     cfg_name = cfg_name.replace(".py", "")
     verb = ""
     if verbosity != 6:

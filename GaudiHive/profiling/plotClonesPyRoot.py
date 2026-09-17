@@ -32,7 +32,7 @@ NThreads = -1
 def parseLog(logfilename):
     global NEventsInFlight
     global NThreads
-    ifile = open(logfilename, "r")
+    ifile = open(logfilename)
     lines = ifile.readlines()
     vals = []
     for line in lines:

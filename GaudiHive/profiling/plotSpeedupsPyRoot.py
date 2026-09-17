@@ -116,7 +116,7 @@ def createFname(neif, nt, cFlag):
 
 def xtractTiming(neif, nt, cFlag):
     filename = createFname(neif, nt, cFlag)
-    ifile = open(filename, "r")
+    ifile = open(filename)
     seconds = -1
     for line in ifile:
         if "seconds" in line:
