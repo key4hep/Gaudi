@@ -118,7 +118,7 @@ class DefaultSemantics(PropertySemantics):
     def store(self, value):
         # flag that the value was explicitly set
         self._is_set = True
-        return super(DefaultSemantics, self).store(value)
+        return super().store(value)
 
     def is_set(self, value):
         try:
@@ -261,7 +261,7 @@ class ComponentSemantics(PropertySemantics):
     )
 
     def __init__(self, cpp_type):
-        super(ComponentSemantics, self).__init__(cpp_type)
+        super().__init__(cpp_type)
         if ":" in cpp_type:
             self.cpp_type, self.interfaces = cpp_type.split(":", 1)
             self.interfaces = set(self.interfaces.split(","))
@@ -511,7 +511,7 @@ class SequenceSemantics(PropertySemantics):
     __handled_types__ = (re.compile(r"(std::)?(vector|list)<.*>$"),)
 
     def __init__(self, cpp_type, valueSem=None):
-        super(SequenceSemantics, self).__init__(cpp_type)
+        super().__init__(cpp_type)
         self.value_semantics = valueSem or getSemanticsFor(
             list(extract_template_args(cpp_type))[0]
         )
@@ -651,7 +651,7 @@ class SetSemantics(PropertySemantics):
     __handled_types__ = (re.compile(r"(std::)?unordered_set<.*>$"),)
 
     def __init__(self, cpp_type, valueSem=None):
-        super(SetSemantics, self).__init__(cpp_type)
+        super().__init__(cpp_type)
         self.value_semantics = valueSem or getSemanticsFor(
             list(extract_template_args(cpp_type))[0]
         )
@@ -706,7 +706,7 @@ class OrderedSetSemantics(SequenceSemantics):
     )
 
     def __init__(self, cpp_type):
-        super(OrderedSetSemantics, self).__init__(cpp_type)
+        super().__init__(cpp_type)
 
     def merge(self, bb, aa):
         for b in bb:
@@ -792,7 +792,7 @@ class MappingSemantics(PropertySemantics):
     __handled_types__ = (re.compile(r"(std::)?(unordered_)?map<.*>$"),)
 
     def __init__(self, cpp_type):
-        super(MappingSemantics, self).__init__(cpp_type)
+        super().__init__(cpp_type)
         template_args = list(extract_template_args(cpp_type))
         self.key_semantics = getSemanticsFor(template_args[0])
         self.value_semantics = getSemanticsFor(template_args[1])

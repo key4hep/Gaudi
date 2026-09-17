@@ -44,7 +44,7 @@ class MultiInstance(ConfigurableUserTest):
     __used_configurables__ = [(SubModule1, None)]
 
     def __apply_configuration__(self):
-        super(MultiInstance, self).__apply_configuration__()
+        super().__apply_configuration__()
         SubModule1(self._instanceName(SubModule1))
 
 
@@ -59,7 +59,7 @@ class Application(ConfigurableUserTest):
     ]
 
     def __apply_configuration__(self):
-        super(Application, self).__apply_configuration__()
+        super().__apply_configuration__()
         if hasattr(self, "Property1"):
             val = self.Property1
         else:

@@ -520,7 +520,7 @@ class Configurable(metaclass=ConfigurableMeta.ConfigurableMeta):
                 % self.name()
             )
         try:
-            super(Configurable, self).__setattr__(name, value)
+            super().__setattr__(name, value)
         except AttributeError:
             raise AttributeError(
                 "Configurable '%s' does not have property '%s'."
@@ -1117,7 +1117,7 @@ class ConfigurableGeneric(Configurable):
     def __setattr__(self, name, value):
         # filter private (user) variables
         if name[0] == "_":
-            super(ConfigurableGeneric, self).__setattr__(name, value)
+            super().__setattr__(name, value)
             return
 
         # filter configurable types
@@ -1141,7 +1141,7 @@ class ConfigurableAlgorithm(Configurable):
     }
 
     def __init__(self, name=Configurable.DefaultName):
-        super(ConfigurableAlgorithm, self).__init__(name)
+        super().__init__(name)
         name = self.getName()
         self._jobOptName = name[name.find("/") + 1 :]  # strips class
 
@@ -1243,7 +1243,7 @@ class ConfigurableAlgTool(Configurable):
     }
 
     def __init__(self, name=Configurable.DefaultName):
-        super(ConfigurableAlgTool, self).__init__(name)
+        super().__init__(name)
         if "." not in self._name:
             # Public tools must have ToolSvc as parent
             self._name = "ToolSvc." + self._name
@@ -1332,7 +1332,7 @@ class ConfigurableAuditor(Configurable):
     __slots__ = {"_jobOptName": 0, "OutputLevel": 0, "Enable": 1}
 
     def __init__(self, name=Configurable.DefaultName):
-        super(ConfigurableAuditor, self).__init__(name)
+        super().__init__(name)
         name = self.getName()
         name = name[name.find("/") + 1 :]  # strips class, if any
         self._jobOptName = name
@@ -1376,7 +1376,7 @@ class ConfigurableUser(Configurable):
     __queried_configurables__ = []
 
     def __init__(self, name=Configurable.DefaultName, _enabled=True, **kwargs):
-        super(ConfigurableUser, self).__init__(name)
+        super().__init__(name)
         for n, v in kwargs.items():
             setattr(self, n, v)
         self._enabled = _enabled
@@ -1867,7 +1867,7 @@ class SuperAlgorithm(ControlFlowNode):
             )
             return instance
         else:
-            instance = super(SuperAlgorithm, cls).__new__(cls)
+            instance = super().__new__(cls)
             Configurable.allConfigurables[name] = instance
             return instance
 
@@ -1917,7 +1917,7 @@ class SuperAlgorithm(ControlFlowNode):
             self.graph.visitNode(visitor)
 
     def __setattr__(self, name, value):
-        super(SuperAlgorithm, self).__setattr__(name, value)
+        super().__setattr__(name, value)
         if name in ("_name", "graph"):
             # do not propagate internal data members
             return

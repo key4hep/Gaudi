@@ -44,7 +44,7 @@ class PlainConfigurable(ConfigurableAlgTool):
     }
 
     def __init__(self, name=Configurable.DefaultName, **kwargs):
-        super(PlainConfigurable, self).__init__(name)
+        super().__init__(name)
         for n, v in kwargs.items():
             setattr(self, n, v)
 

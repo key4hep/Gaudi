@@ -29,7 +29,7 @@ class UnknownPersistency(PersistencyError):
     """
 
     def __init__(self, type_):
-        super(UnknownPersistency, self).__init__("Unknown persistency type %r" % type_)
+        super().__init__("Unknown persistency type %r" % type_)
         self.type = type_
 
 
@@ -126,9 +126,7 @@ class RootPersistency(PersistencyHelper):
 
         Declare the type of supported persistencies to the base class.
         """
-        super(RootPersistency, self).__init__(
-            ["ROOT", "RootCnvSvc", "Gaudi::RootCnvSvc"]
-        )
+        super().__init__(["ROOT", "RootCnvSvc", "Gaudi::RootCnvSvc"])
         self.configured = False
 
     def configure(self, appMgr):

@@ -21,7 +21,7 @@ class MyDerivedAlg(MyAlg):
     """Derived algorithm with __init__ override"""
 
     def __init__(self):
-        super(MyDerivedAlg, self).__init__()
+        super().__init__()
         self.AnIntProp = 42
 
 

@@ -21,7 +21,7 @@ class APublicTool(ConfigurableAlgTool):
     __slots__ = {}
 
     def __init__(self, name=Configurable.DefaultName, **kwargs):
-        super(APublicTool, self).__init__(name)
+        super().__init__(name)
         for n, v in kwargs.items():
             setattr(self, n, v)
 
@@ -36,7 +36,7 @@ class APrivateTool(ConfigurableAlgTool):
     __slots__ = {}
 
     def __init__(self, name=Configurable.DefaultName, **kwargs):
-        super(APrivateTool, self).__init__(name)
+        super().__init__(name)
         for n, v in kwargs.items():
             setattr(self, n, v)
 
@@ -58,7 +58,7 @@ class MyTestTool(ConfigurableAlgTool):
     }
 
     def __init__(self, name=Configurable.DefaultName, **kwargs):
-        super(MyTestTool, self).__init__(name)
+        super().__init__(name)
         for n, v in kwargs.items():
             setattr(self, n, v)
 
