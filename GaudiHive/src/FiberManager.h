@@ -14,6 +14,8 @@
 #include <boost/fiber/condition_variable.hpp>
 #include <boost/fiber/fiber.hpp>
 #include <boost/fiber/mutex.hpp>
+
+#include <thread>
 /** @class FiberManager FiberManager.h
  *
  * The FiberManager manages a pool of threads used to run boost::fiber fibers.
