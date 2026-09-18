@@ -260,6 +260,19 @@ warnings-check:lcg-view:110:x86_64-el9-gcc15-opt:
     - job: "lcg-view:110:x86_64-el9-gcc15-opt"
       artifacts: true
 
+lcg-view:110:aarch64-el9-gcc15-opt:
+  <<: *template_lcg_view_build
+  tags:
+    - k8s-arm
+  image: gitlab-registry.cern.ch/lhcb-docker/os-base/alma9-devel-aarch64:latest
+  variables:
+    CUDACXX: /cvmfs/projects.cern.ch/lcg/releases/cuda/13.3.1/aarch64-linux/bin/nvcc
+warnings-check:lcg-view:110:aarch64-el9-gcc15-opt:
+  <<: *template_warnings_check
+  needs:
+    - job: "lcg-view:110:aarch64-el9-gcc15-opt"
+      artifacts: true
+
 # Compatibility
 lcg-view:110:x86_64-el9-clang22-opt:
   <<: *template_lcg_view_build
