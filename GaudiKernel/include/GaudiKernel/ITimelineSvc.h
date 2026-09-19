@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -27,7 +27,10 @@ public:
   class TimelineRecorder final {
   public:
     TimelineRecorder() = default;
+    // Construct a TimelineRecorder with an empty record object, algorithm name, and event context
     TimelineRecorder( TimelineEvent& record, std::string alg, const EventContext& ctx );
+    // Construct a TimelineRecorder with a record object with pre-filled algorithm name and event context
+    TimelineRecorder( TimelineEvent& record );
 
     TimelineRecorder( const TimelineRecorder& )            = delete;
     TimelineRecorder& operator=( const TimelineRecorder& ) = delete;
@@ -46,6 +49,13 @@ public:
 
   virtual TimelineRecorder getRecorder( std::string alg, const EventContext& ctx ) = 0;
   // Augment a partially pre-filled TimelineEvent object with matching info
-  virtual bool getTimelineEvent( TimelineEvent& ) const = 0;
-  virtual bool isEnabled() const                        = 0;
+  [[deprecated( "Use getFirstMatching or getLastMatching instead" )]] virtual bool
+  getTimelineEvent( TimelineEvent& ) const = 0;
+  // Augment a partially pre-filled TimelineEvent object with matching info. If there are multiple events for the same
+  // algorithm and event context, the first one (by start time) is returned.
+  virtual bool getFirstMatching( TimelineEvent& ) const = 0;
+  // Augment a partially pre-filled TimelineEvent object with matching info. If there are multiple events for the same
+  // algorithm and event context, the first one (by start time) is returned.
+  virtual bool getLastMatching( TimelineEvent& ) const = 0;
+  virtual bool isEnabled() const                       = 0;
 };

@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -21,6 +21,12 @@ ITimelineSvc::TimelineRecorder::TimelineRecorder( TimelineEvent& record, std::st
   m_record->event     = ctx.evt();
   m_record->algorithm = std::move( alg );
   m_record->start     = TimelineEvent::Clock::now();
+}
+
+ITimelineSvc::TimelineRecorder::TimelineRecorder( TimelineEvent& record ) : m_record{ &record } {
+  m_record->thread = pthread_self();
+  // m_record->slot, m_record->event, m_record->algorithm  are expected to be pre-filled
+  m_record->start = TimelineEvent::Clock::now();
 }
 
 ITimelineSvc::TimelineRecorder::~TimelineRecorder() {

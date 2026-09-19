@@ -80,7 +80,7 @@ namespace Gaudi {
     m_WB = service( "EventDataSvc" );
 
     // check whether timeline should be done
-    m_doTimeline = timelineSvc()->isEnabled();
+    m_doTimeline = m_doTimeline && timelineSvc()->isEnabled();
 
     StatusCode sc;
     // Invoke initialize() method of the derived class inside a try/catch clause

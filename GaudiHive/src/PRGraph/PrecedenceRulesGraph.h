@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -278,7 +278,7 @@ namespace precedence {
         te.slot      = m_slot.eventContext->slot();
         te.event     = m_slot.eventContext->evt();
 
-        m_timelineSvc->getTimelineEvent( te );
+        m_timelineSvc->getFirstMatching( te );
         startTime = std::to_string(
             std::chrono::duration_cast<std::chrono::nanoseconds>( te.start.time_since_epoch() ).count() );
       }
@@ -317,7 +317,7 @@ namespace precedence {
         te.slot      = m_slot.eventContext->slot();
         te.event     = m_slot.eventContext->evt();
 
-        m_timelineSvc->getTimelineEvent( te );
+        m_timelineSvc->getLastMatching( te );
         endTime =
             std::to_string( std::chrono::duration_cast<std::chrono::nanoseconds>( te.end.time_since_epoch() ).count() );
       }
@@ -356,8 +356,14 @@ namespace precedence {
         te.slot      = m_slot.eventContext->slot();
         te.event     = m_slot.eventContext->evt();
 
-        m_timelineSvc->getTimelineEvent( te );
-        time = std::to_string( std::chrono::duration_cast<std::chrono::nanoseconds>( te.end - te.start ).count() );
+        // Calculate duration that is the difference between stop and and start for given algorithm. Asynchronous
+        // algorithms will have multiple TimelineEvents, so the start should be taken from the first and the end from
+        // the last.
+        m_timelineSvc->getFirstMatching( te );
+        auto start = te.start;
+        m_timelineSvc->getLastMatching( te );
+        auto end = te.end;
+        time     = std::to_string( std::chrono::duration_cast<std::chrono::nanoseconds>( end - start ).count() );
       }
 
       return time;

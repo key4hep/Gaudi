@@ -43,6 +43,7 @@ gaudi_add_module(GaudiTestSuiteComponents
                          src/AlgTools/TestToolFailing.cpp
                          src/AnyData/AnyDataAlgorithm.cpp
                          src/AnyData/AnyViewAlgorithm.cpp
+                         src/AsyncAlgorithms/AsyncSleeperAlg.cpp
                          src/Auditors/AuditorTestAlg.cpp
                          src/Auditors/LoggingAuditor.cpp
                          src/bug_34121/bug34121_MyAlgorithm.cpp

@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -681,13 +681,17 @@ namespace concurrency {
         te.algorithm = m_precTrace[*vp.first].m_name;
         te.slot      = slot.eventContext->slot();
         te.event     = slot.eventContext->evt();
-        timelineSvc->getTimelineEvent( te );
-
-        long int runtime{ std::chrono::duration_cast<std::chrono::microseconds>( te.end - te.start ).count() };
+        // This calculates duration that is the difference between stop and start time which for asynchronous algorithms
+        // is not the same as the time spent in the algorithm itself. Perhaps it should be changed to elapsed time.
+        timelineSvc->getFirstMatching( te );
+        auto start_point = te.start;
+        timelineSvc->getLastMatching( te );
+        auto     end_point = te.end;
+        long int runtime{ std::chrono::duration_cast<std::chrono::microseconds>( end_point - start_point ).count() };
         m_precTrace[*vp.first].m_runtime = runtime;
 
         long long int start{
-            std::chrono::duration_cast<std::chrono::nanoseconds>( te.start.time_since_epoch() ).count() };
+            std::chrono::duration_cast<std::chrono::nanoseconds>( start_point.time_since_epoch() ).count() };
         m_precTrace[*vp.first].m_start = start;
         if ( start != 0 ) start_times.push_back( start );
       }

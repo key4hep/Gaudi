@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -25,12 +25,21 @@ namespace GaudiTestSuite {
     /// constructor
     using Auditor::Auditor;
 
-    void before( std::string const& evt, std::string const& caller, EventContext const& ) override {
-      info() << "Auditing before of " << evt << " for " << caller << endmsg;
+    void before( std::string const& evt, std::string const& caller, EventContext const& ctx ) override {
+      if ( ctx.valid() ) {
+        info() << "Auditing before of " << evt << " for " << caller << " with context " << ctx << endmsg;
+      } else {
+        info() << "Auditing before of " << evt << " for " << caller << endmsg;
+      }
     }
 
-    void after( std::string const& evt, std::string const& caller, EventContext const&, StatusCode const& ) override {
-      info() << "Auditing after of " << evt << " for " << caller << endmsg;
+    void after( std::string const& evt, std::string const& caller, EventContext const& ctx,
+                StatusCode const& ) override {
+      if ( ctx.valid() ) {
+        info() << "Auditing after of " << evt << " for " << caller << " with context " << ctx << endmsg;
+      } else {
+        info() << "Auditing after of " << evt << " for " << caller << endmsg;
+      }
     }
   };
 
