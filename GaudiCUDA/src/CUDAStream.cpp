@@ -112,10 +112,17 @@ namespace Gaudi::CUDA {
   const Gaudi::AsynchronousAlgorithm* Stream::asyncParent() { return m_async_parent; }
 
   StatusCode Stream::await() {
-    cudaError_t temp_error;
+    auto temp_error = cudaSuccess;
     if ( m_async_parent != nullptr ) {
-      auto res   = boost::fibers::cuda::waitfor_all( m_stream );
-      temp_error = std::get<1>( res );
+      auto sc = m_async_parent->decorateSuspension( [this, &temp_error]() {
+        auto res   = boost::fibers::cuda::waitfor_all( m_stream );
+        temp_error = std::get<1>( res );
+        return StatusCode::SUCCESS;
+      } );
+      if ( !sc.isSuccess() ) {
+        m_parent->error() << "Error suspending on stream " << endmsg;
+        return sc;
+      }
     } else {
       temp_error = cudaStreamSynchronize( m_stream );
     }
@@ -125,7 +132,6 @@ namespace Gaudi::CUDA {
       m_parent->error() << errmsg << endmsg;
       return StatusCode::FAILURE;
     }
-    if ( m_async_parent != nullptr ) { return m_async_parent->restoreAfterSuspend(); }
     return StatusCode::SUCCESS;
   }
 

@@ -929,7 +929,7 @@ void AvalancheSchedulerSvc::dumpSchedulerState( int iSlot ) {
           te.slot      = slot.eventContext->slot();
           te.event     = slot.eventContext->evt();
 
-          if ( timelineSvc->getTimelineEvent( te ) )
+          if ( timelineSvc->getLastMatching( te ) )
             outputMS << " thread.id: 0x" << std::hex << te.thread << std::dec;
           else
             outputMS << " thread.id: [unknown]"; // this means a task has just

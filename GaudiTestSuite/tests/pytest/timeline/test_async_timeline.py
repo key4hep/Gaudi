@@ -12,7 +12,7 @@ from GaudiTesting import GaudiExeTest
 from timeline_base import TimelineBase
 
 
-class TestTimeline(TimelineBase, GaudiExeTest):
-    command = ["gaudirun.py", "../../../options/Timeline.py"]
-    reference = "../refs/Timeline.yaml"
-    result_file = "myTimeline.csv"
+class TestAsyncTimeline(TimelineBase, GaudiExeTest):
+    command = ["gaudirun.py", "../../../options/AsyncTimeline.py"]
+    reference = "../refs/AsyncTimeline.yaml"
+    result_file = "myAsyncTimeline.csv"

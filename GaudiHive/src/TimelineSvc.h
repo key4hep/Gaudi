@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -13,10 +13,10 @@
 
 #include <GaudiKernel/ITimelineSvc.h>
 #include <GaudiKernel/Service.h>
-
 #include <string>
 
-#include <tbb/concurrent_vector.h>
+#include <boost/functional/hash.hpp>
+#include <tbb/concurrent_unordered_map.h>
 
 class TimelineSvc : public extends<Service, ITimelineSvc> {
 public:
@@ -27,8 +27,10 @@ public:
   StatusCode finalize() override;
 
   TimelineRecorder getRecorder( std::string alg, const EventContext& ctx ) override;
-  bool             getTimelineEvent( TimelineEvent& ) const override;
 
+  bool getTimelineEvent( TimelineEvent& ) const override;
+  bool getFirstMatching( TimelineEvent& ) const override;
+  bool getLastMatching( TimelineEvent& ) const override;
   bool isEnabled() const override { return m_isEnabled; }
 
 private:
@@ -39,5 +41,6 @@ private:
   Gaudi::Property<bool>        m_dumpTimeline{ this, "DumpTimeline", false, "Enable dumping of the timeline events" };
   Gaudi::Property<bool>        m_partial{ this, "Partial", false, "" };
 
-  tbb::concurrent_vector<TimelineEvent> m_events;
+  using key_type = std::tuple<std::string, std::size_t>;
+  tbb::concurrent_unordered_multimap<key_type, TimelineEvent, boost::hash<key_type>> m_events;
 };

@@ -378,6 +378,9 @@ namespace Gaudi {
     void setAsynchronous( bool value ) { m_asynchronous = value; }
 
   protected:
+    // Disable synchronous timeline recording and return if it was enabled before
+    bool setAsynchronousTimeline() { return std::exchange( m_doTimeline, false ); }
+
     std::vector<IAlgTool*>& tools();
 
     // // adds declared in- and outputs of subAlgorithms to own DOHs

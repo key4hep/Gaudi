@@ -56,14 +56,17 @@ namespace Gaudi::CUDA::Detail {
       if ( err == cudaErrorMemoryAllocation && parent != nullptr ) {
         // Waiting and retrying only works if we're in an asynchronous algorithm
         cudaGetLastError();
-        std::unique_lock lck( gpu_mem_mtx );
-        gpu_mem_cv.wait( lck );
+        parent
+            ->decorateSuspension( [&]() {
+              std::unique_lock lck( gpu_mem_mtx );
+              gpu_mem_cv.wait( lck );
+              return StatusCode::SUCCESS;
+            } )
+            .orThrow( "Error suspending while waiting for memory", DEVARREXC );
       } else {
         throw GaudiException( err_fmt( err, __FILE__, __LINE__ ), DEVARREXC, StatusCode::FAILURE );
       }
     } while ( err == cudaErrorMemoryAllocation );
-    // In case we suspended
-    if ( parent != nullptr ) { parent->restoreAfterSuspend().orThrow( "Error restoring", DEVARREXC ); }
     return devPtr;
   }
 
@@ -79,9 +82,13 @@ namespace Gaudi::CUDA::Detail {
         // If called from an AsynchronousAlgorithm, wait as in the with stream variant
         // Otherwise, the thread should sleep
         if ( parent != nullptr ) {
-          std::unique_lock lck( gpu_mem_mtx );
-          gpu_mem_cv.wait( lck );
-          parent->restoreAfterSuspend().orThrow( "Error restoring", DEVARREXC );
+          parent
+              ->decorateSuspension( [&]() {
+                std::unique_lock lck( gpu_mem_mtx );
+                gpu_mem_cv.wait( lck );
+                return StatusCode::SUCCESS;
+              } )
+              .orThrow( "Error supending while waiting for memory", DEVARREXC );
         } else {
           std::this_thread::sleep_for( 100ms );
         }

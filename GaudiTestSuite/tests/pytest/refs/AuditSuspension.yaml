@@ -1,0 +1,62 @@
+stdout: |-
+  ApplicationMgr     SUCCESS
+  ====================================================================================================================================
+  ====================================================================================================================================
+  ApplicationMgr        INFO Application Manager Configured successfully
+  ThreadPoolSvc         INFO no thread init tools attached
+  AlgResourcePool       INFO TopAlg list empty. Recovering the one of Application Manager
+  Auditor               INFO Auditing before of Initialize for Sleepers
+  Sleepers              INFO Member list: Gaudi::TestSuite::AsyncSleeperAlg/SingleSleepAlg, Gaudi::TestSuite::AsyncSleeperAlg/DoubleSleepAlg
+  Auditor               INFO Auditing before of Initialize for SingleSleepAlg
+  Auditor               INFO Auditing after of Initialize for SingleSleepAlg
+  Auditor               INFO Auditing before of Initialize for DoubleSleepAlg
+  Auditor               INFO Auditing after of Initialize for DoubleSleepAlg
+  Auditor               INFO Auditing after of Initialize for Sleepers
+  PrecedenceSvc         INFO Assembling CF and DF task precedence rules
+  PrecedenceSvc         INFO PrecedenceSvc initialized successfully
+  ApplicationMgr        INFO Application Manager Initialized successfully
+  Auditor               INFO Auditing before of Start for SingleSleepAlg
+  Auditor               INFO Auditing after of Start for SingleSleepAlg
+  Auditor               INFO Auditing before of Start for DoubleSleepAlg
+  Auditor               INFO Auditing after of Start for DoubleSleepAlg
+  Auditor               INFO Auditing before of Start for Sleepers
+  Auditor               INFO Auditing after of Start for Sleepers
+  ApplicationMgr        INFO Application Manager Started successfully
+  Auditor               INFO Auditing before of Execute for SingleSleepAlg with context s: 0  e: 0
+  Auditor               INFO Auditing before of Suspension for SingleSleepAlg with context s: 0  e: 0
+  Auditor               INFO Auditing after of Suspension for SingleSleepAlg with context s: 0  e: 0
+  Auditor               INFO Auditing after of Execute for SingleSleepAlg with context s: 0  e: 0
+  Auditor               INFO Auditing before of Execute for DoubleSleepAlg with context s: 0  e: 0
+  Auditor               INFO Auditing before of Suspension for DoubleSleepAlg with context s: 0  e: 0
+  Auditor               INFO Auditing after of Suspension for DoubleSleepAlg with context s: 0  e: 0
+  Auditor               INFO Auditing before of Suspension for DoubleSleepAlg with context s: 0  e: 0
+  Auditor               INFO Auditing after of Suspension for DoubleSleepAlg with context s: 0  e: 0
+  Auditor               INFO Auditing after of Execute for DoubleSleepAlg with context s: 0  e: 0
+  Auditor               INFO Auditing before of Execute for SingleSleepAlg with context s: 0  e: 1
+  Auditor               INFO Auditing before of Suspension for SingleSleepAlg with context s: 0  e: 1
+  Auditor               INFO Auditing after of Suspension for SingleSleepAlg with context s: 0  e: 1
+  Auditor               INFO Auditing after of Execute for SingleSleepAlg with context s: 0  e: 1
+  Auditor               INFO Auditing before of Execute for DoubleSleepAlg with context s: 0  e: 1
+  Auditor               INFO Auditing before of Suspension for DoubleSleepAlg with context s: 0  e: 1
+  Auditor               INFO Auditing after of Suspension for DoubleSleepAlg with context s: 0  e: 1
+  Auditor               INFO Auditing before of Suspension for DoubleSleepAlg with context s: 0  e: 1
+  Auditor               INFO Auditing after of Suspension for DoubleSleepAlg with context s: 0  e: 1
+  Auditor               INFO Auditing after of Execute for DoubleSleepAlg with context s: 0  e: 1
+  Auditor               INFO Auditing before of Stop for Sleepers
+  Auditor               INFO Auditing before of Stop for SingleSleepAlg
+  Auditor               INFO Auditing after of Stop for SingleSleepAlg
+  Auditor               INFO Auditing before of Stop for DoubleSleepAlg
+  Auditor               INFO Auditing after of Stop for DoubleSleepAlg
+  Auditor               INFO Auditing after of Stop for Sleepers
+  ApplicationMgr        INFO Application Manager Stopped successfully
+  Auditor               INFO Auditing before of Finalize for Sleepers
+  Auditor               INFO Auditing before of Finalize for SingleSleepAlg
+  Auditor               INFO Auditing after of Finalize for SingleSleepAlg
+  Auditor               INFO Auditing before of Finalize for DoubleSleepAlg
+  Auditor               INFO Auditing after of Finalize for DoubleSleepAlg
+  Auditor               INFO Auditing after of Finalize for Sleepers
+  TimelineSvc           INFO Outputting timeline with 10 entries to file myAsyncTimeline.csv
+  ApplicationMgr        INFO Application Manager Finalized successfully
+  ApplicationMgr        INFO Application Manager Terminated successfully
+histos: {}
+ttrees: {}
