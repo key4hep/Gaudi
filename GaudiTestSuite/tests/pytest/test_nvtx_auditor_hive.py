@@ -36,11 +36,17 @@ class TestNVTXAuditHive(GaudiExeTest):
                 if line.startswith("Text:"):
                     ranges[line] += 1
 
-        number_of_events = 4
-
         for alg in ["GPUAlg1", "GPUAlg2", "CPUAlg1", "GPUAlg2"]:
             assert ranges[f'Text: "{alg}:Start"'] == 1
             assert ranges[f'Text: "{alg}:Initialize"'] == 1
-            assert ranges[f'Text: "{alg}:Execute"'] == number_of_events
             assert ranges[f'Text: "{alg}:Finalize"'] == 1
             assert ranges[f'Text: "{alg}:Stop"'] == 1
+
+        number_of_events = 4
+        # synchronous CPU algorithms should have only one execution range per event
+        assert ranges['Text: "CPUAlg1:Execute"'] == number_of_events
+        assert ranges['Text: "CPUAlg2:Execute"'] == number_of_events
+        # asynchronous GPU algorithms can have multiple execution ranges per event
+        # the GPUCruncher algorithm is designed to have at least one suspension per event, so more ranges are expected
+        assert ranges['Text: "GPUAlg1:Execute"'] > number_of_events
+        assert ranges['Text: "GPUAlg2:Execute"'] > number_of_events
