@@ -169,6 +169,12 @@ private:
   }
 
   /**
+   * @brief Helper to create a label for the audited event.
+   */
+  std::string make_label( std::string const& event, std::string const& caller ) const {
+    return std::format( "{}:{}", caller, event );
+  }
+  /**
    * @brief Start an NVTX range for the audited event.
    * @param label The label to attach to the range.
    * @param ctx The event context associated with the audited event.
@@ -227,7 +233,7 @@ private:
     }
 
     auto key   = make_key( event, caller, ctx );
-    auto label = std::format( "{}:{}", caller, event );
+    auto label = make_label( event, caller );
     auto id    = start_range( label, ctx );
     auto ret   = m_ranges.emplace( key, id );
     if ( !ret ) {
@@ -255,7 +261,7 @@ private:
     // execution range. Do not create a range for Suspend itself.
     if ( IAuditor::Suspension == event ) {
       auto execute_key = make_key( IAuditor::Execute, caller, ctx );
-      auto label       = std::format( "{}:{}", caller, IAuditor::Execute );
+      auto label       = make_label( IAuditor::Execute, caller );
       auto id          = start_range( label, ctx );
       auto ret         = m_ranges.emplace( execute_key, id );
       if ( !ret ) {
