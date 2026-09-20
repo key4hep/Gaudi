@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 2023-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 2023-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -154,7 +154,7 @@ StatusCode GPUCruncher::execute( const EventContext& ctx ) const // the executio
   std::vector<double> out{};
   gpuExecute( input, out ).orThrow( "GPU_EXECUTE" );
   auto endcrunch     = std::chrono::steady_clock::now();
-  int  total_entries = std::accumulate( out.begin() + 2, out.end(), 0, std::plus{} );
+  auto total_entries = std::accumulate( out.begin() + 2, out.end(), 0u, std::plus{} );
   bool match =
       ( out.at( 0 ) == lower_bound ) && ( out.at( 1 ) == upper_bound ) && ( total_entries == 256 * input.size() );
   info() << "Crunched." << endmsg;
