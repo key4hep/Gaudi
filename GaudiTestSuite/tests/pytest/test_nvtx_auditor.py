@@ -8,7 +8,8 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-from collections import Counter
+import csv
+import subprocess
 
 from GaudiTesting import GaudiExeTest
 
@@ -19,8 +20,6 @@ class TestNVTXAudit(GaudiExeTest):
         "nsys",
         "profile",
         "--trace=nvtx",
-        "--export",
-        "text",
         "-o",
         output,
         "gaudirun.py",
@@ -28,19 +27,27 @@ class TestNVTXAudit(GaudiExeTest):
     ]
 
     def test_written_ranges(self, cwd):
-        ranges = Counter()
+        stats_command = [
+            "nsys",
+            "stats",
+            f"{self.output}.nsys-rep",
+            "--report=nvtx_sum",
+            "--format=csv",
+            f"--output={self.output}",
+        ]
+        subprocess.run(stats_command, cwd=cwd, check=True)
+        ranges = {}
 
-        with (cwd / f"{self.output}.txt").open() as f:
-            for line in f:
-                line = line.strip()
-                if line.startswith("Text:"):
-                    ranges[line] += 1
+        with (cwd / f"{self.output}_nvtx_sum.csv").open(newline="") as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                ranges[row["Range"]] = int(row["Instances"])
 
         number_of_events = 4
 
         for alg in ["Sequencer", "InnerAlg1", "InnerAlg2", "OuterAlg"]:
-            assert ranges[f'Text: "{alg}:Start"'] == 1
-            assert ranges[f'Text: "{alg}:Initialize"'] == 1
-            assert ranges[f'Text: "{alg}:Execute"'] == number_of_events
-            assert ranges[f'Text: "{alg}:Finalize"'] == 1
-            assert ranges[f'Text: "{alg}:Stop"'] == 1
+            assert ranges[f"Gaudi:{alg}:Start"] == 1
+            assert ranges[f"Gaudi:{alg}:Initialize"] == 1
+            assert ranges[f"Gaudi:{alg}:Execute"] == number_of_events
+            assert ranges[f"Gaudi:{alg}:Finalize"] == 1
+            assert ranges[f"Gaudi:{alg}:Stop"] == 1
