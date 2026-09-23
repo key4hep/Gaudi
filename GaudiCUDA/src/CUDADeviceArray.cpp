@@ -46,10 +46,9 @@ namespace Gaudi::CUDA::Detail {
   } // namespace
 
   void* allocateWithStream( std::size_t size, Stream& stream ) {
-    const Gaudi::AsynchronousAlgorithm* parent     = stream.asyncParent();
-    void*                               devPtr     = nullptr;
-    cudaError_t                         err        = cudaSuccess;
-    auto                                start_time = std::chrono::steady_clock::now();
+    const Gaudi::AsynchronousAlgorithm* parent = stream.asyncParent();
+    void*                               devPtr = nullptr;
+    cudaError_t                         err    = cudaSuccess;
     do {
       err = cudaMallocAsync( &devPtr, size, stream );
       if ( err == cudaSuccess ) { break; }
@@ -71,9 +70,8 @@ namespace Gaudi::CUDA::Detail {
   }
 
   void* allocateNoStream( std::size_t size, Gaudi::AsynchronousAlgorithm* parent ) {
-    void*       devPtr     = nullptr;
-    cudaError_t err        = cudaSuccess;
-    auto        start_time = std::chrono::steady_clock::now();
+    void*       devPtr = nullptr;
+    cudaError_t err    = cudaSuccess;
     do {
       err = cudaMalloc( &devPtr, size );
       if ( err == cudaSuccess ) { break; }
