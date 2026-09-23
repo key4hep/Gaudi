@@ -140,7 +140,7 @@ private:
 
     if ( !incident.context().valid() ) {
       nvtxDomainMarkEx( s_domain, &eventAttrib );
-      info() << std::format( "Marked incident {} from {}", incident.type(), incident.source() ) << endmsg;
+      debug() << std::format( "Marked incident {} from {}", incident.type(), incident.source() ) << endmsg;
       return;
     }
 
@@ -151,9 +151,9 @@ private:
     eventAttrib.payload.ullValue = incident.context().evt();
 
     nvtxDomainMarkEx( s_domain, &eventAttrib );
-    info() << std::format( "Marked incident {} from {} with context {}", incident.type(), incident.source(),
-                           incident.context() )
-           << endmsg;
+    debug() << std::format( "Marked incident {} from {} with context {}", incident.type(), incident.source(),
+                            incident.context() )
+            << endmsg;
   }
 
   /**
@@ -227,7 +227,7 @@ private:
       } else {
         nvtxDomainRangeEnd( s_domain, acc->second );
         m_ranges.erase( acc );
-        info() << std::format( "Suspended execution range for {}", execute_key ) << endmsg;
+        debug() << std::format( "Suspended execution range for {}", execute_key ) << endmsg;
       }
       return;
     }
@@ -240,7 +240,7 @@ private:
       error() << std::format( "Range for {} already exists", key ) << endmsg;
       nvtxDomainRangeEnd( s_domain, id ); // the newly started range would otherwise never be closed
     } else {
-      info() << std::format( "Started range for {}", key ) << endmsg;
+      debug() << std::format( "Started range for {}", key ) << endmsg;
     }
   }
 
@@ -268,7 +268,7 @@ private:
         error() << std::format( "Execution range for {} already exists while resuming", execute_key ) << endmsg;
         nvtxDomainRangeEnd( s_domain, id ); // the newly started range would otherwise never be closed
       } else {
-        info() << std::format( "Resumed execution range for {}", execute_key ) << endmsg;
+        debug() << std::format( "Resumed execution range for {}", execute_key ) << endmsg;
       }
       return;
     }
@@ -278,8 +278,10 @@ private:
     if ( m_ranges.find( acc, key ) ) {
       nvtxDomainRangeEnd( s_domain, acc->second );
       m_ranges.erase( acc );
+    } else {
+      error() << std::format( "Range for {} does not exist", key ) << endmsg;
     }
-    info() << std::format( "Finished range for {}", key ) << endmsg;
+    debug() << std::format( "Finished range for {}", key ) << endmsg;
   }
 };
 
