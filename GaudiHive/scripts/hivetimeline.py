@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #####################################################################################
-# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -9,11 +9,12 @@
 # granted to it by virtue of its status as an Intergovernmental Organization        #
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
-"""Plot timeline from TimelineSvc"""
+"""Export timeline from TimelineSvc"""
 
 __author__ = "Frank Winklmeier"
 
 import argparse
+import json
 import operator
 import re
 import sys
@@ -179,8 +180,116 @@ def plot(data, showThreads=True, batch=False, nevtcolors=10, width=1200, height=
     return c
 
 
+def writeChromeTrace(data, outfile):
+    """Write timeline data in Chrome Trace Event JSON format."""
+
+    if not data:
+        trace = {"traceEvents": []}
+        with open(outfile, "w") as f:
+            json.dump(trace, f)
+        return
+
+    tmin = min(d.start for d in data)
+
+    # Perfetto doesn't accept uint64 tids so convert to index starting from 1
+    # but use the original tid in the thread name later
+    threads = sorted(set(d.thread for d in data))
+    thread_ids = {thread: idx for idx, thread in enumerate(threads, 1)}
+
+    # Execution of asynchronous algorithm can be split into multiple ranges,
+    # so group by (algorithm, event) to find all ranges corresponding to the same execution
+    # and create a flow events connecting all individual ranges
+    flows = defaultdict(list)
+
+    for d in data:
+        flows[(d.algorithm, d.event)].append(d)
+
+    for executions in flows.values():
+        executions.sort(key=lambda d: d.start)
+
+    # Assign a unique flow ID to each (algorithm, event) pair.
+    flow_ids = {key: idx for idx, key in enumerate(sorted(flows), 1)}
+
+    trace_events = []
+
+    # Algorithm execution events + flow events
+    for key, executions in flows.items():
+        flow_id = flow_ids[key]
+
+        for i, d in enumerate(executions):
+            tid = thread_ids[d.thread]
+
+            ts = (d.start - tmin) // 1000  # Convert to microseconds
+            dur = (d.end - d.start) // 1000  # Convert to microseconds
+
+            # Create duration slices for individual executions of the algorithm
+            trace_events.append(
+                {
+                    "name": d.algorithm,
+                    "cat": f"slot {d.slot}",
+                    "ph": "X",
+                    "pid": 1,
+                    "tid": tid,
+                    "ts": ts,
+                    "dur": dur,
+                    "args": {
+                        "event": d.event,
+                    },
+                }
+            )
+
+            # Connect the individual execution slices by flow events.
+            # A flow event should be enclosed by corresponding duration slice
+            if len(executions) > 1:
+                flow_event = {
+                    "name": d.algorithm,
+                    "cat": "flow",
+                    "pid": 1,
+                    "tid": tid,
+                    "ts": ts,
+                    "id": flow_id,
+                }
+                if i == 0:  # start
+                    flow_event["ph"] = "s"
+                elif i == len(executions) - 1:  # stop
+                    flow_event["ph"] = "f"
+                    flow_event["bp"] = "e"
+                else:  # intermediate
+                    flow_event["ph"] = "t"
+
+                trace_events.append(flow_event)
+
+    # Add thread names metadata
+    for thread, tid in thread_ids.items():
+        trace_events.append(
+            {
+                "name": "thread_name",
+                "ph": "M",
+                "pid": 1,
+                "tid": tid,
+                "args": {
+                    "name": f"Thread {thread}",
+                },
+            }
+        )
+
+    trace = {
+        "traceEvents": trace_events,
+        "displayTimeUnit": "ns",
+    }
+
+    with open(outfile, "w") as f:
+        json.dump(trace, f)
+
+
 def main():
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = argparse.ArgumentParser(
+        description=__doc__,
+        epilog=(
+            "By default, the timeline is plotted using ROOT. Use --chrome-trace "
+            "to export the timeline in Chrome Trace Event JSON format."
+        ),
+    )
 
     parser.add_argument("timeline", nargs=1, help="timeline file")
 
@@ -209,7 +318,7 @@ def main():
         dest="outfile",
         nargs="?",
         const="timeline.png",
-        help="Save to FILE [%(const)s]",
+        help="Save plot to FILE [%(const)s]",
     )
 
     parser.add_argument(
@@ -236,9 +345,19 @@ def main():
         "-y", "--height", default=500, type=int, help="height of the output picture"
     )
 
+    parser.add_argument(
+        "--chrome-trace",
+        metavar="FILE",
+        help="Save timeline as Chrome Trace JSON to FILE",
+    )
+
     args = parser.parse_args()
 
     data = read(args.timeline[0], args.select, args.skipevents)
+    if args.chrome_trace:
+        writeChromeTrace(data, args.chrome_trace)
+        if not args.outfile:
+            return 0
     c = plot(data, not args.slots, args.batch, args.nevtcolors, args.width, args.height)
     if args.outfile:
         c.SaveAs(args.outfile)
