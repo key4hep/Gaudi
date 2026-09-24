@@ -331,11 +331,28 @@ if(BUILD_TESTING)
     LINK GaudiKernel Boost::unit_test_framework TEST)
 
   gaudi_add_executable(test_MonotonicArena SOURCES tests/src/test_MonotonicArena.cpp
-    LINK GaudiKernel Boost::unit_test_framework TEST)
+    LINK GaudiKernel Boost::unit_test_framework)
   # This test defines its own operator new and delete, which conflicts with
   # the Leak and Address sanitizers
   target_compile_options(test_MonotonicArena PRIVATE -fno-sanitize=leak,address)
   target_link_options(test_MonotonicArena PRIVATE -fno-sanitize=leak,address)
+  # On sanitizer builds, LD_PRELOAD is set ambiently (outside this checkout,
+  # before ctest itself runs) for every test, but this binary isn't compiled
+  # with ASan/LSan support (see above) -- preloading those runtimes into it
+  # aborts immediately with "ASan runtime does not come first in initial
+  # library list", not a real test failure. Registered manually here (instead
+  # of via gaudi_add_executable's TEST keyword, which just runs the executable
+  # directly), routed through strip_sanitizer_preload.sh to strip only
+  # libasan.so/liblsan.so out of LD_PRELOAD: neither the ENVIRONMENT nor
+  # ENVIRONMENT_MODIFICATION test property can remove individual entries from
+  # an existing environment variable, only set/append/reset it wholesale,
+  # which would also drop any other preload already present (e.g. on an
+  # ALUBSAN build, libubsan.so must stay, since UBSan isn't disabled for this
+  # test -- only leak/address are).
+  add_test(NAME GaudiKernel.test_MonotonicArena
+    COMMAND sh ${CMAKE_CURRENT_SOURCE_DIR}/tests/scripts/strip_sanitizer_preload.sh
+        libasan.so liblsan.so -- $<TARGET_FILE:run> $<TARGET_FILE:test_MonotonicArena>)
+  set_tests_properties(GaudiKernel.test_MonotonicArena PROPERTIES LABELS "${PROJECT_NAME};GaudiKernel")
 
   gaudi_add_executable(test_GaudiTimer SOURCES tests/src/test_GaudiTimer.cpp
     LINK GaudiKernel Boost::unit_test_framework TEST)
