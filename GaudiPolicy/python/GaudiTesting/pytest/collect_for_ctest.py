@@ -1,5 +1,5 @@
 ###############################################################################
-# (c) Copyright 2024-2025 CERN for the benefit of the LHCb Collaboration      #
+# (c) Copyright 2024-2026 CERN for the benefit of the LHCb Collaboration      #
 #                                                                             #
 # This software is distributed under the terms of the GNU General Public      #
 # Licence version 3 (GPL Version 3), copied verbatim in the file "COPYING".   #
@@ -106,6 +106,35 @@ set_tests_properties({name} PROPERTIES {properties})
 """
 
 
+def _resolve_sanitizer_lib(name):
+    """Resolve a bare sanitizer runtime library name (e.g. "libasan.so") to
+    an absolute path by searching LD_LIBRARY_PATH ourselves, instead of
+    leaving it bare for the dynamic loader to search for later.
+
+    PRELOAD_SANITIZER_LIB (set by the sanitizer toolchain, see
+    lcg-toolchains' fragments/sanitizers/settings.cmake) is exported as a
+    bare filename. That's fine here: this function runs inside the same
+    `run`-wrapper environment used to launch this very pytest collection
+    process, which is known to have LD_LIBRARY_PATH set up correctly (the
+    sanitizer library does get found by *something* in this process, or
+    ASan wouldn't be able to report "runtime does not come first in
+    initial library list" at all -- it would fail to load entirely). But
+    that's not guaranteed for whatever process actually *runs* each test
+    later, which is a different invocation context (verified: pytest-based
+    CTest tests print "ld.so: ... cannot be preloaded (cannot open shared
+    object file): ignored" and silently run without the sanitizer active).
+    Resolving to an absolute path now, once, and baking it into each
+    test's ENVIRONMENT property removes that dependency entirely -- an
+    absolute path needs no search at test-run time.
+    """
+    if os.path.isabs(name):
+        return name
+    for directory in os.environ.get("LD_LIBRARY_PATH", "").split(":"):
+        if directory and os.path.isfile(os.path.join(directory, name)):
+            return os.path.join(directory, name)
+    return name  # not found: fall back to the bare name, as before
+
+
 def pytest_collection_finish(session):
     args = session.ctest_args
     output_filename = args.get("output_file")
@@ -124,8 +153,19 @@ def pytest_collection_finish(session):
         )
 
     properties = 'LABELS "{}" '.format(";".join(args["label"]))
+    env_entries = []
     if args.get("binary_dir"):
-        properties += f'ENVIRONMENT "CMAKE_CURRENT_BINARY_DIR={args["binary_dir"]}" '
+        env_entries.append(f"CMAKE_CURRENT_BINARY_DIR={args['binary_dir']}")
+    preload_sanitizer_lib = os.environ.get("PRELOAD_SANITIZER_LIB")
+    if preload_sanitizer_lib:
+        resolved = ":".join(
+            _resolve_sanitizer_lib(name)
+            for name in preload_sanitizer_lib.split(":")
+            if name
+        )
+        env_entries.append(f"LD_PRELOAD={resolved}")
+    if env_entries:
+        properties += 'ENVIRONMENT "{}" '.format(";".join(env_entries))
     properties += " ".join(args["properties"])
 
     producers = defaultdict(list)  # test name -> list of fixtures it produces
