@@ -590,10 +590,15 @@ long System::ProcessDescriptor::query( long pid, InfoType fetch, KERNEL_USER_TIM
     }
 
     if ( myself ) { // myself
-      tms tmsb;
-      times( &tmsb );
-      info->UserTime   = tmsb.tms_utime * TICK_TO_100NSEC;
-      info->KernelTime = tmsb.tms_stime * TICK_TO_100NSEC;
+      rusage usage;
+      if ( getrusage( RUSAGE_SELF, &usage ) != 0 ) return 0;
+
+      // getrusage returns current-process user and system times as seconds plus microseconds.
+      // Convert the timeval fields to Gaudi's 100 ns time unit.
+      info->UserTime = static_cast<long long>( usage.ru_utime.tv_sec ) * 10000000LL +
+                       static_cast<long long>( usage.ru_utime.tv_usec ) * 10LL;
+      info->KernelTime = static_cast<long long>( usage.ru_stime.tv_sec ) * 10000000LL +
+                         static_cast<long long>( usage.ru_stime.tv_usec ) * 10LL;
       info->CreateTime = prc_start;
     } else { // other process
       linux_proc prc;
