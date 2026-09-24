@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -39,14 +39,25 @@ void Gaudi::Guards::ExceptionGuard::handle( MsgStream& log ) {
 
 Gaudi::Guards::ExceptionGuard::~ExceptionGuard() { m_sc.ignore(); }
 
+Gaudi::Guards::AuditorGuard::AuditorGuard( std::string name, IAuditor* svc, std::string const& evt )
+    : m_objName( name ), m_svc( svc ), m_evt( evt ) {
+  i_before();
+}
+
 Gaudi::Guards::AuditorGuard::AuditorGuard( std::string name, IAuditor* svc, std::string const& evt,
                                            EventContext const& context )
-    : m_objName( name ), m_svc( svc ), m_evt( evt ), m_context( context ) {
+    : m_objName( name ), m_svc( svc ), m_evt( evt ), m_context( &context ) {
+  i_before();
+}
+
+Gaudi::Guards::AuditorGuard::AuditorGuard( std::string name, IAuditor* svc, std::string const& evt,
+                                           StatusCode const& sc )
+    : m_objName( name ), m_svc( svc ), m_evt( evt ), m_sc( &sc ) {
   i_before();
 }
 
 Gaudi::Guards::AuditorGuard::AuditorGuard( std::string name, IAuditor* svc, std::string const& evt,
                                            StatusCode const& sc, EventContext const& context )
-    : m_objName( name ), m_svc( svc ), m_evt( evt ), m_sc( &sc ), m_context( context ) {
+    : m_objName( name ), m_svc( svc ), m_evt( evt ), m_sc( &sc ), m_context( &context ) {
   i_before();
 }

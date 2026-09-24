@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -203,9 +203,11 @@ namespace Gaudi {
     class GAUDI_API AuditorGuard final {
     public:
       // user facing constructors
-      AuditorGuard( std::string name, IAuditor* svc, std::string const& evt, EventContext const& context = {} );
+      AuditorGuard( std::string name, IAuditor* svc, std::string const& evt );
+      AuditorGuard( std::string name, IAuditor* svc, std::string const& evt, EventContext const& context );
+      AuditorGuard( std::string name, IAuditor* svc, std::string const& evt, StatusCode const& sc );
       AuditorGuard( std::string name, IAuditor* svc, std::string const& evt, StatusCode const& sc,
-                    EventContext const& context = {} );
+                    EventContext const& context );
 
       ~AuditorGuard() { i_after(); }
 
@@ -219,37 +221,48 @@ namespace Gaudi {
       AuditorGuard& operator=( const AuditorGuard& right ) = delete;
 
     private:
-      /// the guarded object name (if there is no INamedInterface)
-      std::string m_objName;
-      /// auditor service
-      SmartIF<IAuditor> m_svc = nullptr;
-      /// Event type
-      std::string const m_evt;
-      /// Pointer to a status code instance, to be passed to the "after" function if needed
-      /// The instance must have a scope larger than the one of the guard.
-      /// No check is performed.
-      StatusCode const* m_sc{};
-      /// Pointer to a EventContext instance, to be passed to the "before" and "after" function
-      /// If given, the instance must have a scope larger than the one of the guard.
-      /// No check is performed.
-      const EventContext& m_context;
+      /// Stable, default-constructed EventContext used when the guard was not given one.
+      /// A function-local static has static storage duration, so (unlike a per-call
+      /// default-argument temporary) it is safe to bind a reference to for the guard's
+      /// entire lifetime.
+      static EventContext const& defaultContext() {
+        static EventContext const context{};
+        return context;
+      }
 
       inline void i_before() {
         if ( m_svc ) { // if the service is not available, we cannot do anything
-          m_svc->before( m_evt, m_objName, m_context );
+          m_svc->before( m_evt, m_objName, m_context ? *m_context : defaultContext() );
         }
       }
 
       inline void i_after() {
         if ( m_svc ) { // if the service is not available, we cannot do anything
           if ( m_sc ) {
-            m_svc->after( m_evt, m_objName, m_context, *m_sc );
+            m_svc->after( m_evt, m_objName, m_context ? *m_context : defaultContext(), *m_sc );
           } else {
-            m_svc->after( m_evt, m_objName, m_context );
+            m_svc->after( m_evt, m_objName, m_context ? *m_context : defaultContext() );
           }
           m_svc.reset();
         }
       }
+
+    private:
+      /// the guarded object name (if there is no INamedInterface)
+      std::string m_objName;
+      /// auditor service
+      SmartIF<IAuditor> m_svc;
+      /// Event type
+      std::string const m_evt;
+      /// Pointer to a status code instance, to be passed to the "after" function if needed
+      /// The instance must have a scope larger than the one of the guard.
+      /// No check is performed.
+      StatusCode const* m_sc{};
+      /// Pointer to an EventContext instance, to be passed to the "before" and "after" function.
+      /// If given, the instance must have a scope larger than the one of the guard.
+      /// No check is performed. Null when the caller did not provide one, in which case
+      /// defaultContext() is used instead (see i_before()/i_after()).
+      EventContext const* m_context{};
     };
   } // namespace Guards
 } // namespace Gaudi
