@@ -30,9 +30,12 @@ gaudi_add_module(GaudiCUDA
                   SOURCES src/GPUCruncher.cpp
                           src/GPUCruncher.cu
                           src/CUDADeviceArray.cpp
+                          src/NVTXAuditor.cpp
                   LINK GaudiKernel
                        GaudiCUDALib
                        Boost::headers
                        Boost::fiber
                        CUDA::cudart
+                       CUDA::nvtx3
+                       TBB::tbb
 )
