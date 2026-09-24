@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -14,6 +14,7 @@
 #include <GaudiKernel/GaudiException.h>
 #include <GaudiKernel/IAlgManager.h>
 #include <GaudiKernel/ThreadLocalContext.h>
+#include <atomic>
 
 DECLARE_COMPONENT( AlgExecStateSvc )
 
@@ -123,16 +124,23 @@ const EventStatus::Status& AlgExecStateSvc::eventStatus( const EventContext& ctx
 
 void AlgExecStateSvc::setEventStatus( const EventStatus::Status& sc, const EventContext& ctx ) {
   std::call_once( m_initFlag, &AlgExecStateSvc::init, this );
-  m_eventStatus.at( ctx.slot() ) = sc;
+  std::atomic_ref{ m_eventStatus.at( ctx.slot() ) }.store( sc, std::memory_order_relaxed );
 }
 
 void AlgExecStateSvc::updateEventStatus( const bool& fail, const EventContext& ctx ) {
   std::call_once( m_initFlag, &AlgExecStateSvc::init, this );
-  auto& status = m_eventStatus.at( ctx.slot() );
-  if ( status == EventStatus::Success ) {
-    if ( fail ) status = EventStatus::AlgFail;
-  } else if ( status == EventStatus::Invalid ) {
-    status = ( fail ? EventStatus::AlgFail : EventStatus::Success );
+  // Called at the end of every algorithm, and algorithms of one event slot finish concurrently:
+  // update atomically so that a failure cannot be overwritten by a concurrent success.
+  std::atomic_ref status{ m_eventStatus.at( ctx.slot() ) };
+  auto            current = status.load( std::memory_order_relaxed );
+  while ( true ) {
+    auto next = current;
+    if ( current == EventStatus::Success ) {
+      if ( fail ) next = EventStatus::AlgFail;
+    } else if ( current == EventStatus::Invalid ) {
+      next = ( fail ? EventStatus::AlgFail : EventStatus::Success );
+    }
+    if ( next == current || status.compare_exchange_weak( current, next, std::memory_order_relaxed ) ) { break; }
   }
 }
 
@@ -213,5 +221,5 @@ void AlgExecStateSvc::reset( const EventContext& ctx ) {
     }
   }
 
-  m_eventStatus.at( ctx.slot() ) = EventStatus::Invalid;
+  std::atomic_ref{ m_eventStatus.at( ctx.slot() ) }.store( EventStatus::Invalid, std::memory_order_relaxed );
 }
