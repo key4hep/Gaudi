@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "COPYING".                                            *
@@ -45,7 +45,7 @@ namespace Gaudi {
     */
     struct IOptionsSvc : virtual public IInterface {
       /// InterfaceID declaration.
-      DeclareInterfaceID( IOptionsSvc, 1, 0 );
+      DeclareInterfaceID( IOptionsSvc, 2, 0 );
 
       /// Set the value of an option, overriding the old value, if any.
       virtual void set( const std::string& key, const std::string& value ) = 0;
@@ -100,10 +100,6 @@ namespace Gaudi {
       /// can also be overridden passing `OnlyDefaults{false}` as third argument to the method.
       virtual void broadcast( const std::regex& filter, const std::string& value,
                               OnlyDefaults defaults = OnlyDefaults{ true } ) = 0;
-
-      /// look for file 'file' into search path 'path'
-      /// and read it to update the options
-      virtual StatusCode readOptions( std::string_view file, std::string_view path = "" ) = 0;
 
     protected:
       virtual ~IOptionsSvc() = default;
