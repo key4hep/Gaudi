@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 2024 CERN for the benefit of the LHCb and ATLAS collaborations      #
+# (c) Copyright 2024-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -191,12 +191,9 @@ def reference_path(request) -> Generator[Optional[Path], None, None]:
         yield None
 
     elif isinstance(cls.reference, (str, os.PathLike)):
-        path = cls.reference
-        if hasattr(cls, "resolve_path"):
-            path = cls.resolve_path(path)
-
-        path = expand_reference_file_name(path)
-        yield Path(path) if path else None
+        reference = file_path_for_class(cls).parent / os.path.expandvars(cls.reference)
+        path = expand_reference_file_name(reference)
+        yield Path(path)
 
     elif isinstance(cls.reference, dict):
         yield None
@@ -218,9 +215,6 @@ def reference(request, reference_path: Optional[Path]) -> Generator[dict, None, 
             with open(reference_path, "r") as f:
                 original_reference_data = yaml.safe_load(f)
         else:
-            # if the file does not exist we may have a relative path, so
-            # we have to resolve it wrt the file containing the test class
-            reference_path = file_path_for_class(cls).parent / reference_path
             original_reference_data = AlwaysTrueDefaultDict(lambda: None)
 
         current_reference_data = original_reference_data.copy()
