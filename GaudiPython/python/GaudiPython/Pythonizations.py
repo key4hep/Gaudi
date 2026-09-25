@@ -33,11 +33,8 @@ if not hasattr(gbl, "stringstream"):
 
 def _printHisto1D(h):
     x = h.axis()
-    return 'Histogram 1D "%s" %d bins [%f,%f]' % (
-        h.title(),
-        x.bins(),
-        x.lowerEdge(),
-        x.upperEdge(),
+    return (
+        f'Histogram 1D "{h.title()}" {x.bins()} bins [{x.lowerEdge()},{x.upperEdge()}]'
     )
 
 
@@ -48,15 +45,7 @@ def _contentsHisto1D(h):
 
 def _printHisto2D(h):
     x, y = h.xAxis(), h.yAxis()
-    return 'Histogram 2D "%s" %d xbins [%f,%f], %d ybins [%f,%f]' % (
-        h.title(),
-        x.bins(),
-        x.lowerEdge(),
-        x.upperEdge(),
-        y.bins(),
-        y.lowerEdge(),
-        y.upperEdge(),
-    )
+    return f'Histogram 2D "{h.title()}" {x.bins()} xbins [{x.lowerEdge()},{x.upperEdge()}], {y.bins()} ybins [{y.lowerEdge()},{y.upperEdge()}]'
 
 
 def _printStatusCode(s):
@@ -440,7 +429,7 @@ def __mapbase_str__(self):
         _val = self.at(_key)
         if 0 != i:
             _result += " , "
-        _result += " %s : %s " % (str(_key), str(_val))
+        _result += f" {_key} : {_val} "
     _result += " } "
     return _result
 

@@ -50,19 +50,20 @@ if __name__ == "__main__":
     if opts.list:
         print("Available components:\n%s" % (21 * "="))
         for item in sorted(cfgDb):
-            print("  %s (from %s)" % (item, cfgDb[item]["lib"]))
+            print("  {} (from {})".format(item, cfgDb[item]["lib"]))
         sys.exit()
     elif opts.name:
         name = opts.name
         if name not in cfgDb:
-            print("Component %s not found." % (name))
+            print(f"Component {name} not found.")
             sys.exit()
         print(
-            "\nDumping component information for %s:\n%s"
-            % (name, (35 + len(name)) * "=")
+            "\nDumping component information for {}:\n{}".format(
+                name, (35 + len(name)) * "="
+            )
         )
-        print("  Library: %s" % (cfgDb[name]["lib"]))
-        print("  Package: %s" % (cfgDb[name]["package"]))
+        print("  Library: {}".format(cfgDb[name]["lib"]))
+        print("  Package: {}".format(cfgDb[name]["package"]))
         print("\nProperties:\n%s" % (11 * "-"))
         try:
             properties = getattr(Configurables, name)().getPropertiesWithDescription()
@@ -72,8 +73,9 @@ if __name__ == "__main__":
         for label, (value, desc) in sorted(properties.items()):
             print(
                 (
-                    "  %s\t : %s\t (%s) "
-                    % (label, value, str(desc).replace("None", " no description "))
+                    "  {}\t : {}\t ({}) ".format(
+                        label, value, str(desc).replace("None", " no description ")
+                    )
                 ).expandtabs(30)
             )
         sys.exit()

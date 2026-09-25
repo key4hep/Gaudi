@@ -44,7 +44,7 @@ def test(capfd):
                 tes.registerObject(p, objects[i * 10 + j])
 
             ret = tes[p]
-            print("Access of {} yields {}".format(p, ret))
+            print(f"Access of {p} yields {ret}")
             assert ret, f"Access of path: {p}, should not result in nullptr"
 
     tes.dump()

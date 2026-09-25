@@ -26,7 +26,7 @@ __ignore_missing_configurables__ = False
 #  @endcode
 
 
-class _ConfigurablesModule(object):
+class _ConfigurablesModule:
     # Initializes the instance
     def __init__(self):
         # If set to true, does not raise an AttributeError if the configurable is not found.
@@ -69,8 +69,7 @@ class _ConfigurablesModule(object):
             # We raise an AttributeError exception if the configurable could not be found
             # to respect the Python semantic.
             raise AttributeError(
-                "module '%s' does not have attribute '%s'"
-                % (__configurables_module_fullname__, name)
+                f"module '{__configurables_module_fullname__}' does not have attribute '{name}'"
             )
         return retval
 
@@ -86,7 +85,7 @@ class c_opt_t(ctypes.Structure):
     _fields_ = [("key", ctypes.c_char_p), ("value", ctypes.c_char_p)]
 
 
-class Application(object):
+class Application:
     def __init__(self, opts, appType="Gaudi::Application"):
         global _GaudiKernelLib
         if _GaudiKernelLib is None:

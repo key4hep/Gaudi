@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
 #####################################################################################
-# (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -121,19 +121,17 @@ def comparePaths(t1, t2):
     print("Comparison of Paths : Reference vs Test ROOT files")
     print("-" * 80)
     print(
-        "Number of paths in Reference file : %i (objects, histos) = ( %i, %i )"
-        % (len(dsks), os, hs)
+        f"Number of paths in Reference file : {len(dsks)} (objects, histos) = ( {os}, {hs} )"
     )
     print(
-        "Number of paths in Test file : %i (objects, histos) = ( %i, %i )"
-        % (len(dpks), op, hp)
+        f"Number of paths in Test file : {len(dpks)} (objects, histos) = ( {op}, {hp} )"
     )
     matching = sset.intersection(pset)
     matchingHistos = 0
     for n in matching:
         if ds[n].__class__.__name__ in histos:
             matchingHistos += 1
-    print("\nMatching paths                 : %i" % (len(matching)))
+    print(f"\nMatching paths                 : {len(matching)}")
     uSer = sset - pset
     # work out histos unique to test file
     uniqueReferenceHistos = 0
@@ -141,24 +139,21 @@ def comparePaths(t1, t2):
         if ds[n].__class__.__name__ in histos:
             uniqueReferenceHistos += 1
     print(
-        "Paths unique to Reference file : %i ( %i Histos )"
-        % (len(uSer), uniqueReferenceHistos)
+        f"Paths unique to Reference file : {len(uSer)} ( {uniqueReferenceHistos} Histos )"
     )
     if uSer:
         for n in uSer:
-            print("\t%s : \t%s" % (ds[n], n))
+            print(f"\t{ds[n]} : \t{n}")
     uPar = pset - sset
     uniqueTestHistos = 0
     for n in uPar:
         if dp[n].__class__.__name__ in histos:
             uniqueTestHistos += 1
-    print(
-        "Paths unique to Test file : %i ( %i Histos )" % (len(uPar), uniqueTestHistos)
-    )
+    print(f"Paths unique to Test file : {len(uPar)} ( {uniqueTestHistos} Histos )")
     if uPar:
         for n in uPar:
-            print("\t%s : \t%s" % (dp[n], n))
-    print("Matching Histos to test : %i" % (matchingHistos))
+            print(f"\t{dp[n]} : \t{n}")
+    print(f"Matching Histos to test : {matchingHistos}")
     print("=" * 80 + "\n")
     return (
         ((os, hs), (op, hp)),
@@ -330,10 +325,7 @@ def compareHistos(t1, t2, state, checkBin2BinIdentity):
     if diffEntries:
         diffEntries.sort()
         for e in diffEntries:
-            print(
-                "\t\t\t%s:\t%i != %i"
-                % (e, int(ds[e].GetEntries()), int(dp[e].GetEntries()))
-            )
+            print(f"\t\t\t{e}:\t{int(ds[e].GetEntries())} != {int(dp[e].GetEntries())}")
     print("-" * 80)
 
     # report on Failed Kolmogorov Tests
@@ -344,9 +336,7 @@ def compareHistos(t1, t2, state, checkBin2BinIdentity):
         diffKols.sort()
         for e in diffKols:
             result = kTestResults[e]  # DP Calculated twice ARGH!!
-            print(
-                "%s\t\t%s :\tK-Test Result :\t %5.16f" % (ds[e].ClassName(), e, result)
-            )
+            print(f"{ds[e].ClassName()}\t\t{e} :\tK-Test Result :\t {result:5.16f}")
     print("-" * 60)
 
     # report on Failed Integral Checks
@@ -359,8 +349,7 @@ def compareHistos(t1, t2, state, checkBin2BinIdentity):
             diff = dp[e].Integral() - ds[e].Integral()
             pc = (diff * 100) / ds[e].Integral()
             print(
-                "%s\t\t%s:\t Diff = %5.6f\tPercent Diff to Reference : %5.6f "
-                % (ds[e].ClassName(), e, diff, pc)
+                f"{ds[e].ClassName()}\t\t{e}:\t Diff = {diff:5.6f}\tPercent Diff to Reference : {pc:5.6f} "
             )
     print("-" * 60 + "\n")
     print("=" * 80 + "\n")
@@ -375,8 +364,7 @@ def compareHistos(t1, t2, state, checkBin2BinIdentity):
             diffIdentity.sort()
             for e in diffIdentity:
                 print(
-                    "%s\t\t%s: %i different bins"
-                    % (ds[e].ClassName(), e, identityDiffBins[e])
+                    f"{ds[e].ClassName()}\t\t{e}: {identityDiffBins[e]} different bins"
                 )
             print("-" * 80)
 
@@ -384,47 +372,41 @@ def compareHistos(t1, t2, state, checkBin2BinIdentity):
     print("Comparison : Reference/Test ROOT Histo files")
     print("\n\t\tReference\tTest")
     print(
-        "\tObjects : %i\t%i\t\t( p-s = %i )"
-        % (referenceObjects, parallObjects, parallObjects - referenceObjects)
+        f"\tObjects : {referenceObjects}\t{parallObjects}\t\t( p-s = {parallObjects - referenceObjects} )"
     )
     print(
-        "\tHistos  : %i\t%i\t\t( p-s = %i )"
-        % (referenceHistos, parallHistos, parallHistos - referenceHistos)
+        f"\tHistos  : {referenceHistos}\t{parallHistos}\t\t( p-s = {parallHistos - referenceHistos} )"
     )
     print("\t          __________")
     print(
-        "\tTotal   : %i\t%i\n"
-        % (referenceHistos + referenceObjects, parallHistos + parallObjects)
+        f"\tTotal   : {referenceHistos + referenceObjects}\t{parallHistos + parallObjects}"
     )
     print(
-        "Objects/Histos unique to Reference File : %i / %i"
-        % (len(uniqueSerPaths) - uniqueSerHistos, uniqueSerHistos)
+        f"Objects/Histos unique to Reference File : {len(uniqueSerPaths) - uniqueSerHistos} / {uniqueSerHistos}"
     )
     print(
-        "Objects/Histos unique to Test File : %i / %i"
-        % (len(uniqueParPaths) - uniqueParHistos, uniqueParHistos)
+        f"Objects/Histos unique to Test File : {len(uniqueParPaths) - uniqueParHistos} / {uniqueParHistos}"
     )
-    print("\nMatching Histograms valid for Comparison : %i" % (mh))
+    print(f"\nMatching Histograms valid for Comparison : {mh}")
     print("\nOmissions' patterns : ")
     for entry in gRegexBlackList:
-        print("\t%s" % (entry))
+        print(f"\t{entry}")
     print(
-        "\nHistograms for Comparison (after Omissions) : %i"
-        % (mh - len(gRegexBlackList))
+        f"\nHistograms for Comparison (after Omissions) : {mh - len(gRegexBlackList)}"
     )
     print("\n\tHISTOGRAM TESTS : ")
-    print("\t\tKOLMOGOROV TEST      : %i" % (kTested))
-    print("\t\tINTEGRAL TEST        : %i" % (otherTest))
-    print("\t\tENTRIES TEST         : %i" % (xEntries))
+    print(f"\t\tKOLMOGOROV TEST      : {kTested}")
+    print(f"\t\tINTEGRAL TEST        : {otherTest}")
+    print(f"\t\tENTRIES TEST         : {xEntries}")
     if checkBin2BinIdentity:
-        print("\t\tBIN2BIN TEST         : %i" % (passedIdentity))
+        print(f"\t\tBIN2BIN TEST         : {passedIdentity}")
     print("\t\t                       ____")
-    print("\t\tTested               : %i" % (cEntries))
+    print(f"\t\tTested               : {cEntries}")
 
     print("\n\tDISCREPANCIES : ")
-    print("\t\tK-Test      : %i" % (failedKol))
-    print("\t\tIntegrals   : %i" % (xIntegrals))
-    print("\t\tEntries     : %i" % (xEntries))
+    print(f"\t\tK-Test      : {failedKol}")
+    print(f"\t\tIntegrals   : {xIntegrals}")
+    print(f"\t\tEntries     : {xEntries}")
     retval = failedKol + xIntegrals + xEntries + failedIdentity
     if retval != 0:
         print("\nThe two sets of histograms were not identical")
@@ -474,9 +456,9 @@ if __name__ == "__main__":
     testFile, referenceFile = args
 
     tfs = TFile(testFile, "REC")
-    print("opening Test File : %s" % (testFile))
+    print(f"opening Test File : {testFile}")
     tfp = TFile(referenceFile, "REC")
-    print("opening Reference File : %s" % (referenceFile))
+    print(f"opening Reference File : {referenceFile}")
 
     # get structure of TFiles in a list of (path, object) tuples
     lref = rec(tfs)

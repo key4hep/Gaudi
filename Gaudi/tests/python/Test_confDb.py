@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -37,6 +37,6 @@ try:
     # house cleaning...
     del _fillCfgDb
 except Exception as err:
-    print("Py:ConfigurableDb   ERROR Problem with [%s] content!" % __name__)
+    print(f"Py:ConfigurableDb   ERROR Problem with [{__name__}] content!")
     print("Py:ConfigurableDb   ERROR", err)
     print("Py:ConfigurableDb   ERROR   ==> culprit is package [Test] !")

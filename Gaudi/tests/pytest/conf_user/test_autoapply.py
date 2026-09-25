@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -44,7 +44,7 @@ class MultiInstance(ConfigurableUserTest):
     __used_configurables__ = [(SubModule1, None)]
 
     def __apply_configuration__(self):
-        super(MultiInstance, self).__apply_configuration__()
+        super().__apply_configuration__()
         SubModule1(self._instanceName(SubModule1))
 
 
@@ -59,7 +59,7 @@ class Application(ConfigurableUserTest):
     ]
 
     def __apply_configuration__(self):
-        super(Application, self).__apply_configuration__()
+        super().__apply_configuration__()
         if hasattr(self, "Property1"):
             val = self.Property1
         else:
@@ -76,7 +76,7 @@ class Application(ConfigurableUserTest):
 calledActions = []
 
 
-class Action(object):
+class Action:
     def __init__(self, msg):
         self.msg = msg
 
@@ -142,10 +142,6 @@ def test():
     # check property values
     allConfs = Configurable.allConfigurables
     for name, (prop, value) in expected.items():
-        assert allConfs[name].getProp(prop) == value, "%s.%s != %s" % (
-            name,
-            prop,
-            value,
-        )
+        assert allConfs[name].getProp(prop) == value, f"{name}.{prop} != {value}"
 
     print("Success.")

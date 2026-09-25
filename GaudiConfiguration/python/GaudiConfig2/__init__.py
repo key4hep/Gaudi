@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -35,7 +35,7 @@ def _makeConfigDict(iterable):
     try:  # pragma no cover
         from collections.abc import Mapping
     except ImportError:  # pragma no cover
-        from collections import Mapping
+        from collections.abc import Mapping
 
     if iterable is None:
         return {}
@@ -81,7 +81,7 @@ def invokeConfig(func, *args, **kwargs):
                 )
                 func = globals[m.group("callable")]
             else:
-                raise ValueError("invalid callable id %r" % func)
+                raise ValueError(f"invalid callable id {func!r}")
         else:
             raise TypeError("expected either a callable or a string as first argument")
     return _makeConfigDict(func(*args, **kwargs))

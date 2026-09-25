@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -32,7 +32,7 @@ NThreads = -1
 def parseLog(logfilename):
     global NEventsInFlight
     global NThreads
-    ifile = open(logfilename, "r")
+    ifile = open(logfilename)
     lines = ifile.readlines()
     vals = []
     for line in lines:
@@ -77,7 +77,7 @@ def getText(x, y, text, scale, angle, colour, font, NDC=False):
     lat = TLatex(
         float(x),
         float(y),
-        "#scale[%s]{#color[%s]{#font[%s]{%s}}}" % (scale, colour, font, text),
+        f"#scale[{scale}]{{#color[{colour}]{{#font[{font}]{{{text}}}}}}}",
     )
 
     lat.SetNDC(NDC)
@@ -124,8 +124,7 @@ def doPlot(logfilename):
     evtsIf = getText(
         0.6,
         0.365,
-        "#splitline{#splitline{%s Simultaneous Events}{%s Threads}}{%s Algorithms}"
-        % (NEventsInFlight, NThreads, nalgorithms),
+        f"#splitline{{#splitline{{{NEventsInFlight} Simultaneous Events}}{{{NThreads} Threads}}}}{{{nalgorithms} Algorithms}}",
         0.8,
         0,
         2,

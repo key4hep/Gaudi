@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -117,10 +117,10 @@ if "__main__" == __name__:
     alg = gaudi.algorithm("PropertyAlg")
 
     props = alg.properties()
-    print("Properties of %s " % alg.name())
+    print(f"Properties of {alg.name()} ")
     for p in props:
         v = props[p].value()
-        print("Python: Name/Value:  '%s' / '%s' " % (p, v))
+        print(f"Python: Name/Value:  '{p}' / '{v}' ")
 
 # =============================================================================
 # The END

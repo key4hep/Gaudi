@@ -103,7 +103,7 @@ namespace GaudiPython { namespace Helpers {
 
 # toIntArray, toShortArray, etc.
 for l in [l for l in dir(Helper) if re.match("^to.*Array$", l)]:
-    exec("%s = Helper.%s" % (l, l))
+    exec(f"{l} = Helper.{l}")
     __all__.append(l)
 
 # FIXME: (MCl) Hack to handle ROOT 5.18 and ROOT >= 5.20
@@ -116,7 +116,7 @@ if hasattr(Helper, "toArray"):
 else:
     # forward to the actual implementation of GaudiPython::Helper::toArray<T>
     def toArray(typ):
-        return getattr(Helper, "toArray<%s>" % typ)
+        return getattr(Helper, f"toArray<{typ}>")
 
 
 # ----Convenient accessors to PyROOT functionality ----------------------------
@@ -136,7 +136,7 @@ def deprecation(message):
 # ----InterfaceCast class -----------------------------------------------------
 
 
-class InterfaceCast(object):
+class InterfaceCast:
     """Helper class to obtain the adequate interface from a component
     by using the Gaudi queryInterface() mechanism"""
 
@@ -231,7 +231,7 @@ def getClass(name, libs=[]):
 # ----PropertyEntry class------------------------------------------------------
 
 
-class PropertyEntry(object):
+class PropertyEntry:
     """holds the value and the documentation string of a property"""
 
     def __init__(self, prop):
@@ -278,7 +278,7 @@ class PropertyEntry(object):
 # ----iProperty class----------------------------------------------------------
 
 
-class iProperty(object):
+class iProperty:
     """Python equivalent to the C++ Property interface"""
 
     def __init__(self, name, ip=cppyy.nullptr):
@@ -319,7 +319,7 @@ class iProperty(object):
         ip = self.getInterface()
         if ip:
             if not gbl.Gaudi.Utils.hasProperty(ip, name):
-                raise AttributeError("property %s does not exist" % name)
+                raise AttributeError(f"property {name} does not exist")
             ip.setPropertyRepr(name, value)
         else:
             gbl.GaudiPython.Helpers.setProperty(
@@ -335,7 +335,7 @@ class iProperty(object):
         ip = self.getInterface()
         if ip:
             if not gbl.Gaudi.Utils.hasProperty(ip, name):
-                raise AttributeError("property %s does not exist" % name)
+                raise AttributeError(f"property {name} does not exist")
             prop = ip.getProperty(name)
             if isinstance(prop, StringProperty):
                 return prop.value()
@@ -347,10 +347,10 @@ class iProperty(object):
                 return prop.value()
         else:
             opts = self._svcloc.getOptsSvc()
-            if opts.has("{}.{}".format(self._name, name)):
+            if opts.has(f"{self._name}.{name}"):
                 # from JobOptionsSvc we always have only strings
-                return eval(opts.get("{}.{}".format(self._name, name)), {}, {})
-            raise AttributeError("property %s does not exist" % name)
+                return eval(opts.get(f"{self._name}.{name}"), {}, {})
+            raise AttributeError(f"property {name} does not exist")
 
     def properties(self):
         dct = {}
@@ -369,8 +369,7 @@ class iProperty(object):
                     dct[p.name()] = PropertyEntry(p)
                 except (ValueError, TypeError) as e:
                     raise ValueError(
-                        "gaudimodule.iProperty.properties(): %s%s processing property %s.%s = %s"
-                        % (e.__class__.__name__, e.args, propsFrom, p.name(), p.value())
+                        f"gaudimodule.iProperty.properties(): {e.__class__.__name__}{e.args} processing property {propsFrom}.{p.name()} = {p.value()}"
                     )
         return dct
 
@@ -528,14 +527,14 @@ class iDataSvc(iService):
     def registerObject(self, path, obj):
         if not self._idp:
             raise AttributeError(
-                "C++ service %s does not exist" % self.__dict__["_name"]
+                "C++ service {} does not exist".format(self.__dict__["_name"])
             )
         return Helper.registerObject(self._idp, path, obj)
 
     def unregisterObject(self, path):
         if not self._idp:
             raise AttributeError(
-                "C++ service %s does not exist" % self.__dict__["_name"]
+                "C++ service {} does not exist".format(self.__dict__["_name"])
             )
         return Helper.unregisterObject(self._idp, path)
 
@@ -560,7 +559,9 @@ class iDataSvc(iService):
 
         """
         if not self._idp:
-            raise IndexError("C++ service %s does not exist" % self.__dict__["_name"])
+            raise IndexError(
+                "C++ service {} does not exist".format(self.__dict__["_name"])
+            )
         return Helper.findobject(self._idp, path)
 
     # get or retrieve object, possible switch-off 'on-demand' actions
@@ -588,22 +589,30 @@ class iDataSvc(iService):
 
         """
         if not self._idp:
-            raise IndexError("C++ service %s does not exist" % self.__dict__["_name"])
+            raise IndexError(
+                "C++ service {} does not exist".format(self.__dict__["_name"])
+            )
         return Helper.getobject(self._idp, path, *args)
 
     def __getitem__(self, path):
         if not self._idp:
-            raise IndexError("C++ service %s does not exist" % self.__dict__["_name"])
+            raise IndexError(
+                "C++ service {} does not exist".format(self.__dict__["_name"])
+            )
         return Helper.dataobject(self._idp, path)
 
     def __setitem__(self, path, obj):
         if not self._idp:
-            raise IndexError("C++ service %s does not exist" % self.__dict__["_name"])
+            raise IndexError(
+                "C++ service {} does not exist".format(self.__dict__["_name"])
+            )
         return self.registerObject(path, obj)
 
     def __delitem__(self, path):
         if not self._idp:
-            raise IndexError("C++ service %s does not exist" % self.__dict__["_name"])
+            raise IndexError(
+                "C++ service {} does not exist".format(self.__dict__["_name"])
+            )
         return self.unregisterObject(path)
 
     def leaves(self, node=cppyy.nullptr):
@@ -667,7 +676,9 @@ class iDataSvc(iService):
 
     def setRoot(self, name, obj):
         if not self._idm:
-            raise IndexError("C++ service %s does not exist" % self.__dict__["_name"])
+            raise IndexError(
+                "C++ service {} does not exist".format(self.__dict__["_name"])
+            )
         return self._idm.setRoot(name, obj)
 
     def selectOnlyStore(self):
@@ -684,12 +695,16 @@ class iDataSvc(iService):
 
     def selectStore(self, n):
         if not self._ihwb:
-            raise IndexError("C++ service %s does not exist" % self.__dict__["_name"])
+            raise IndexError(
+                "C++ service {} does not exist".format(self.__dict__["_name"])
+            )
         return self._ihwb.selectStore(n)
 
     def clearStore(self):
         if not self._idm:
-            raise IndexError("C++ service %s does not exist" % self.__dict__["_name"])
+            raise IndexError(
+                "C++ service {} does not exist".format(self.__dict__["_name"])
+            )
         return self._idm.clearStore()
 
 
@@ -1298,7 +1313,7 @@ class AppMgr(iService):
 def _getFIDandEvents(pfn):
     tfile = gbl.TFile.Open(pfn)
     if not tfile:
-        raise IOError("Cannot open ROOT file {0}".format(pfn))
+        raise OSError(f"Cannot open ROOT file {pfn}")
     tree = tfile.Get("##Params")
     tree.GetEvent(0)
     text = tree.db_string

@@ -33,7 +33,7 @@ class Data:
 def read(f, regex=".*", skipevents=0):
     data = []
     regex = re.compile(regex)
-    for l in open(f, "r"):
+    for l in open(f):
         if l.startswith("#"):  # e.g. #start end algorithm thread slot event
             names = l.lstrip("#").split()
             continue
@@ -89,7 +89,7 @@ def plot(data, showThreads=True, batch=False, nevtcolors=10, width=1200, height=
     c.SetTopMargin(0.1)
     c.SetBottomMargin(0.1)
     c.coord = ROOT.TH2I("coord", ";Time (ns)", 100, 0, tmax - tmin, ymax, 0, ymax)
-    c.coord.GetYaxis().SetTitle(("Thread" if showThreads else "Slot"))
+    c.coord.GetYaxis().SetTitle("Thread" if showThreads else "Slot")
     c.coord.GetYaxis().SetTitleOffset(0.5)
     c.coord.GetYaxis().CenterTitle()
     c.coord.SetStats(False)

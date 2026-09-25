@@ -30,7 +30,7 @@ def sanitize_for_xml(data):
 
     def quote(match):
         "helper function"
-        return "".join("[NON-XML-CHAR-0x%2X]" % ord(c) for c in match.group())
+        return "".join(f"[NON-XML-CHAR-0x{ord(c):2X}]" for c in match.group())
 
     return bad_chars.sub(quote, data)
 

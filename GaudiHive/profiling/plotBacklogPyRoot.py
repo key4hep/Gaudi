@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -52,7 +52,7 @@ def parseLog(logfilename):
     # "HiveSlimEventLoopMgr  SUCCESS Event backlog (max= 3, min= 0 ) = 3"
     global NEventsInFlight
     global NThreads
-    ifile = open(logfilename, "r")
+    ifile = open(logfilename)
     lines = ifile.readlines()
     ifile.close()
     content = []
@@ -113,7 +113,7 @@ def getText(x, y, text, scale, angle, colour, font, NDC=False):
     lat = TLatex(
         float(x),
         float(y),
-        "#scale[%s]{#color[%s]{#font[%s]{%s}}}" % (scale, colour, font, text),
+        f"#scale[{scale}]{{#color[{colour}]{{#font[{font}]{{{text}}}}}}}",
     )
     if NDC:
         lat.SetNDC()
@@ -153,7 +153,7 @@ def doPlot(logfilename, logfilename_copy):
         12,
     )
     eventInFlightLabel.Draw()
-    nThreadsLabel = getText(0.15, 0.7, "%s Threads" % NThreads, 0.6, 0, 2, 12, True)
+    nThreadsLabel = getText(0.15, 0.7, f"{NThreads} Threads", 0.6, 0, 2, 12, True)
     nThreadsLabel.Draw()
 
     # Build a Legend

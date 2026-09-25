@@ -44,7 +44,7 @@ What is searched?
 ^^^^^^^^^^^^^^^^^
 
 * Boost>=1.70
-* Python>=3.7
+* Python>=3.12
 * ROOT>=6.18
 * UUID
 * TBB>=2019.0.11007.2
@@ -101,7 +101,7 @@ foreach(component IN ITEMS filesystem regex thread python unit_test_framework
   mark_as_advanced(boost_${component}_DIR)
 endforeach()
 
-find_package(Python 3.7 ${__quiet} REQUIRED Interpreter Development)
+find_package(Python 3.12 ${__quiet} REQUIRED Interpreter Development)
 
 find_package(ROOT 6.18 ${__quiet} CONFIG REQUIRED Core RIO Hist Thread Matrix
   MathCore Net XMLIO Tree TreePlayer Graf3d Graf Gpad)

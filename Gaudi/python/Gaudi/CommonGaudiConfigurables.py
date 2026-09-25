@@ -36,7 +36,7 @@ packages = [
 for package in packages:
     try:
         mod = __import__(
-            "%s.%sConf" % (package, package), globals(), locals(), ["%sConf" % package]
+            f"{package}.{package}Conf", globals(), locals(), [f"{package}Conf"]
         )
         for nam in dir(mod):
             cls = getattr(mod, nam)

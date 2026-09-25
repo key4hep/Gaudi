@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -16,20 +16,15 @@ def prepareConfig(
     template_filename, n_threads=10, n_parallel_events=10, n_parallel_algorithms=10
 ):
     template = open(template_filename)
-    new_filename = "%s_%i_%i_%i.py" % (
-        template_filename.rstrip(".py"),
-        n_threads,
-        n_parallel_events,
-        n_parallel_algorithms,
-    )
+    new_filename = f"{template_filename.rstrip('.py')}_{n_threads}_{n_parallel_events}_{n_parallel_algorithms}.py"
     new_config = open(new_filename, "w")
     for line in template.readlines():
         if line.startswith("n_threads"):
-            line = "n_threads = %i\n" % n_threads
+            line = f"n_threads = {n_threads}\n"
         elif line.startswith("n_parallel_events"):
-            line = "n_parallel_events = %i\n" % n_parallel_events
+            line = f"n_parallel_events = {n_parallel_events}\n"
         elif line.startswith("n_parallel_algorithms"):
-            line = "n_parallel_algorithms = %i\n" % n_parallel_algorithms
+            line = f"n_parallel_algorithms = {n_parallel_algorithms}\n"
         new_config.write(line)
     new_config.close()
     return new_filename
@@ -48,6 +43,7 @@ if __name__ == "__main__":
             )
             # config.replace(".py",".log"))
             print(
-                "/usr/bin/time -f %%S -o %s.time `alias gaudirun` %s > %s"
-                % (config.replace(".py", ""), config, "/dev/null")
+                "/usr/bin/time -f %S -o {}.time `alias gaudirun` {} > {}".format(
+                    config.replace(".py", ""), config, "/dev/null"
+                )
             )

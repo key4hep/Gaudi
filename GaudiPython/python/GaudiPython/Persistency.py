@@ -29,7 +29,7 @@ class UnknownPersistency(PersistencyError):
     """
 
     def __init__(self, type_):
-        super(UnknownPersistency, self).__init__("Unknown persistency type %r" % type_)
+        super().__init__(f"Unknown persistency type {type_!r}")
         self.type = type_
 
 
@@ -56,7 +56,7 @@ def add(instance):
     _implementations.insert(0, instance)
 
 
-class FileDescription(object):
+class FileDescription:
     def __init__(self, filename, opt, svc, sel=None, collection=None, fun=None):
         """
         Class to hold/manipulate the file description.
@@ -93,10 +93,10 @@ class FileDescription(object):
         Return the string representation of the file description to be passed
         to the application.
         """
-        return " ".join(["%s='%s'" % (k, v) for k, v in self.__data__() if v])
+        return " ".join([f"{k}='{v}'" for k, v in self.__data__() if v])
 
 
-class PersistencyHelper(object):
+class PersistencyHelper:
     """
     Base class for extensions to persistency configuration in GaudiPython.
     """
@@ -126,9 +126,7 @@ class RootPersistency(PersistencyHelper):
 
         Declare the type of supported persistencies to the base class.
         """
-        super(RootPersistency, self).__init__(
-            ["ROOT", "RootCnvSvc", "Gaudi::RootCnvSvc"]
-        )
+        super().__init__(["ROOT", "RootCnvSvc", "Gaudi::RootCnvSvc"])
         self.configured = False
 
     def configure(self, appMgr):
@@ -178,7 +176,7 @@ class RootPersistency(PersistencyHelper):
             raise PersistencyError("Persistency not configured")
         retval = str(FileDescription(filename, "RECREATE", "Gaudi::RootCnvSvc"))
         if "lun" in kwargs:
-            retval = "%s %s" % (kwargs["lun"], retval)
+            retval = "{} {}".format(kwargs["lun"], retval)
         return retval
 
 

@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -95,9 +95,9 @@ def update():
 def printDelta(s0, s1):
     for s in s1:
         if s == "time":
-            print("%15s : %10.2F sec" % (s, (s1[s] - s0[s])))
+            print(f"{s:>15s} : {(s1[s] - s0[s]):10.2F} sec")
         else:
-            print("%15s : %10.2F MB" % (s, (s1[s] - s0[s]) / 1.0e6))
+            print(f"{s:>15s} : {(s1[s] - s0[s])/ 1.0e6:10.2F} MB")
 
 
 import GaudiPython
@@ -123,5 +123,5 @@ while 1 > 0:
     if N > 100000:
         break
 end = update()
-print("Read %d events" % N)
+print(f"Read {N} events")
 printDelta(start, end)

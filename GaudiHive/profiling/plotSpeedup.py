@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
 #####################################################################################
-# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -42,7 +42,7 @@ def getRuntime(n_algos_in_flight, n_evts_in_flight, cloneFlag):
     filename = filename_scheleton % (n_evts_in_flight, n_algos_in_flight, cloneFlag)
     print(filename)
     rt = 0.0
-    for line in open(filename, "r").readlines():
+    for line in open(filename).readlines():
         rt = float(line[:-1])
         # print filename
         # print rt
@@ -103,7 +103,7 @@ def make_plot(runtimes, cloneFlag):
     if cloneFlag:
         clone_string = "_clone"
         title += " (Cloning)"
-    plotname = "runtime%s.pdf" % clone_string
+    plotname = f"runtime{clone_string}.pdf"
 
     canvas = ROOT.TCanvas(plotname, "plot", 500, 400)
     canvas.SetGrid()
@@ -132,7 +132,7 @@ def make_plot(runtimes, cloneFlag):
     legend.SetFillColor(ROOT.kWhite)
     # evil
     for graph, n in zip(graphs, n_evts_in_flight_l):
-        legend.AddEntry(graph, "%s" % n)
+        legend.AddEntry(graph, f"{n}")
     legend.Draw()
 
     # Add some text

@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -21,7 +21,7 @@ def getMetaData(path):
 
     f = TFile.Open(path)
     if not f:
-        raise RuntimeError("cannot open {0}".format(path))
+        raise RuntimeError(f"cannot open {path}")
     try:
         if version < (6, 32):
             return dict(f.info)

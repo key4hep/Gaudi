@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #####################################################################################
-# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -16,9 +16,6 @@
 #  @date 2008-12-02
 # =============================================================================
 """Demo-file for interactive work with new Particle Property Service"""
-
-# =============================================================================
-from builtins import range
 
 __author__ = "Vanya BELYAEV Ivan.Belyaev@nikhef.nl"
 import GaudiPartProp.decorators
@@ -60,19 +57,19 @@ def test():
     for l in range(1, 6):
         # get
         lst1 = pps.get(lambda x: l == x.pid().lSpin())
-        print(" %s == 2*lSpin+1 " % l)
+        print(f" {l} == 2*lSpin+1 ")
         print(lst1)
 
     for s in range(0, 2):
         # get
         lst1 = pps.get(lambda x: s == x.pid().sSpin())
-        print(" %s == 2*sSpin+1 " % s)
+        print(f" {s} == 2*sSpin+1 ")
         print(lst1)
 
     for j in range(0, 7):
         # get
         lst1 = pps.get(lambda x: j == x.pid().jSpin())
-        print(" %s == 2*jSpi+1 " % j)
+        print(f" {j} == 2*jSpi+1 ")
         print(lst1)
 
     decays = [
@@ -83,7 +80,7 @@ def test():
     ]
 
     for decay in decays:
-        print("Decay&CC:  %s : %s " % (decay, pps.cc(decay)))
+        print(f"Decay&CC:  {decay} : {pps.cc(decay)} ")
 
     Item = pps.Item
     Items = pps.Items
@@ -125,7 +122,7 @@ def test2():
         node.validate(pps.svc())
 
         lst1 = pps.get(node)
-        print(' selected by node: "%s" ' % node)
+        print(f' selected by node: "{node}" ')
         print(lst1)
 
 

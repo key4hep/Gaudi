@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 2024 CERN for the benefit of the LHCb and ATLAS collaborations      #
+# (c) Copyright 2024-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -12,8 +12,8 @@ import inspect
 import os
 import subprocess
 from collections import defaultdict
+from collections.abc import Callable, Generator
 from pathlib import Path
-from typing import Callable, Generator, Optional
 
 import pytest
 import yaml
@@ -83,7 +83,7 @@ def pytest_collection_modifyitems(config, items):
             results[f"{name}.source_code"] = source_code
 
 
-def _get_shared_cwd_id(cls: type) -> Optional[str]:
+def _get_shared_cwd_id(cls: type) -> str | None:
     """
     Extract the id of the shared cwd directory needed by the class, if any.
 
@@ -184,7 +184,7 @@ def capture_class_docstring(
 
 
 @pytest.fixture(scope="class")
-def reference_path(request) -> Generator[Optional[Path], None, None]:
+def reference_path(request) -> Generator[Path | None, None, None]:
     cls = request.cls
 
     if not hasattr(cls, "reference") or cls.reference is None:
@@ -208,14 +208,14 @@ def reference_path(request) -> Generator[Optional[Path], None, None]:
 
 
 @pytest.fixture(scope="class")
-def reference(request, reference_path: Optional[Path]) -> Generator[dict, None, None]:
+def reference(request, reference_path: Path | None) -> Generator[dict, None, None]:
     cls = request.cls
     original_reference_data = None
     current_reference_data = None
 
     if reference_path:
         if reference_path.exists() and reference_path.stat().st_size > 0:
-            with open(reference_path, "r") as f:
+            with open(reference_path) as f:
                 original_reference_data = yaml.safe_load(f)
         else:
             # if the file does not exist we may have a relative path, so

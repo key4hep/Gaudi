@@ -93,11 +93,11 @@ class _CfgDb(dict):
                 self.add(cname, pkg, module, lib)
             except IndexError:
                 f.close()
-                raise Exception("invalid line format: %s:%d: %r" % (fname, i + 1, ll))
+                raise Exception(f"invalid line format: {fname}:{i + 1}: {ll}")
         f.close()
 
 
-class _Singleton(object):
+class _Singleton:
     # the object this singleton is holding
     # No other object will be created...
     __obj = _CfgDb()

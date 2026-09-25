@@ -15,10 +15,10 @@ import shutil
 import signal
 import subprocess
 import threading
+from collections.abc import Callable
 from datetime import datetime
 from pathlib import Path
 from string import Template
-from typing import Callable, Dict, List, Optional, Union
 
 import pytest
 
@@ -39,24 +39,24 @@ class SubprocessBaseTest:
     and handling subprocess output and errors.
     """
 
-    command: List[str] = None
+    command: list[str] = None
     reference: str = None
-    environment: List[str] = None
+    environment: list[str] = None
     timeout: int = 600
     returncode: int = 0
-    popen_kwargs: Dict = {}
+    popen_kwargs: dict = {}
     # By default record environment variables that are likely to affect job execution
-    env_to_record: List[str] = [
+    env_to_record: list[str] = [
         r"^(.*PATH|BINARY_TAG|CMTCONFIG|PWD|TMPDIR|DISPLAY|LC_[A-Z]+|LANGUAGE|.*ROOT|.*OPTS|GAUDI_ENV_TO_RECORD(_\d+)?)$"
     ]
 
     @property
-    def cwd(self) -> Optional[Path]:
+    def cwd(self) -> Path | None:
         cwd = self.popen_kwargs.get("cwd")
         return Path(cwd) if cwd else None
 
     @classmethod
-    def resolve_path(cls, path: Union[Path, str]) -> str:
+    def resolve_path(cls, path: Path | str) -> str:
         """
         Resolve the given path to an absolute path,
         expanding environment variables.
@@ -81,24 +81,24 @@ class SubprocessBaseTest:
         return path + suffix
 
     @classmethod
-    def update_env(cls, env: Dict[str, str]) -> None:
+    def update_env(cls, env: dict[str, str]) -> None:
         if cls.environment:
             for item in cls.environment:
                 key, value = item.split("=", 1)
                 env[key] = cls.expand_vars_from(value, env)
 
     @classmethod
-    def _prepare_environment(cls) -> Dict[str, str]:
+    def _prepare_environment(cls) -> dict[str, str]:
         env = dict(os.environ)
         cls.update_env(env)
         return env
 
     @staticmethod
-    def expand_vars_from(value: str, env: Dict[str, str]) -> str:
+    def expand_vars_from(value: str, env: dict[str, str]) -> str:
         return Template(value).safe_substitute(env)
 
     @staticmethod
-    def unset_vars(env: Dict[str, str], vars_to_unset: List[str]) -> None:
+    def unset_vars(env: dict[str, str], vars_to_unset: list[str]) -> None:
         for var in vars_to_unset:
             env.pop(var, None)
 
@@ -109,7 +109,7 @@ class SubprocessBaseTest:
         return which(prog) or cls.resolve_path(prog)
 
     @classmethod
-    def _prepare_command(cls, tmp_path=Path()) -> List[str]:
+    def _prepare_command(cls, tmp_path=Path()) -> list[str]:
         """
         Prepare the command to be executed, resolving paths for each part.
         """
@@ -284,7 +284,7 @@ class SubprocessBaseTest:
         self,
         record_property: Callable[[str, str], None],
         fixture_result: FixtureResult,
-        reference_path: Optional[Path],
+        reference_path: Path | None,
     ) -> None:
         """
         Record properties and handle any failures during fixture setup.

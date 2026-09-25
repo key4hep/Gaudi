@@ -114,12 +114,12 @@ class Error(RuntimeError):
 # Allow references to options  as in old style
 
 
-class PropertyReference(object):
+class PropertyReference:
     def __init__(self, propname):
         self.name = propname
 
     def __str__(self):
-        return "@%s" % self.name
+        return f"@{self.name}"
 
     def __resolve__(self):
         # late binding for property references
@@ -131,7 +131,7 @@ class PropertyReference(object):
             if hasattr(retval, "getFullName"):
                 retval = retval.getFullName()
         else:
-            raise NameError("name '%s' not found resolving '%s'" % (refname, self))
+            raise NameError(f"name '{refname}' not found resolving '{self}'")
         return retval
 
     def getFullName(self):
@@ -209,7 +209,7 @@ class Configurable(metaclass=ConfigurableMeta.ConfigurableMeta):
                 name = args[1]  # '0' is for self
             except (IndexError, TypeError):
                 raise TypeError(
-                    'no "name" argument while instantiating "%s"' % cls.__name__
+                    f'no "name" argument while instantiating "{cls.__name__}"'
                 )
 
         argname = name
@@ -221,7 +221,7 @@ class Configurable(metaclass=ConfigurableMeta.ConfigurableMeta):
         elif not name or not isinstance(name, str):
             # unnamed, highly specialized user code, etc. ... unacceptable
             raise TypeError(
-                "could not retrieve name from %s.__init__ arguments" % cls.__name__
+                f"could not retrieve name from {cls.__name__}.__init__ arguments"
             )
 
         # Handle the case of global tools to prepend ToolSvc in the name.
@@ -259,7 +259,7 @@ class Configurable(metaclass=ConfigurableMeta.ConfigurableMeta):
         spos = name.find("/")
         ti_name = None
         if spos < 0:
-            ti_name = "%s/%s" % (name, name)
+            ti_name = f"{name}/{name}"
             if ti_name in cls.configurables:
                 # support for old-style name as type/name lookup where name==type
                 return cls.configurables[ti_name]
@@ -297,8 +297,7 @@ class Configurable(metaclass=ConfigurableMeta.ConfigurableMeta):
                 for n in conf._properties:
                     if names[n.lower()] != n:
                         log.warning(
-                            "Option '%s' was used for %s, but the correct spelling is '%s'"
-                            % (n, name, names[n.lower()])
+                            f"Option '{n}' was used for {name}, but the correct spelling is '{names[n.lower()]}'"
                         )
                     setattr(newconf, names[n.lower()], getattr(conf, n))
                 for n, v in kwargs.items():
@@ -347,9 +346,7 @@ class Configurable(metaclass=ConfigurableMeta.ConfigurableMeta):
 
         # this is an abstract class
         if klass == Configurable:
-            raise TypeError(
-                "%s is an ABC and can not be instantiated" % str(Configurable)
-            )
+            raise TypeError(f"{Configurable} is an ABC and can not be instantiated")
 
         # the following methods require overloading
         # NOT YET  meths = { 'getServices'   : 1,    # retrieve list of services to configure
@@ -364,18 +361,14 @@ class Configurable(metaclass=ConfigurableMeta.ConfigurableMeta):
             try:
                 f = getattr(klass, meth)
             except AttributeError:
-                raise NotImplementedError(
-                    "%s is missing in class %s" % (meth, str(klass))
-                )
+                raise NotImplementedError(f"{meth} is missing in class {klass}")
 
             # in addition, verify the number of arguments w/o defaults
             nargcount = f.__code__.co_argcount
             fdefaults = f.__defaults__
             ndefaults = fdefaults and len(fdefaults) or 0
             if not nargcount - ndefaults <= nArgs <= nargcount:
-                raise TypeError(
-                    "%s.%s requires exactly %d arguments" % (klass, meth, nArgs)
-                )
+                raise TypeError(f"{klass}.{meth} requires exactly {nArgs} arguments")
 
         # for using this Configurable as a (Gaudi) sequence
         self.__children = []
@@ -468,7 +461,7 @@ class Configurable(metaclass=ConfigurableMeta.ConfigurableMeta):
         for cfg in configs:
             # prevent type mismatches
             if not isinstance(cfg, Configurable):
-                raise TypeError("'%s' is not a Configurable" % str(cfg))
+                raise TypeError(f"'{cfg}' is not a Configurable")
 
             cc = self.copyChildAndSetParent(cfg, joname)
 
@@ -509,22 +502,18 @@ class Configurable(metaclass=ConfigurableMeta.ConfigurableMeta):
             if c.getName() == attr:
                 return c
 
-        raise AttributeError(
-            "'%s' object has no attribute '%s'" % (self.__class__, attr)
-        )
+        raise AttributeError(f"'{self.__class__}' object has no attribute '{attr}'")
 
     def __setattr__(self, name, value):
         if self._configurationLocked:
             raise RuntimeError(
-                "%s: Configuration cannot be modified after the ApplicationMgr has been started."
-                % self.name()
+                f"{self.name()}: Configuration cannot be modified after the ApplicationMgr has been started."
             )
         try:
-            super(Configurable, self).__setattr__(name, value)
+            super().__setattr__(name, value)
         except AttributeError:
             raise AttributeError(
-                "Configurable '%s' does not have property '%s'."
-                % (self.__class__.__name__, name)
+                f"Configurable '{self.__class__.__name__}' does not have property '{name}'."
             )
 
     def __delattr__(self, attr):
@@ -661,8 +650,7 @@ class Configurable(metaclass=ConfigurableMeta.ConfigurableMeta):
         if not hasattr(self, "_initok") or not self._initok:
             # could check more, but this is the only explanation
             raise TypeError(
-                "Configurable.__init__ not called in %s override"
-                % self.__class__.__name__
+                f"Configurable.__init__ not called in {self.__class__.__name__} override"
             )
 
         #      log.debug("calling setup() on " + self.getFullJobOptName())
@@ -828,7 +816,7 @@ class Configurable(metaclass=ConfigurableMeta.ConfigurableMeta):
         return str(self.getType() + "/" + self.getName())
 
     def getFullJobOptName(self):
-        return "%s/%s" % (self.getType(), self.getJobOptName() or self.getName())
+        return f"{self.getType()}/{self.getJobOptName() or self.getName()}"
 
     def getPrintTitle(self):
         return self.getGaudiType() + " " + self.getTitleName()
@@ -904,7 +892,7 @@ class Configurable(metaclass=ConfigurableMeta.ConfigurableMeta):
             else:
                 classname = type(tool).__name__
             raise TypeError(
-                "addTool requires AlgTool configurable. Got %s type" % classname
+                f"addTool requires AlgTool configurable. Got {classname} type"
             )
         self.__tools[name] = priv_tool
         if name in self.__slots__:
@@ -960,7 +948,7 @@ class Configurable(metaclass=ConfigurableMeta.ConfigurableMeta):
             Configurable.printHeaderWidth - preLen - 3 - len(title)
         )  # - len(indentStr)
         postLen = max(preLen, postLen)
-        return indentStr + "/%s %s %s" % (preLen * "*", title, postLen * "*")
+        return indentStr + "/{} {} {}".format(preLen * "*", title, postLen * "*")
 
     @staticmethod
     def _printFooter(indentStr, title):
@@ -969,10 +957,12 @@ class Configurable(metaclass=ConfigurableMeta.ConfigurableMeta):
             Configurable.printHeaderWidth - preLen - 12 - len(title)
         )  # - len(indentStr)
         postLen = max(preLen, postLen)
-        return indentStr + "\\%s (End of %s) %s" % (preLen * "-", title, postLen * "-")
+        return indentStr + "\\{} (End of {}) {}".format(
+            preLen * "-", title, postLen * "-"
+        )
 
     def __repr__(self):
-        return "{0}({1!r})".format(self.__class__.__name__, self.name())
+        return f"{self.__class__.__name__}({self.name()!r})"
 
     def __str__(self, indent=0, headerLastIndentUnit=indentUnit):
         global log  # to print some info depending on output level
@@ -995,7 +985,7 @@ class Configurable(metaclass=ConfigurableMeta.ConfigurableMeta):
         props = self.getProperties()
         defs = self.getDefaultProperties()
         if not props:
-            rep += indentStr + "|-<no properties>" + os.linesep
+            rep += f"{indentStr}|-<no properties>{os.linesep}"
         else:
             # get property name with
             nameWidth = 0
@@ -1003,13 +993,13 @@ class Configurable(metaclass=ConfigurableMeta.ConfigurableMeta):
                 nameWidth = max(nameWidth, len(p))
             for p, v in props.items():
                 # start with indent and property name
-                prefix = indentStr + "|-%-*s" % (nameWidth, p)
+                prefix = f"{indentStr}|-{p:<{nameWidth}}"
                 # add memory address for debugging (not for defaults)
                 if log.isEnabledFor(logging.DEBUG):
                     if v != Configurable.propertyNoValue:
-                        address = " @%11s" % hex(id(v))
+                        address = f" @{id(v):#018x}"
                     else:
-                        address = 13 * " "
+                        address = 20 * " "
                     prefix += address
                 # add value and default
                 default = defs.get(p)
@@ -1050,7 +1040,7 @@ class Configurable(metaclass=ConfigurableMeta.ConfigurableMeta):
                             + "| "
                             + (len(prefix) - len(indentStr) - 3) * " "
                         )
-                    line += "  (default: %s)" % (strDef,)
+                    line += f"  (default: {strDef})"
                 # add the line to the total string
                 rep += line + os.linesep
                 # print out full private configurables
@@ -1082,7 +1072,7 @@ class Configurable(metaclass=ConfigurableMeta.ConfigurableMeta):
 # classes for generic Gaudi component ===========
 
 
-class DummyDescriptor(object):
+class DummyDescriptor:
     def __init__(self, name):
         self.__name__ = name  # conventional
 
@@ -1117,7 +1107,7 @@ class ConfigurableGeneric(Configurable):
     def __setattr__(self, name, value):
         # filter private (user) variables
         if name[0] == "_":
-            super(ConfigurableGeneric, self).__setattr__(name, value)
+            super().__setattr__(name, value)
             return
 
         # filter configurable types
@@ -1141,7 +1131,7 @@ class ConfigurableAlgorithm(Configurable):
     }
 
     def __init__(self, name=Configurable.DefaultName):
-        super(ConfigurableAlgorithm, self).__init__(name)
+        super().__init__(name)
         name = self.getName()
         self._jobOptName = name[name.find("/") + 1 :]  # strips class
 
@@ -1243,7 +1233,7 @@ class ConfigurableAlgTool(Configurable):
     }
 
     def __init__(self, name=Configurable.DefaultName):
-        super(ConfigurableAlgTool, self).__init__(name)
+        super().__init__(name)
         if "." not in self._name:
             # Public tools must have ToolSvc as parent
             self._name = "ToolSvc." + self._name
@@ -1332,7 +1322,7 @@ class ConfigurableAuditor(Configurable):
     __slots__ = {"_jobOptName": 0, "OutputLevel": 0, "Enable": 1}
 
     def __init__(self, name=Configurable.DefaultName):
-        super(ConfigurableAuditor, self).__init__(name)
+        super().__init__(name)
         name = self.getName()
         name = name[name.find("/") + 1 :]  # strips class, if any
         self._jobOptName = name
@@ -1376,7 +1366,7 @@ class ConfigurableUser(Configurable):
     __queried_configurables__ = []
 
     def __init__(self, name=Configurable.DefaultName, _enabled=True, **kwargs):
-        super(ConfigurableUser, self).__init__(name)
+        super().__init__(name)
         for n, v in kwargs.items():
             setattr(self, n, v)
         self._enabled = _enabled
@@ -1438,8 +1428,7 @@ class ConfigurableUser(Configurable):
         """
         if not isinstance(other, ConfigurableUser):
             raise Error(
-                "'%s': Cannot make passive use of '%s', it is not a ConfigurableUser"
-                % (self.name(), other.name())
+                f"'{self.name()}': Cannot make passive use of '{other.name()}', it is not a ConfigurableUser"
             )
         other.__addActiveUseOf(self)
 
@@ -1494,8 +1483,9 @@ class ConfigurableUser(Configurable):
             if local_is_set:
                 if other.isPropertySet(name):
                     log.warning(
-                        "Property '%(prop)s' is set in both '%(self)s' and '%(other)s', using '%(self)s.%(prop)s'"
-                        % {"self": self.name(), "other": other.name(), "prop": name}
+                        "Property '{prop}' is set in both '{self}' and '{other}', using '{self}.{prop}'".format(
+                            self=self.name(), other=other.name(), prop=name
+                        )
                     )
                 other.setProp(name, value)
             # If not, and other property also not set, propagate the default
@@ -1549,7 +1539,7 @@ class ConfigurableUser(Configurable):
             clName = cls
         else:
             clName = cls.__name__
-        return "%s_%s" % (self.name(), clName)
+        return f"{self.name()}_{clName}"
 
     def getUsedInstance(self, name):
         """
@@ -1640,7 +1630,7 @@ def applyConfigurableUsers():
         if c._enabled:
             log.info("applying configuration of %s", c.name())
             if debugApplyOrder:
-                sys.stderr.write("applying %r" % c)
+                sys.stderr.write(f"applying {c!r}")
             c.__apply_configuration__()
             log.info(c)
         else:
@@ -1713,7 +1703,7 @@ def applyConfigurableUsers_old():
                 if enabled:
                     log.info("applying configuration of %s", c.name())
                     if debugApplyOrder:
-                        sys.stderr.write("applying %r" % c)
+                        sys.stderr.write(f"applying {c!r}")
                     c.__apply_configuration__()
                     log.info(c)
                 else:
@@ -1781,7 +1771,7 @@ def purge():
     _included_files.clear()
 
 
-class CreateSequencesVisitor(object):
+class CreateSequencesVisitor:
     def __init__(self):
         self.stack = []
 
@@ -1842,7 +1832,7 @@ def makeSequences(expression):
     """
     if not isinstance(expression, ControlFlowNode):
         raise ValueError(
-            "ControlFlowNode instance expected, got %s" % type(expression).__name__
+            f"ControlFlowNode instance expected, got {type(expression).__name__}"
         )
     visitor = CreateSequencesVisitor()
     expression.visitNode(visitor)
@@ -1861,13 +1851,13 @@ class SuperAlgorithm(ControlFlowNode):
         if name in Configurable.allConfigurables:
             instance = Configurable.allConfigurables[name]
             assert type(instance) is cls, (
-                "trying to reuse {0!r} as name of a {1} instance while it"
+                f"trying to reuse {name!r} as name of a {cls.__name__} instance while it"
                 "s "
-                "already used for an instance of {2}"
-            ).format(name, cls.__name__, type(instance).__name__)
+                f"already used for an instance of {type(instance).__name__}"
+            )
             return instance
         else:
-            instance = super(SuperAlgorithm, cls).__new__(cls)
+            instance = super().__new__(cls)
             Configurable.allConfigurables[name] = instance
             return instance
 
@@ -1903,26 +1893,26 @@ class SuperAlgorithm(ControlFlowNode):
         Instantiate and algorithm of type 'typ' with a name suitable for use
         inside a SuperAlgorithm.
         """
-        name = "{0}_{1}".format(self.name, kwargs.pop("name", typ.getType()))
+        name = "{}_{}".format(self.name, kwargs.pop("name", typ.getType()))
         return typ(name, **kwargs)
 
     def _initGraph(self):
         raise NotImplementedError()
 
     def __repr__(self):
-        return "{0}({1!r})".format(self.getType(), self.name)
+        return f"{self.getType()}({self.name!r})"
 
     def _visitSubNodes(self, visitor):
         if self.graph:
             self.graph.visitNode(visitor)
 
     def __setattr__(self, name, value):
-        super(SuperAlgorithm, self).__setattr__(name, value)
+        super().__setattr__(name, value)
         if name in ("_name", "graph"):
             # do not propagate internal data members
             return
 
-        class PropSetter(object):
+        class PropSetter:
             def enter(self, node):
                 try:
                     setattr(node, name, value)

@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -81,7 +81,7 @@ def scaleCores(n_threads):
 
 def getText(x, y, text, scale, angle, colour, font):
     lat = ROOT.TLatex(
-        x, y, "#scale[%s]{#color[%s]{#font[%s]{%s}}}" % (scale, colour, font, text)
+        x, y, f"#scale[{scale}]{{#color[{colour}]{{#font[{font}]{{{text}}}}}}}"
     )
     if angle != 0.0:
         lat.SetTextAngle(angle)
@@ -116,7 +116,7 @@ def createFname(neif, nt, cFlag):
 
 def xtractTiming(neif, nt, cFlag):
     filename = createFname(neif, nt, cFlag)
-    ifile = open(filename, "r")
+    ifile = open(filename)
     seconds = -1
     for line in ifile:
         if "seconds" in line:
@@ -139,12 +139,9 @@ if len(sys.argv) > 1:
 
 # main loop: just printouts
 for neif in neif_l:
-    print("Events in flight: %s" % neif)
+    print(f"Events in flight: {neif}")
     for tn in nts:
-        print(
-            "%s %s %s"
-            % (tn, xtractTiming(neif, tn, False), xtractTiming(neif, tn, True))
-        )
+        print(f"{tn} {xtractTiming(neif, tn, False)} {xtractTiming(neif, tn, True)}")
 
 len_nt = len(nts) + 1
 # Prepare ideal speedup graph
@@ -155,8 +152,7 @@ scaled_s = ""
 if scaleThreads:
     scaled_s = " (scaled for HT)"
 idealSpeedup.SetTitle(
-    "GaudiHive Speedup (Brunel, 100 evts);Thread Pool Size%s;Speedup wrt Serial Case"
-    % scaled_s
+    f"GaudiHive Speedup (Brunel, 100 evts);Thread Pool Size{scaled_s};Speedup wrt Serial Case"
 )
 idealSpeedup.SetLineWidth(4)
 idealSpeedup.SetLineColor(ROOT.kGray - 2)
@@ -166,11 +162,11 @@ idealSpeedup.SetLineStyle(2)
 neif_graphs = []
 for neif in neif_l:  # One graph per number of events in flight
     graph = ROOT.TGraph(len_nt)
-    graph.SetName("%s" % neif)
+    graph.SetName(f"{neif}")
     graph.SetPoint(0, 1, 1)
 
     graphc = ROOT.TGraph(len_nt)
-    graphc.SetName("%s clone" % neif)
+    graphc.SetName(f"{neif} clone")
     graphc.SetPoint(0, 1, 1)
     counter = 1
     for tn in nts:
@@ -210,8 +206,8 @@ legend = ROOT.TLegend(0.1, 0.45, 0.38, 0.9)
 legend.SetFillColor(ROOT.kWhite)
 legend.SetHeader("# Simultaneous Evts")
 for neif, graph, graphc in neif_graphs:
-    legend.AddEntry(graph, "%s" % neif, LegendDrawOpts)
-    legend.AddEntry(graphc, "%s (clone)" % neif, LegendDrawOpts)
+    legend.AddEntry(graph, f"{neif}", LegendDrawOpts)
+    legend.AddEntry(graphc, f"{neif} (clone)", LegendDrawOpts)
 legend.Draw()
 
 # Labels
@@ -226,7 +222,7 @@ if scaleThreads:
     ht_weight = getText(
         18.5,
         8,
-        "#splitline{Hardware threaded}{cores weight: %s}" % HtCoreWeight,
+        f"#splitline{{Hardware threaded}}{{cores weight: {HtCoreWeight}}}",
         LabelsSize,
         0,
         600,
@@ -236,4 +232,4 @@ if scaleThreads:
 
 if scaleThreads:
     scaled_s = "_HTScaled"
-canvas.Print("GaudiHivePerfBrunelAllPoints%s.png" % scaled_s)
+canvas.Print(f"GaudiHivePerfBrunelAllPoints{scaled_s}.png")

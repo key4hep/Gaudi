@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 2024-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 2024-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -10,7 +10,6 @@
 #####################################################################################
 import datetime
 import subprocess
-from typing import List, Union
 
 from GaudiTesting.utils import CodeWrapper
 
@@ -37,9 +36,9 @@ class FixtureResult:
         completed_process: subprocess.CompletedProcess,
         start_time: datetime,
         end_time: datetime,
-        run_exception: Union[ProcessTimeoutError, ExceededStreamError, None],
-        command: List[str],
-        expanded_command: List[str],
+        run_exception: ProcessTimeoutError | ExceededStreamError | None,
+        command: list[str],
+        expanded_command: list[str],
         env: dict,
         cwd: str,
     ):

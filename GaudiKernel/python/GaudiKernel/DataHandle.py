@@ -11,7 +11,7 @@
 __doc__ = """The python module holding python bindings to DataHandle"""
 
 
-class DataHandle(object):
+class DataHandle:
     __slots__ = ("Path", "Mode", "Type", "IsCondition")
 
     __hash__ = None  # Make class non-hashable for Python2 (default in Python3)
@@ -41,7 +41,7 @@ class DataHandle(object):
         if other is None:
             return False
         raise ValueError(
-            "Unknown equality check: type=%r, repr=%r" % (type(other), other)
+            f"Unknown equality check: type={type(other)!r}, repr={other!r}"
         )
 
     def __ne__(self, other):
@@ -54,10 +54,10 @@ class DataHandle(object):
         return self.Path
 
     def __repr__(self):
-        args = "'%s','%s','%s'" % (self.Path, self.Mode, self.Type)
+        args = f"'{self.Path}','{self.Mode}','{self.Type}'"
         if self.IsCondition:
-            args += ",%s" % self.IsCondition
-        return "%s(%s)" % (self.__class__.__name__, args)
+            args += f",{self.IsCondition}"
+        return f"{self.__class__.__name__}({args})"
 
     def toStringProperty(self):
         return self.__str__()
@@ -78,7 +78,7 @@ class DataHandle(object):
         return repr(str(self))
 
 
-class DataHandleVector(object):
+class DataHandleVector:
     __slots__ = ("Paths", "Mode", "Type", "IsCondition")
 
     __hash__ = None
@@ -105,7 +105,7 @@ class DataHandleVector(object):
         if other is None:
             return False
         raise ValueError(
-            "Unknown equality check: type=%r, repr=%r" % (type(other), other)
+            f"Unknown equality check: type={type(other)!r}, repr={other!r}"
         )
 
     def __ne__(self, other):
@@ -124,10 +124,10 @@ class DataHandleVector(object):
         return str(self.Paths)
 
     def __repr__(self):
-        args = "%r,'%s','%s'" % (self.Paths, self.Mode, self.Type)
+        args = f"{self.Paths!r},'{self.Mode}','{self.Type}'"
         if self.IsCondition:
-            args += ",%s" % self.IsCondition
-        return "%s(%s)" % (self.__class__.__name__, args)
+            args += f",{self.IsCondition}"
+        return f"{self.__class__.__name__}({args})"
 
     def toStringProperty(self):
         return self.Paths

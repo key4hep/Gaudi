@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -39,7 +39,7 @@ def get_critical_path(path_to_trace_file):
 
     cpath = nx.algorithms.dag.dag_longest_path(trace, weight="Runtime")
 
-    print("Algorithms on the critical path (%i): " % len(cpath))
+    print(f"Algorithms on the critical path ({len(cpath)}): ")
 
     print("  {:<40} Runtime (us)".format("Name"))
     print("  -----------------------------------------------------")

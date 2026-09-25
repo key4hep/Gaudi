@@ -14,9 +14,9 @@ import json
 import os
 import re
 import time
+from collections.abc import Callable
 from pathlib import Path
 from textwrap import dedent
-from typing import Callable, Dict, List
 
 import pytest
 
@@ -44,7 +44,7 @@ class GaudiExeTest(SubprocessBaseTest):
     preprocessor: Callable = normalizeTestSuite
 
     @classmethod
-    def _prepare_command(cls, tmp_path=Path()) -> List[str]:
+    def _prepare_command(cls, tmp_path=Path()) -> list[str]:
         """
         Override the base class to include options.
         """
@@ -121,7 +121,7 @@ class GaudiExeTest(SubprocessBaseTest):
         cls,
         data: bytes,
         key: str,
-        reference: Dict,
+        reference: dict,
         record_property: Callable[[str, str], None],
     ) -> None:
         """
@@ -284,7 +284,7 @@ class GaudiExeTest(SubprocessBaseTest):
 
     @pytest.mark.do_not_collect_source
     def test_stdout(
-        self, stdout: bytes, record_property: Callable, reference: Dict
+        self, stdout: bytes, record_property: Callable, reference: dict
     ) -> None:
         """
         Test the standard output against the reference.
@@ -297,7 +297,7 @@ class GaudiExeTest(SubprocessBaseTest):
 
     @pytest.mark.do_not_collect_source
     def test_ttrees(
-        self, stdout: bytes, record_property: Callable, reference: Dict
+        self, stdout: bytes, record_property: Callable, reference: dict
     ) -> None:
         """
         Test the TTree summaries against the reference.
@@ -319,7 +319,7 @@ class GaudiExeTest(SubprocessBaseTest):
 
     @pytest.mark.do_not_collect_source
     def test_histos(
-        self, stdout: bytes, record_property: Callable, reference: Dict
+        self, stdout: bytes, record_property: Callable, reference: dict
     ) -> None:
         """
         Test the histogram summaries against the reference.
@@ -341,7 +341,7 @@ class GaudiExeTest(SubprocessBaseTest):
 
     @pytest.mark.do_not_collect_source
     def test_stderr(
-        self, stderr: bytes, record_property: Callable, reference: Dict
+        self, stderr: bytes, record_property: Callable, reference: dict
     ) -> None:
         """
         Test the standard error output against the reference.

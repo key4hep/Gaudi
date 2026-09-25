@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -18,8 +18,8 @@ from Gaudi import Configuration
 log = logging.getLogger(__name__)
 
 
-class BootstrapHelper(object):
-    class StatusCode(object):
+class BootstrapHelper:
+    class StatusCode:
         def __init__(self, value):
             self.value = value
 
@@ -37,7 +37,7 @@ class BootstrapHelper(object):
         def ignore(self):
             pass
 
-    class Property(object):
+    class Property:
         def __init__(self, value):
             self.value = value
 
@@ -47,7 +47,7 @@ class BootstrapHelper(object):
 
         toString = __str__
 
-    class AppMgr(object):
+    class AppMgr:
         def __init__(self, ptr, lib):
             self.ptr = ptr
             self.lib = lib
@@ -135,7 +135,7 @@ class BootstrapHelper(object):
         ]
 
         for name, restype, argtypes in functions:
-            f = getattr(gkl, "py_bootstrap_%s" % name)
+            f = getattr(gkl, f"py_bootstrap_{name}")
             f.restype, f.argtypes = restype, argtypes
             # create a delegate method if not already present
             # (we do not want to use hasattr because it calls "properties")
@@ -150,7 +150,7 @@ class BootstrapHelper(object):
             "finalize",
             "terminate",
         ):
-            f = getattr(gkl, "py_bootstrap_fsm_%s" % name)
+            f = getattr(gkl, f"py_bootstrap_fsm_{name}")
             f.restype, f.argtypes = c_bool, [IInterface_p]
         gkl.py_bootstrap_app_run.restype = c_bool
         gkl.py_bootstrap_app_run.argtypes = [IInterface_p, c_int]
@@ -274,13 +274,13 @@ def toOpt(value):
     {"a": [1, 2, "3"]}
     """
     if isinstance(value, str):
-        return '"{0}"'.format(value.replace('"', '\\"'))
+        return '"{}"'.format(value.replace('"', '\\"'))
     elif isinstance(value, dict):
-        return "{{{0}}}".format(
-            ", ".join("{0}: {1}".format(toOpt(k), toOpt(v)) for k, v in value.items())
+        return "{{{}}}".format(
+            ", ".join(f"{toOpt(k)}: {toOpt(v)}" for k, v in value.items())
         )
     elif hasattr(value, "__iter__"):
-        return "[{0}]".format(", ".join(map(toOpt, value)))
+        return "[{}]".format(", ".join(map(toOpt, value)))
     else:
         return repr(value)
 
@@ -316,7 +316,7 @@ def parseOpt(s):
     return eval(s)
 
 
-class gaudimain(object):
+class gaudimain:
     def __init__(self):
         from Configurables import ApplicationMgr
 
@@ -341,7 +341,7 @@ class gaudimain(object):
 
         datetime = ctime()
         datetime = datetime.replace(" ", "_")
-        outfile = open("gaudirun-%s.log" % (datetime), "w")
+        outfile = open(f"gaudirun-{datetime}.log", "w")
         # two handlers, one for a log file, one for terminal
         streamhandler = logging.StreamHandler(stream=outfile)
         console = logging.StreamHandler()
@@ -385,9 +385,7 @@ class gaudimain(object):
     def generateOptsOutput(self, all=False):
         opts = getAllOpts(all)
         keys = sorted(opts)
-        return "\n".join(
-            "{} = {};".format(key, toOpt(parseOpt(opts[key]))) for key in keys
-        )
+        return "\n".join(f"{key} = {toOpt(parseOpt(opts[key]))};" for key in keys)
 
     def _writepickle(self, filename):
         # --- Lets take the first file input file as the name of the pickle file
@@ -556,7 +554,7 @@ class gaudimain(object):
         Parall = gpp.Coord(ncpus, c, self.log)
         sysStart = time()
         sc = Parall.Go()
-        self.log.info("MAIN.PY : received %s from Coordinator" % (sc))
+        self.log.info(f"MAIN.PY : received {sc} from Coordinator")
         if sc.isFailure():
             return 1
         sysTime = time() - sysStart

@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 2024-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 2024-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -21,7 +21,7 @@ class TestGlobalDefaults(GaudiExeTest):
 
         app = ApplicationMgr(EvtSel="NONE", EvtMax=1)
 
-        app.TopAlg = [HelloWorld("alg{}".format(i)) for i in range(10)]
+        app.TopAlg = [HelloWorld(f"alg{i}") for i in range(10)]
         app.TopAlg[5].OutputLevel = 4
 
         JobOptionsSvc(

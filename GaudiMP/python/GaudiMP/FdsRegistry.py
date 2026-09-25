@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -31,7 +31,7 @@ class FdsDict(dict):
         if i in self:
             return self[i][0]
         else:
-            msg.warning("fds_dict:fname: No Key %s" % i)
+            msg.warning(f"fds_dict:fname: No Key {i}")
             return ""
 
     def fds(self, fname):
@@ -52,7 +52,7 @@ class FdsDict(dict):
         if i in self:
             return self[i][1]
         else:
-            msg.warning("fds_dict:iomode: No Key %s" % i)
+            msg.warning(f"fds_dict:iomode: No Key {i}")
             return ""
 
     def get_output_fds(self):
@@ -66,7 +66,7 @@ class FdsDict(dict):
 
         if dir == "" and self.curdir is not None:
             dir = self.curdir
-        msg.debug("get_fds_in_dir(%s)" % dir)
+        msg.debug(f"get_fds_in_dir({dir})")
         return [
             i for i in self.keys() if os.path.samefile(os.path.dirname(self[i][0]), dir)
         ]
@@ -79,7 +79,7 @@ class FdsDict(dict):
         import os
         import shutil
 
-        msg.info("create_symlinks: %s" % self.get_fds_in_dir())
+        msg.info(f"create_symlinks: {self.get_fds_in_dir()}")
         # some files expected to be in curdir
         for fd in self.get_fds_in_dir():
             src = self[fd][0]
@@ -89,18 +89,16 @@ class FdsDict(dict):
                 if os.path.exists(dst):
                     # update_io_registry took care of this
                     msg.debug(
-                        "fds_dict.create_symlink:update_io_registry took care of src=%s"
-                        % src
+                        f"fds_dict.create_symlink:update_io_registry took care of src={src}"
                     )
                     pass
                 else:
                     msg.debug(
-                        "fds_dict.create_symlink:(symlink) src=%s, iomode=%s"
-                        % (src, iomode)
+                        f"fds_dict.create_symlink:(symlink) src={src}, iomode={iomode}"
                     )
                     os.symlink(src, dst)
             else:
-                msg.debug("fds_dict.create_symlink: (copy) src=%s, dst=%s" % (src, dst))
+                msg.debug(f"fds_dict.create_symlink: (copy) src={src}, dst={dst}")
                 shutil.copy(src, dst)
                 pass
         return
@@ -127,7 +125,7 @@ class FdsDict(dict):
 
             try:
                 realname = os.path.realpath(os.path.join(procfd, i))
-            except (OSError, IOError, TypeError):
+            except (OSError, TypeError):
                 # can fail because the symlink resolution (why is that needed
                 # anyway?) may follow while a temp file disappears
                 msg.debug("failed to resolve: %s ... skipping", os.path.join(procfd, i))
@@ -142,7 +140,7 @@ class FdsDict(dict):
                         iomode = "<OUTPUT>"
 
                     self.add(fd, realname, iomode, flags)
-                except (OSError, IOError):
+                except OSError:
                     # likely saw a temoorary file; for now log a debug
                     # message, but this is fine if silently ignored
                     msg.debug("failed access to: %s ... skipping", realname)
@@ -153,7 +151,7 @@ class FdsDict(dict):
                 # not enough as folks like to run with data from /tmp b/c of
                 # space constraints on /afs
 
-        msg.debug("extract_fds.fds_dict=%s" % self)
+        msg.debug(f"extract_fds.fds_dict={self}")
         return
 
     pass  # FdsDict

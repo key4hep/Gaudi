@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #####################################################################################
-# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -18,8 +18,6 @@
 """
 Simple 'decorator for nodes'
 """
-
-from __future__ import print_function
 
 # =============================================================================
 __author__ = "Vanya BELYAEV <Ivan.Belyaev@nikhef.nl>"
@@ -315,6 +313,6 @@ Symbol = Decays.Nodes.Symbol  # type
 NodeList = Decays.NodeList
 
 if "__main__" == __name__:
-    print(" decorated objects: %s " % str(_decorated))
+    print(f" decorated objects: {_decorated} ")
     print(_decorated)
     print(dir())

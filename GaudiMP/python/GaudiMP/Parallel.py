@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2023 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -52,7 +52,7 @@ def _ppfunction(args):
     return (copy.deepcopy(task.output), stat)
 
 
-class Statistics(object):
+class Statistics:
     def __init__(self):
         self.name = os.getenv("HOSTNAME")
         self.start = time.time()
@@ -63,7 +63,7 @@ class Statistics(object):
         self.time = time.time() - self.start
 
 
-class Task(object):
+class Task:
     """Basic base class to encapsulate any processing that is going to be porcessed in parallel.
     User class much inherit from it and implement the methods initializeLocal,
     initializeRemote, process and finalize."""
@@ -137,7 +137,7 @@ class Task(object):
                 o.Reset()
 
 
-class WorkManager(object):
+class WorkManager:
     """Class to in charge of managing the tasks and distributing them to
     the workers. They can be local (using other cores) or remote
     using other nodes in the local cluster"""
@@ -207,14 +207,7 @@ class WorkManager(object):
         print("job count | % of all jobs | job time sum | time per job | job server")
         for name, stat in self.stats.items():
             print(
-                "       %d |        %6.2f |     %8.3f |    %8.3f | %s"
-                % (
-                    stat.njob,
-                    100.0 * stat.njob / njobs,
-                    stat.time,
-                    stat.time / stat.njob,
-                    name,
-                )
+                f"       {stat.njob} |        {100.0 * stat.njob / njobs:6.2f} |     {stat.time:8.3f} |    {stat.time / stat.njob:8.3f} | {name}"
             )
 
     def _mergeStatistics(self, stat):
@@ -225,7 +218,7 @@ class WorkManager(object):
         s.njob += 1
 
 
-class SshSession(object):
+class SshSession:
     def __init__(self, hostname):
         import pp
         import pyssh
@@ -235,19 +228,18 @@ class SshSession(object):
         self.session = pyssh.Ssh(host=hostname)
         self.session.open()
         self.session.read_lazy()
-        self.session.write("cd %s\n" % os.getcwd())
+        self.session.write(f"cd {os.getcwd()}\n")
         self.session.read_lazy()
-        self.session.write("setenv PYTHONPATH %s\n" % os.environ["PYTHONPATH"])
+        self.session.write("setenv PYTHONPATH {}\n".format(os.environ["PYTHONPATH"]))
         self.session.read_lazy()
         self.session.write(
-            "setenv LD_LIBRARY_PATH %s\n" % os.environ["LD_LIBRARY_PATH"]
+            "setenv LD_LIBRARY_PATH {}\n".format(os.environ["LD_LIBRARY_PATH"])
         )
         self.session.read_lazy()
-        self.session.write("setenv ROOTSYS %s\n" % os.environ["ROOTSYS"])
+        self.session.write("setenv ROOTSYS {}\n".format(os.environ["ROOTSYS"]))
         self.session.read_lazy()
         self.session.write(
-            "%s %s/scripts-%s/ppserver.py \n"
-            % (sys.executable, ppprefix, sys.version.split()[0])
+            f"{sys.executable} {ppprefix}/scripts-{sys.version.split()[0]}/ppserver.py \n"
         )
         self.session.read_lazy()
         self.session.read_lazy()
