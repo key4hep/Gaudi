@@ -6,6 +6,155 @@ Project Coordinators: Marco Clemencic @clemenci, Charles Leggett @leggett, Frank
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 
+## [v41r0](https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v41r0) - 2026-09-28
+This is the first release of the 41 series. It modernises the build and development setup
+(native Pixi/Conda environments, ARM CI, LCG_108c/LCG_110) and adds a number of new features,
+including a disk buffer for NTuple writing, a generic ROOT ntuple reader, first-class vector
+data-handle properties and native nlohmann JSON properties. It also includes several
+backward-incompatible changes: the minimum supported Python version is now 3.12, plugins are
+installed in a dedicated directory, and a number of long-deprecated APIs have been removed.
+Concurrency handling and thread safety were improved across the framework, together with the
+usual set of bug fixes.
+
+A special thanks to all the people that contributed to this release:
+@abarton,
+@ahennequ,
+@anmorris,
+@bstanisl,
+@cburr,
+@chrjones,
+@clemenci,
+@elmsheus,
+@fwinkl,
+@graven,
+@jcarcell,
+@mafila,
+@sponce,
+@vponce,
+Lev Simbiriatin.
+
+### Changed
+- Move plugins to a dedicated directory (gaudi/Gaudi!1928)
+- Update required minimum Python version to 3.12 (gaudi/Gaudi#400, gaudi/Gaudi!2035)
+- Remove IOptionsSvc::readOptions (gaudi/Gaudi#185, gaudi/Gaudi!2028)
+- remove duplicated implementations of synchronized value (gaudi/Gaudi!2013)
+- ci: run tests only once (gaudi/Gaudi!2034)
+- Rework AsynchronousAlgorithm interaction with auditors, TimelineSvc (gaudi/Gaudi!2020)
+- Avoid unnecessary lambda capture (gaudi/Gaudi!2027)
+- ThreadInitTask: reference ThreadPoolSvc's tool array instead of copying it (gaudi/Gaudi!1974)
+- Pin pre-commit hooks to SHA rather than tag name (gaudi/Gaudi!1992)
+- Replace deprecated ROOT RVersion header (gaudi/Gaudi!2030)
+- Update CI to LCG_108c/gcc15 and LCG_110/gcc15 (gaudi/Gaudi!2008)
+- GaudiConfig2: optimize configurable merging (gaudi/Gaudi!2002)
+- merge_confdb2_parts: detect duplicates and read inputs from file (gaudi/Gaudi#416, gaudi/Gaudi!1999)
+- Reduce test_multithreaded_alg runtime (gaudi/Gaudi!2024)
+- simplify and explain FiberManager (gaudi/Gaudi!1995)
+- remove obsolete CUDAAsynchronousAlgHelper.cuh (gaudi/Gaudi!2012)
+- GaudiConfig2: avoid loading same confdb2 file twice (gaudi/Gaudi!1994)
+- Clean up cruncher algorithms (gaudi/Gaudi!2011)
+- GaudiHive: remove obsolete CFHEP-114 test (gaudi/Gaudi!2004)
+- Fail when there are no threads to run async algorithms (gaudi/Gaudi!1996)
+- Remove unused properties and members of AvalancheSchedulerSvc (gaudi/Gaudi!1993)
+- Remove deprecated ErrorMax property (gaudi/Gaudi!2000)
+- Migrate all typedef typename declarations to using aliases (gaudi/Gaudi!1983)
+- DataObjectHandle: make type verification debug-only and remove its data race (gaudi/Gaudi!1989)
+- Use python -m pytest to find tests (gaudi/Gaudi!1969)
+- Allow transparent key lookups in VectorMap (gaudi/Gaudi!1838)
+- Remove unused startdir param from pytest_report_header hook (gaudi/Gaudi!1963)
+- Small clean up and fixes (gaudi/Gaudi!1953)
+- Remove deprecated `System::instructionsetLevel()` (gaudi/Gaudi#245, gaudi/Gaudi!1954)
+- Remove code that was used only by GaudiAlg (gaudi/Gaudi#350, gaudi/Gaudi!1752)
+- ToolHandle: make single-argument constructors explicit (gaudi/Gaudi!1938)
+- GaudiFunctional: remove zip.h from details.h (gaudi/Gaudi!1947)
+- Remove files that can not be imported because they need GaudiAlg (gaudi/Gaudi!1940)
+- Statuscode: rule of zero (gaudi/Gaudi!1945)
+- Revert workaround for test issue with LCG views containing Gaudi < 40.0 (gaudi/Gaudi#387, gaudi/Gaudi!1862)
+- Make StatusCode::ignore return void (gaudi/Gaudi!1867)
+- Remove GaudiFunctional/include/Gaudi/Functional/deprecated.h (gaudi/Gaudi!1939)
+- CI: switch LCG view builds to LCG_109 (gaudi/Gaudi!1935)
+- remove unused ITERATOR argument from Range (gaudi/Gaudi!1936)
+- Remove duplicate std::string_view conversion operator (gaudi/Gaudi!1934)
+- genconf: remove deprecated option --no-init (gaudi/Gaudi!1859)
+- Moved run_gaudi to the only file using it : test_opts_export (gaudi/Gaudi!1924)
+- Remove RootFileHandle::setupSSL since ROOT won't provide SSL API (gaudi/Gaudi!1933)
+- GaudiFunctional: refactor handle plumbing (gaudi/Gaudi!1920)
+- Cleaned up POOL related code (gaudi/Gaudi!1819)
+
+### Added
+- Add configuration to allow development using Pixi/Conda environments (gaudi/Gaudi!1955)
+- Add NVTXAuditor providing instrumentation for Nvidia nsight profilers (gaudi/Gaudi!2021)
+- Add ARM build to CI (gaudi/Gaudi!2039)
+- Add exporting timeline to chrome trace format (gaudi/Gaudi!2042)
+- Add note on AI tools to contribution guide (gaudi/Gaudi!2022)
+- Add first-class vector data handle properties (gaudi/Gaudi!1961)
+- Support using a disk buffer for ntuple writing (gaudi/Gaudi!2023)
+- Add a ConcurrencyManager base class to control who can set concurrency flags (gaudi/Gaudi!1997)
+- feat(Gaudi::NTuple::GenericReader): added algorithm for generic classes reading from ROOT files (gaudi/Gaudi!1964)
+- Support nlohmann JSON as a native Gaudi property (gaudi/Gaudi!1988)
+- Expose message levels as a Python IntEnum (gaudi/Gaudi!1973)
+- Allow to set seeds to the random number generators through the Numbers interface (gaudi/Gaudi!1948)
+- Algorithm: allow integer valued resource requirements (gaudi/Gaudi!1918)
+- Add ability to use Gaudi::CUDA::Stream in synchronous algorithms (gaudi/Gaudi!1941)
+
+### Fixed
+- gaudi_add_pytest: resolve PRELOAD_SANITIZER_LIB to an absolute path (gaudi/Gaudi!1971)
+- Fix Linux process time resolution (gaudi/Gaudi!2043)
+- Fix sanitizer-build test setup issues (gaudi/Gaudi!1972)
+- fix unused variable and sign compare warnings in GaudiCUDA (gaudi/Gaudi!2040)
+- Fix ref file generation of new tests (gaudi/Gaudi!2031)
+- Ensure install paths are relative (gaudi/Gaudi#395, gaudi/Gaudi!2026)
+- Increase test_multithreaded_alg timeout (gaudi/Gaudi!2037)
+- Fix flaky current time test (gaudi/Gaudi!2038)
+- Find zstd by hand because LCG views prevent use of pkg-config (gaudi/Gaudi!2036)
+- Fix floating-point comparison warnings introduced by the `-Wfloat-equal` compiler flag. (gaudi/Gaudi!1984)
+- Include <thread> in FiberManager.h (gaudi/Gaudi!2029)
+- Work-around for a bug in the CLHEP Ranlux engine (gaudi/Gaudi!2018)
+- Simplify `test_cf_bug` reference block (gaudi/Gaudi!2025)
+- Tolerate timing jitter in `test_event_timeout_mt` (gaudi/Gaudi!2009)
+- Enable root thread safety on application startup (gaudi/Gaudi!2017)
+- gaudi_add_pytest: disable leak detection during test collection only (gaudi/Gaudi!1970)
+- Remove absolute rt path (gaudi/Gaudi!1985)
+- EvtStoreSvc: Fix race condition on onlyThisID by giving one to each partition (gaudi/Gaudi!1990)
+- Skip timing-sensitive tests under sanitizer instrumentation (gaudi/Gaudi#410, gaudi/Gaudi!1980)
+- GaudiKernel: Fix clang23 compilation problem (gaudi/Gaudi!1991)
+- Fix test_iDataSvc leaking 5 DataObjects never registered in the TES (gaudi/Gaudi#404, gaudi/Gaudi!1986)
+- Emit incidents for FileSvc output files (gaudi/Gaudi!1978)
+- RootCnv: guard basket size before multiplication (gaudi/Gaudi#408, gaudi/Gaudi!1979)
+- Fix GaudiConfig2 handle array option values (gaudi/Gaudi!1975)
+- Set DYLD_LIBRARY_PATH for Mac builds to find libGaudiPluginService.dylib (gaudi/Gaudi!1932)
+- fix: add dependency of GaudiKernel/pytest on GaudiPluginService (gaudi/Gaudi#401, gaudi/Gaudi!1968)
+- PluginServiceV2: look first in GAUDI_PLUGIN_PATH to avoid double loading in the plugin service (gaudi/Gaudi!1951)
+- Fix EvtStoreSvc's unregisterObject and implement objectLeaves() (gaudi/Gaudi!1949)
+- Fix a leak in the ConversionSvc when running genconf (gaudi/Gaudi!1899)
+- Fixed wrong behavior of GenericNTupleWriter when using concurrently several files (gaudi/Gaudi!1957)
+- Fix unity builds on Mac (gaudi/Gaudi!1950)
+- fix: resolve ps to an absolute path in kill_tree (gaudi/Gaudi!1944)
+- Remove include TSSLSocket.h (gaudi/Gaudi!1937)
+
+
+## [v40r6](https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v40r6) - 2026-09-08
+This release focuses on improvements to NTuple writing performance and ROOT thread safety.
+A key feature is the optional disk buffer for ntuple writing, which can significantly reduce
+memory usage for jobs with many wide ntuples.
+
+A special thanks to all the people that contributed to this release:
+@ahennequ,
+@cburr,
+@clemenci,
+@graven.
+
+### Added
+- Support using a disk buffer for ntuple writing (gaudi/Gaudi!2010)
+  - New `Gaudi::NTuple::DiskBuffer` class for spilling ntuple rows to disk during a job
+  - Configurable via NTupleSvc properties: `DiskBuffer`, `DiskBufferDirectory`, `DiskBufferCompression`, `DiskBufferBlockSize`
+  - Optional zstd compression for buffered rows
+  - Can significantly reduce memory usage for wide ntuples
+
+### Fixed
+- Enable root thread safety on application startup (gaudi/Gaudi!2014)
+- Emit incidents for FileSvc output files (gaudi/Gaudi!2005)
+
+
 ## [v40r5](https://gitlab.cern.ch/gaudi/Gaudi/-/releases/v40r5) - 2026-07-21
 This is a minor bugfix release that includes some of backward compatible changes needed by LHCb.
 

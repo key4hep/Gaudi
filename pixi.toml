@@ -4,7 +4,7 @@ channels = ["conda-forge"]
 exclude-newer = "14d"
 name = "Gaudi"
 platforms = ["linux-64", "linux-aarch64"]
-version = "40.5"
+version = "41.0"
 preview = ["pixi-build"]
 
 [dependencies]
@@ -55,7 +55,7 @@ gitlab-ci-test = { cmd = "ctest --test-dir build -T test --output-junit ../resul
 
 [package]
 name = "Gaudi"
-version = "40.5"
+version = "41.0"
 
 [package.build.backend]
 name = "pixi-build-cmake"

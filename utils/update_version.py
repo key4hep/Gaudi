@@ -10,6 +10,7 @@
 # or submit itself to any jurisdiction.                                             #
 #####################################################################################
 import datetime
+import functools
 import os
 import re
 import sys
@@ -19,7 +20,24 @@ from subprocess import run
 
 import click
 
-GITLAB_TOKEN = os.environ.get("GITLAB_TOKEN")
+
+@functools.cache
+def gitlab_token() -> str | None:
+    """
+    Return the GitLab API token to use, if available.
+
+    The token is taken from the ``GITLAB_TOKEN`` environment variable or, as a
+    fallback, from the file indicated by ``GITLAB_TOKEN_FILE`` (default
+    ``~/.gitlab_token``).  The file, if present, must contain only the token.
+    """
+    if token := os.environ.get("GITLAB_TOKEN"):
+        return token
+    token_file = os.environ.get("GITLAB_TOKEN_FILE", "~/.gitlab_token")
+    try:
+        with open(os.path.expanduser(token_file)) as f:
+            return f.read().strip() or None
+    except OSError:
+        return None
 
 
 def normalize_version(version: str) -> tuple[str, str]:
@@ -190,12 +208,12 @@ def update_changelog(fields: Fields) -> tuple[str, list[str], list[str]]:
 
 
 def contributor_handle(name: str) -> str:
-    if GITLAB_TOKEN:
+    if token := gitlab_token():
         from requests import get
 
         users = get(
             "https://gitlab.cern.ch/api/v4/users",
-            headers={"PRIVATE-TOKEN": GITLAB_TOKEN},
+            headers={"PRIVATE-TOKEN": token},
             params={"search": name},
         ).json()
         if users:
@@ -249,7 +267,10 @@ def update_version(version: str, date: datetime.datetime, dry_run: bool):
         FileUpdater(
             "pixi.toml",
             [
-                (r"^version = ", 'version = "{cmake_version}"'),
+                # Only project version values, i.e. those that look like a
+                # version, so that we do not touch e.g. the `"*"` required by
+                # the pixi-build backend.
+                (r'^version = "\d', 'version = "{cmake_version}"'),
             ],
         ),
         update_changelog,
