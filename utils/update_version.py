@@ -249,7 +249,10 @@ def update_version(version: str, date: datetime.datetime, dry_run: bool):
         FileUpdater(
             "pixi.toml",
             [
-                (r"^version = ", 'version = "{cmake_version}"'),
+                # Only project version values, i.e. those that look like a
+                # version, so that we do not touch e.g. the `"*"` required by
+                # the pixi-build backend.
+                (r'^version = "\d', 'version = "{cmake_version}"'),
             ],
         ),
         update_changelog,
