@@ -79,7 +79,7 @@ Default value: ``include``
 
 CMake will install plugins in ``<prefix>/${GAUDI_INSTALL_PLUGINDIR}``
 
-Default value: ``${CMAKE_INSTALL_LIBDIR}``
+Default value: ``${CMAKE_INSTALL_LIBDIR}/gaudi-plugins``
 
 
 .. variable:: GAUDI_INSTALL_PYTHONDIR
@@ -134,7 +134,7 @@ option(GAUDI_TEST_PUBLIC_HEADERS_BUILD
 set(CMAKE_INSTALL_BINDIR "bin" CACHE STRING "Install executable in <prefix>/\${CMAKE_INSTALL_BINDIR}")
 set(CMAKE_INSTALL_LIBDIR "lib" CACHE STRING "Install libraries in <prefix>/\${CMAKE_INSTALL_LIBDIR}")
 set(CMAKE_INSTALL_INCLUDEDIR "include" CACHE STRING "Install public headers in <prefix>/\${CMAKE_INSTALL_INCLUDEDIR}")
-set(GAUDI_INSTALL_PLUGINDIR "${CMAKE_INSTALL_LIBDIR}" CACHE STRING "Install plugins in <prefix>/\${GAUDI_INSTALL_PLUGINDIR}")
+set(GAUDI_INSTALL_PLUGINDIR "${CMAKE_INSTALL_LIBDIR}/gaudi-plugins" CACHE STRING "Install plugins in <prefix>/\${GAUDI_INSTALL_PLUGINDIR}")
 set(GAUDI_INSTALL_CONFIGDIR "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}" CACHE STRING "Install cmake files in <prefix>/\${GAUDI_INSTALL_CONFIGDIR}")
 
 if(NOT GAUDI_INSTALL_PYTHONDIR)
