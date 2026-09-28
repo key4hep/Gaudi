@@ -48,6 +48,7 @@ Gaudi is fully open-source and licenced under the `Apache Licence 2.0 <https://g
 
    contribution_guide
    Developers/cmake.rst
+   Developers/release_process
    CHANGELOG.md
 
 .. toctree::
