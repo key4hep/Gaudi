@@ -27,7 +27,6 @@
 #include <functional>
 #include <gsl/span>
 #include <nlohmann/json.hpp>
-#include <range/v3/numeric/accumulate.hpp>
 #include <ranges>
 #include <string>
 #include <type_traits>
@@ -399,16 +398,16 @@ namespace Gaudi::Histograming::Sink {
       // remember the current directory
       auto previousDir = gDirectory;
       // find or create the directory for the histogram
-      auto currentDir = ranges::accumulate(
-          dir | std::views::transform( []( char c ) { return c == '.' ? '/' : c; } ) | std::views::split( '/' ) |
-              std::views::transform( []<std::ranges::input_range R>( R&& r ) {
-                return std::string( std::ranges::begin( r ), std::ranges::end( r ) );
-              } ),
-          file.GetDirectory( "" ), []( TDirectory* current, std::string const& d ) -> TDirectory* {
-            if ( !current ) return current;
-            if ( auto next = current->GetDirectory( d.c_str() ); next ) return next;
-            return current->mkdir( d.c_str() );
-          } );
+      TDirectory* currentDir = file.GetDirectory( "" );
+      for ( auto&& part :
+            dir | std::views::transform( []( char c ) { return c == '.' ? '/' : c; } ) | std::views::split( '/' ) ) {
+        std::string const d( std::ranges::begin( part ), std::ranges::end( part ) );
+        if ( auto next = currentDir->GetDirectory( d.c_str() ) )
+          currentDir = next;
+        else
+          currentDir = currentDir->mkdir( d.c_str() );
+        if ( !currentDir ) break;
+      }
       if ( !currentDir )
         throw GaudiException( fmt::format( "Could not create directory {}", dir ), "Histogram::Sink::Root",
                               StatusCode::FAILURE );

@@ -162,7 +162,6 @@ gaudi_add_library(GaudiKernel
            cppgsl::cppgsl
            fmt::fmt
            nlohmann_json::nlohmann_json
-           Rangev3::rangev3
            ${GAUDI_ATOMIC_LIBS}
     PRIVATE Python::Python
             GaudiCommonParsers
