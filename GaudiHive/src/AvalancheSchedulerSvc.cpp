@@ -25,7 +25,9 @@
 
 // C++
 #include <algorithm>
+#include <chrono>
 #include <fstream>
+#include <future>
 #include <map>
 #include <queue>
 #include <regex>
@@ -47,6 +49,9 @@ DECLARE_COMPONENT( AvalancheSchedulerSvc )
 #define ON_VERBOSE if ( msgLevel( MSG::VERBOSE ) )
 
 namespace {
+  /// How long dumpState() waits for the scheduler thread to produce the dump
+  constexpr std::chrono::seconds s_dumpStateTimeout{ 30 };
+
   struct DataObjIDSorter {
     bool operator()( const DataObjID* a, const DataObjID* b ) { return a->fullKey() < b->fullKey(); }
   };
@@ -619,7 +624,30 @@ unsigned int AvalancheSchedulerSvc::freeSlots() { return std::max( m_freeSlots.l
 
 //---------------------------------------------------------------------------
 
-void AvalancheSchedulerSvc::dumpState() { dumpSchedulerState( -1 ); }
+void AvalancheSchedulerSvc::dumpState() {
+  // The state of the event slots is only modified by the scheduler thread (through the actions in
+  // m_actionsQueue), so, unless we are already on it or it is not running, let it produce the dump
+  // instead of reading the slots concurrently from the calling thread (typically the EventWatchdog).
+  if ( m_isActive != ACTIVE || std::this_thread::get_id() == m_thread.get_id() ) {
+    dumpSchedulerState( -1 );
+    return;
+  }
+
+  auto done   = std::make_shared<std::promise<void>>();
+  auto future = done->get_future();
+  m_actionsQueue.push( [this, done]() -> StatusCode {
+    dumpSchedulerState( -1 );
+    done->set_value();
+    return StatusCode::SUCCESS;
+  } );
+
+  // Do not block the caller for ever if the scheduler thread is stuck: the dump stays queued
+  // and is produced as soon as the scheduler thread gets to it.
+  if ( future.wait_for( s_dumpStateTimeout ) != std::future_status::ready ) {
+    warning() << "The scheduler thread did not produce the state dump within " << s_dumpStateTimeout.count()
+              << "s (it may be blocked): the dump will appear when it proceeds" << endmsg;
+  }
+}
 
 //---------------------------------------------------------------------------
 /**
