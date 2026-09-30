@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 2024-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 2024-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -56,12 +56,19 @@ class FilePreprocessorSequence(FilePreprocessor):
         return output
 
 
+def _search_pattern(regexp):
+    """Drop a redundant leading ".*", which makes re.search quadratic in line length."""
+    if isinstance(regexp, str):
+        return re.sub(r"^\.\*(?![*+?{])", "", regexp)
+    return regexp
+
+
 class LineSkipper(FilePreprocessor):
     def __init__(self, strings=[], regexps=[]):
         import re
 
         self.strings = strings
-        self.regexps = list(map(re.compile, regexps))
+        self.regexps = [re.compile(_search_pattern(r)) for r in regexps]
 
     def __processLine__(self, line):
         for s in self.strings:
