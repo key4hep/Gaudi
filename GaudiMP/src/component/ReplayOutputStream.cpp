@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,14 +8,71 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#include "ReplayOutputStream.h"
-#include "RecordOutputStream.h"
+
+// FrameWork includes
+#include <GaudiKernel/Algorithm.h>
+#include <GaudiKernel/HashMap.h>
 #include <GaudiKernel/IAlgManager.h>
 #include <GaudiKernel/IDataManagerSvc.h>
 #include <GaudiKernel/IRegistry.h>
-#include <algorithm>
-#include <functional>
-#include <list>
+#include <GaudiKernel/SmartIF.h>
+#include <GaudiKernel/ThreadLocalContext.h>
+
+// STL includes
+#include <string>
+#include <vector>
+
+// Local includes
+#include "OutputStreamShared.h"
+
+/** @class ReplayOutputStream
+ *
+ *
+ * @author Marco Clemencic
+ * @date 30/08/2013
+ */
+class ReplayOutputStream : public Algorithm {
+public:
+  /// Inherited constructor
+  using Algorithm::Algorithm;
+
+  StatusCode initialize() override;
+  StatusCode start() override;
+  StatusCode execute() override;
+  StatusCode stop() override;
+  StatusCode finalize() override;
+
+  /// Class used to hold the OutputStream instances
+  typedef GaudiUtils::HashMap<std::string, SmartIF<IAlgorithm>> OutStreamsMapType;
+
+private:
+  /// Add a new algorithm to the list of OutputStreams
+  void i_addOutputStream( const Gaudi::Utils::TypeNameString& outStream );
+
+  /// Helper class to fill the internal map of OutputStreams.
+  class OutStreamAdder {
+  public:
+    OutStreamAdder( ReplayOutputStream* ptr ) : m_ptr( ptr ) {}
+    inline void operator()( const Gaudi::Utils::TypeNameString& outStream ) { m_ptr->i_addOutputStream( outStream ); }
+
+  private:
+    ReplayOutputStream* m_ptr;
+  };
+
+  /// Helper function to call the transition on the contained OutputStreams.
+  /// Returns StatusCode::FAILURE if any of the OutputStreams returned a failure.
+  template <Gaudi::StateMachine::Transition TR>
+  StatusCode i_outStreamTransition();
+
+  Gaudi::Property<std::vector<std::string>> m_outputStreamNames{
+      this, "OutputStreams", {}, "OutputStream instances that can be called." };
+
+  /// Internal storage for the OutputStreams to call.
+  OutStreamsMapType m_outputStreams;
+
+  SmartIF<IAlgManager>     m_algMgr;
+  SmartIF<IDataManagerSvc> m_evtMgr;
+};
 
 // ----------------------------------------------------------------------------
 // Implementation file for class: ReplayOutputStream
@@ -125,7 +182,7 @@ StatusCode ReplayOutputStream::execute() {
   if ( msgLevel( MSG::DEBUG ) ) debug() << "==> Execute" << endmsg;
 
   std::vector<std::string> names;
-  if ( auto sc = m_evtMgr->traverseSubTree( RecordOutputStream::locationRoot(),
+  if ( auto sc = m_evtMgr->traverseSubTree( locationRoot(),
                                             [&names]( IRegistry* pReg, int lvl ) {
                                               if ( lvl > 0 ) names.push_back( pReg->name() );
                                               return true;
@@ -191,5 +248,3 @@ void ReplayOutputStream::i_addOutputStream( const Gaudi::Utils::TypeNameString& 
     warning() << "OutputStream instance " << outStream.name() << " already added, ignoring " << outStream << endmsg;
   }
 }
-
-// ============================================================================
