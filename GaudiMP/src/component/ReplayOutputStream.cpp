@@ -182,7 +182,7 @@ StatusCode ReplayOutputStream::execute() {
   if ( msgLevel( MSG::DEBUG ) ) debug() << "==> Execute" << endmsg;
 
   std::vector<std::string> names;
-  if ( auto sc = m_evtMgr->traverseSubTree( locationRoot(),
+  if ( auto sc = m_evtMgr->traverseSubTree( GaudiMP::locationRoot + "/",
                                             [&names]( IRegistry* pReg, int lvl ) {
                                               if ( lvl > 0 ) names.push_back( pReg->name() );
                                               return true;

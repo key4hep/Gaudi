@@ -69,7 +69,7 @@ StatusCode RecordOutputStream::initialize() {
     debug() << "Using default OutputStreamName: '" << m_streamName << "'" << endmsg;
   }
 
-  m_flagLocation = locationRoot() + "/" + m_streamName;
+  m_flagLocation = GaudiMP::locationRoot + "/" + m_streamName;
   return StatusCode::SUCCESS;
 }
 

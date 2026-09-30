@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,12 +8,20 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#include "HistorySvc.h"
 
-#include <functional>
-
-#include <GaudiKernel/HistoryObj.h>
+// Framework includes
+#include <Gaudi/Algorithm.h>
+#include <GaudiKernel/AlgTool.h>
+#include <GaudiKernel/IHistorySvc.h>
+#include <GaudiKernel/IIncidentListener.h>
 #include <GaudiKernel/IVersHistoryObj.h>
+#include <GaudiKernel/Service.h>
+#include <GaudiKernel/SmartIF.h>
+#include <GaudiKernel/StatusCode.h>
+
+#include <GaudiKernel/ClassID.h>
+#include <GaudiKernel/HistoryObj.h>
+#include <GaudiKernel/MsgStream.h>
 
 #include <GaudiKernel/AlgToolHistory.h>
 #include <GaudiKernel/AlgorithmHistory.h>
@@ -23,36 +31,119 @@
 
 #include <GaudiKernel/ISvcLocator.h>
 
-#include <Gaudi/Algorithm.h>
-#include <GaudiKernel/AlgTool.h>
 #include <GaudiKernel/Bootstrap.h>
+#include <GaudiKernel/IAlgContextSvc.h>
 #include <GaudiKernel/IAlgManager.h>
 #include <GaudiKernel/IAlgTool.h>
 #include <GaudiKernel/IAlgorithm.h>
-#include <GaudiKernel/IAppMgrUI.h>
 #include <GaudiKernel/IIncidentSvc.h>
 #include <GaudiKernel/IService.h>
 #include <GaudiKernel/IToolSvc.h>
 #include <GaudiKernel/ServiceHandle.h>
-#include <GaudiKernel/System.h>
 
-#include <GaudiKernel/IAlgContextSvc.h>
-
-#include <boost/algorithm/string/predicate.hpp>
-namespace ba = boost::algorithm;
-
+// STL includes
+#include <algorithm>
 #include <fstream>
-#include <iostream>
+#include <functional>
+#include <iterator>
 #include <limits>
+#include <list>
+#include <map>
+#include <memory>
+#include <set>
 #include <sstream>
+#include <string>
+#include <tuple>
+#include <utility>
+
+class IAlgContextSvc;
+class IIncidentSvc;
+class HistoryObj;
+class DataHistory;
+class AlgorithmHistory;
+class ServiceHistory;
+struct DHH;
+
+class HistorySvc : public extends<Service, IHistorySvc, IIncidentListener> {
+public:
+  using extends::extends;
+
+  StatusCode initialize() override;
+  StatusCode reinitialize() override;
+  StatusCode finalize() override;
+  StatusCode stop() override;
+
+  virtual StatusCode captureState();
+
+  StatusCode  registerJob() override;
+  StatusCode  listProperties() const override;
+  JobHistory* getJobHistory() const override;
+
+  StatusCode      registerSvc( const IService& ) override;
+  StatusCode      listProperties( const IService& ) const override;
+  ServiceHistory* getServiceHistory( const IService& ) const override;
+  void            getServiceHistory( std::set<ServiceHistory*>& ) const override;
+
+  StatusCode        registerAlg( const Gaudi::Algorithm& ) override;
+  StatusCode        listProperties( const Gaudi::Algorithm& ) const override;
+  AlgorithmHistory* getAlgHistory( const Gaudi::Algorithm& ) const override;
+  void              getAlgHistory( std::set<AlgorithmHistory*>& ) const override;
+
+  StatusCode      registerAlgTool( const IAlgTool& ) override;
+  StatusCode      listProperties( const IAlgTool& ) const override;
+  AlgToolHistory* getAlgToolHistory( const IAlgTool& ) const override;
+  void            getAlgToolHistory( std::set<AlgToolHistory*>& ) const override;
+
+  DataHistory*       createDataHistoryObj( const CLID& id, const std::string& key, const std::string& store ) override;
+  virtual StatusCode registerDataHistory( const CLID& id, const std::string& key, const std::string& store );
+  DataHistory*       getDataHistory( const CLID& id, const std::string& key, const std::string& store ) const override;
+  virtual int        getDataHistory( const CLID& id, const std::string& key, const std::string& storeName,
+                                     std::list<DataHistory*>& dhlist ) const;
+
+  void handle( const Incident& inc ) override;
+
+private:
+  Gaudi::Property<bool>         m_dump{ this, "Dump", false };
+  Gaudi::Property<bool>         m_activate{ this, "Activate", true };
+  Gaudi::Property<std::string>  m_outputFile{ this, "OutputFile" };
+  ServiceHandle<IAlgContextSvc> p_algCtxSvc{ this, "AlgContextSvc", "AlgContextSvc" };
+
+  void clearState();
+
+  bool m_isInitialized = false;
+
+  std::map<const Gaudi::Algorithm*, AlgorithmHistory*> m_algmap;
+
+  std::set<const IAlgTool*>                  m_ialgtools;
+  std::map<const AlgTool*, AlgToolHistory*>  m_algtoolmap;
+  std::map<const IService*, ServiceHistory*> m_svcmap;
+
+  std::multimap<DHH, DataHistory*> m_datMap;
+
+  std::unique_ptr<JobHistory> m_jobHistory;
+
+  void dumpProperties( std::ofstream& ) const;
+  void dumpProperties( const IService&, std::ofstream& ) const;
+  void dumpProperties( const Gaudi::Algorithm&, std::ofstream& ) const;
+  void dumpProperties( const IAlgTool&, std::ofstream& ) const;
+
+  void dumpState( std::ofstream& ) const;
+  void dumpState( const INamedInterface*, std::ofstream& ) const;
+
+  std::string dumpProp( const Gaudi::Details::PropertyBase*, const bool isXML = false, int indent = 0 ) const;
+
+  IAlgorithm* getCurrentIAlg() const;
+
+  SmartIF<IToolSvc> m_toolSvc;
+
+  bool m_outputFileTypeXML = false;
+};
 
 #define ON_DEBUG if ( msgLevel( MSG::DEBUG ) )
 #define ON_VERBOSE if ( msgLevel( MSG::VERBOSE ) )
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 DECLARE_COMPONENT( HistorySvc )
-
-using namespace std;
 
 //
 ///////////////////////////////////////////////////////////////////////////
@@ -156,7 +247,7 @@ StatusCode HistorySvc::initialize() {
   const bool oneShot = true; // make the listener called only once
   incidentSvc->addListener( this, IncidentType::BeginEvent, std::numeric_limits<long>::min(), rethrow, oneShot );
 
-  m_outputFileTypeXML = ba::iends_with( m_outputFile.value(), ".xml" );
+  m_outputFileTypeXML = m_outputFile.value().ends_with( ".xml" );
   ON_DEBUG if ( m_outputFileTypeXML ) { debug() << "output format is XML" << endmsg; }
 
   m_isInitialized = true;
@@ -172,8 +263,8 @@ StatusCode HistorySvc::captureState() {
 
     bool foundAppMgr( false );
     for ( const auto& item : serviceLocator()->getOptsSvc().items() ) {
-      m_jobHistory->addProperty( get<0>( item ), get<1>( item ) );
-      foundAppMgr |= get<0>( item ).compare( 0, 15, "ApplicationMgr." ) == 0;
+      m_jobHistory->addProperty( std::get<0>( item ), std::get<1>( item ) );
+      foundAppMgr |= std::get<0>( item ).compare( 0, 15, "ApplicationMgr." ) == 0;
     }
 
     if ( !foundAppMgr ) {
@@ -302,13 +393,13 @@ StatusCode HistorySvc::registerAlg( const Gaudi::Algorithm& alg ) {
 
 StatusCode HistorySvc::listProperties( const Gaudi::Algorithm& alg ) const {
 
-  info() << "Dumping properties for " << alg.name() << endl;
+  info() << "Dumping properties for " << alg.name() << std::endl;
 
   AlgorithmHistory* hist = getAlgHistory( alg );
 
   if ( !hist ) { return StatusCode::FAILURE; }
 
-  info() << alg.name() << " --> " << endl << *hist << endmsg;
+  info() << alg.name() << " --> " << std::endl << *hist << endmsg;
 
   return StatusCode::SUCCESS;
 }
@@ -417,7 +508,7 @@ DataHistory* HistorySvc::createDataHistoryObj( const CLID& id, const std::string
   IAlgorithm* ialg = getCurrentIAlg();
   if ( !ialg ) {
     ON_DEBUG
-    debug() << "Could not discover current Algorithm:" << endl
+    debug() << "Could not discover current Algorithm:" << std::endl
             << "          object CLID: " << id << "  key: \"" << key << "\"" << endmsg;
     algHist = nullptr;
   } else {
@@ -425,7 +516,7 @@ DataHistory* HistorySvc::createDataHistoryObj( const CLID& id, const std::string
     if ( alg ) {
       algHist = getAlgHistory( *alg );
     } else {
-      warning() << "Could not extract concrete Algorithm:" << endl
+      warning() << "Could not extract concrete Algorithm:" << std::endl
                 << "          object CLID: " << id << "  key: \"" << key << "\"" << endmsg;
       algHist = nullptr;
     }
@@ -460,7 +551,7 @@ StatusCode HistorySvc::registerDataHistory( const CLID& id, const std::string& k
 
   if ( match == boundaries.second ) { // not found, crete the entry
     DataHistory* dh = createDataHistoryObj( id, key, storeName );
-    m_datMap.insert( pair<DHH, DataHistory*>( dhh, dh ) );
+    m_datMap.insert( std::pair<DHH, DataHistory*>( dhh, dh ) );
   }
 
   return StatusCode::SUCCESS;
@@ -539,13 +630,13 @@ void HistorySvc::getServiceHistory( std::set<ServiceHistory*>& svcs ) const { ma
 
 StatusCode HistorySvc::listProperties( const IService& svc ) const {
 
-  info() << "Dumping properties for " << svc.name() << endl;
+  info() << "Dumping properties for " << svc.name() << std::endl;
 
   ServiceHistory* hist = getServiceHistory( svc );
 
   if ( !hist ) return StatusCode::FAILURE;
 
-  info() << svc.name() << " --> " << endl << *hist << endmsg;
+  info() << svc.name() << " --> " << std::endl << *hist << endmsg;
 
   return StatusCode::SUCCESS;
 }
@@ -605,13 +696,13 @@ StatusCode HistorySvc::registerAlgTool( const IAlgTool& ialg ) {
 
 StatusCode HistorySvc::listProperties( const IAlgTool& alg ) const {
 
-  info() << "Dumping properties for " << alg.name() << endl;
+  info() << "Dumping properties for " << alg.name() << std::endl;
 
   AlgToolHistory* hist = getAlgToolHistory( alg );
 
   if ( !hist ) return StatusCode::FAILURE;
 
-  info() << alg.name() << " --> " << endl << *hist << endmsg;
+  info() << alg.name() << " --> " << std::endl << *hist << endmsg;
 
   return StatusCode::SUCCESS;
 }
@@ -649,7 +740,7 @@ void HistorySvc::handle( const Incident& incident ) {
 
   if ( incident.type() == IncidentType::BeginEvent ) {
     if ( captureState().isFailure() ) {
-      warning() << "Error capturing state." << endl << "Will try again at next BeginEvent incident" << endmsg;
+      warning() << "Error capturing state." << std::endl << "Will try again at next BeginEvent incident" << endmsg;
     }
   }
 }
@@ -694,22 +785,22 @@ void HistorySvc::dumpState( std::ofstream& ofs ) const {
     if ( m_outputFileTypeXML ) {
 
       if ( client != client_currently_open ) {
-        if ( client_currently_open != "start" ) ofs << "    </COMPONENT>" << endl;
+        if ( client_currently_open != "start" ) ofs << "    </COMPONENT>" << std::endl;
         ofs << "    <COMPONENT name=\"" << client << "\" class=\"undefined\">" << std::endl;
       }
     } else {
       ofs << client << "  ";
     }
 
-    ofs << dumpProp( prp.get(), m_outputFileTypeXML, 6 ) << endl;
+    ofs << dumpProp( prp.get(), m_outputFileTypeXML, 6 ) << std::endl;
 
     client_currently_open = client;
 
-    if ( m_outputFileTypeXML ) ofs << "    </COMPONENT>" << endl;
+    if ( m_outputFileTypeXML ) ofs << "    </COMPONENT>" << std::endl;
   }
 
   if ( m_outputFileTypeXML ) {
-    ofs << "</GLOBAL>" << endl << "<SERVICES>" << endl;
+    ofs << "</GLOBAL>" << std::endl << "<SERVICES>" << std::endl;
   } else {
     ofs << "SERVICES" << std::endl;
   }
@@ -724,7 +815,7 @@ void HistorySvc::dumpState( std::ofstream& ofs ) const {
   sortedDump( m_svcmap );
 
   if ( m_outputFileTypeXML ) {
-    ofs << "</SERVICES>" << endl << "<ALGORITHMS> " << endl;
+    ofs << "</SERVICES>" << std::endl << "<ALGORITHMS> " << std::endl;
   } else {
     ofs << "ALGORITHMS" << std::endl;
   }
@@ -732,14 +823,14 @@ void HistorySvc::dumpState( std::ofstream& ofs ) const {
   sortedDump( m_algmap );
 
   if ( m_outputFileTypeXML ) {
-    ofs << "</ALGORITHMS>" << endl << "<ALGTOOLS> " << endl;
+    ofs << "</ALGORITHMS>" << std::endl << "<ALGTOOLS> " << std::endl;
   } else {
     ofs << "ALGTOOLS" << std::endl;
   }
 
   sortedDump( m_algtoolmap );
 
-  if ( m_outputFileTypeXML ) { ofs << "</ALGTOOLS>" << endl << "</SETUP>" << endl; }
+  if ( m_outputFileTypeXML ) { ofs << "</ALGTOOLS>" << std::endl << "</SETUP>" << std::endl; }
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -784,6 +875,6 @@ void HistorySvc::dumpState( const INamedInterface* in, std::ofstream& ofs ) cons
   if ( m_outputFileTypeXML ) {
     hist->dump( ofs, true );
   } else {
-    ofs << ">> " << vhist->name() << endl << *hist << endl;
+    ofs << ">> " << vhist->name() << std::endl << *hist << std::endl;
   }
 }

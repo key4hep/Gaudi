@@ -11,4 +11,6 @@
 #pragma once
 #include <string>
 
-inline constexpr std::string locationRoot() { return "TriggeredOutputStreams"; }
+namespace GaudiMP {
+  inline const std::string locationRoot = "TriggeredOutputStreams";
+} // namespace GaudiMP
