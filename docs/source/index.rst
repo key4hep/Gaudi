@@ -39,6 +39,7 @@ Gaudi is fully open-source and licenced under the `Apache Licence 2.0 <https://g
    :maxdepth: 2
    :caption: Reference
 
+   DevGuide/DevGuide
    old/GDG
    publications
 
