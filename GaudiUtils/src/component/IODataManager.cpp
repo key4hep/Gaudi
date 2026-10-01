@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -21,13 +21,6 @@
 #include <strings.h>
 
 namespace {
-
-  constexpr struct select2nd_t {
-    template <typename S, typename T>
-    const T& operator()( const std::pair<S, T>& p ) const {
-      return p.second;
-    }
-  } select2nd{};
 
   template <typename InputIterator, typename OutputIterator, typename UnaryOperation, typename UnaryPredicate>
   OutputIterator transform_copy_if( InputIterator first, InputIterator last, OutputIterator result, UnaryOperation op,
@@ -152,7 +145,6 @@ StatusCode IODataManager::disconnect( Connection* con ) {
           c->disconnect().ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
           log << MSG::INFO << "Disconnect from dataset " << dsn << " [" << fid << "]" << endmsg;
         }
-        delete i->second;
         m_connectionMap.erase( i );
       }
     }
@@ -179,11 +171,13 @@ StatusCode IODataManager::reconnect( Entry* e ) {
     if ( sc.isSuccess() && e->ioType == Connection::READ ) {
       std::vector<Entry*> to_retire;
       e->connection->resetAge();
-      transform_copy_if( std::begin( m_connectionMap ), std::end( m_connectionMap ), std::back_inserter( to_retire ),
-                         select2nd, [&]( Entry* i ) {
-                           IDataConnection* c = i->connection;
-                           return e->connection != c && c->isConnected() && !i->keepOpen && c->ageFile() > m_ageLimit;
-                         } );
+      transform_copy_if(
+          std::begin( m_connectionMap ), std::end( m_connectionMap ), std::back_inserter( to_retire ),
+          []( ConnectionMap::const_reference i ) { return i.second.get(); },
+          [&]( Entry* i ) {
+            IDataConnection* c = i->connection;
+            return e->connection != c && c->isConnected() && !i->keepOpen && c->ageFile() > m_ageLimit;
+          } );
       if ( !to_retire.empty() ) {
         MsgStream log( msgSvc(), name() );
         std::for_each( std::begin( to_retire ), std::end( to_retire ), [&]( Entry* j ) {
@@ -219,7 +213,7 @@ StatusCode IODataManager::establishConnection( Connection* con ) {
       m_incSvc->fireIncident( Incident( con->name(), IncidentType::FailInputFile ) );
       return error( "Severe logic bug: Twice identical connection object for DSN:" + con->name() );
     }
-    if ( reconnect( i->second ).isSuccess() ) return StatusCode::SUCCESS;
+    if ( reconnect( i->second.get() ).isSuccess() ) return StatusCode::SUCCESS;
   }
   return StatusCode::FAILURE;
 }
@@ -329,29 +323,37 @@ StatusCode IODataManager::connectDataIO( int typ, IoType rw, CSTR dataset, CSTR 
       if ( fi == m_connectionMap.end() ) {
         connection->setFID( fid );
         connection->setPFN( dsn );
-        auto e = new Entry( technology, keep_open, rw, connection );
+        auto e = std::make_unique<Entry>( technology, keep_open, rw, connection );
         // Here we open the file!
-        if ( !reconnect( e ).isSuccess() ) {
-          delete e;
+        if ( !reconnect( e.get() ).isSuccess() ) {
           if ( m_quarantine ) s_badFiles.insert( dsn );
           m_incSvc->fireIncident( Incident( dsn, IncidentType::FailInputFile ) );
           error( "connectDataIO> Cannot connect to database: PFN=" + dsn + " FID=" + fid ).ignore();
           return StatusCode( IDataConnection::BAD_DATA_CONNECTION );
         }
-        fid               = connection->fid();
+        fid = connection->fid();
+        if ( m_connectionMap.contains( fid ) ) {
+          // The FID is the one stored in the file itself, so a copy or replica of a file that is
+          // already connected through another PFN reports the same FID. Track this connection by
+          // its PFN: keying it by the FID would drop its entry and alias its dataset name to the
+          // other connection, which a later disconnect() of this dataset would then tear down.
+          log << MSG::DEBUG << "Dataset " << dsn << " has the same FID " << fid
+              << " as an already connected dataset, tracking it by its PFN" << endmsg;
+          fid = dsn;
+        }
         m_fidMap[dataset] = m_fidMap[dsn] = m_fidMap[fid] = fid;
         if ( !( rw == Connection::CREATE || rw == Connection::RECREATE ) ) {
-          if ( !m_disablePFNWarning && strcasecmp( dsn.c_str(), fid.c_str() ) == 0 ) {
+          if ( !m_disablePFNWarning && strcasecmp( dsn.c_str(), connection->fid().c_str() ) == 0 ) {
             log << MSG::ERROR << "Referring to existing dataset " << dsn << " by its physical name." << endmsg;
             log << "You may not be able to navigate back to the input file"
                 << " -- processing continues" << endmsg;
           }
         }
-        m_connectionMap.emplace( fid, e ); // note: only if we disconnect does e get deleted??
+        m_connectionMap.emplace( fid, std::move( e ) );
         return StatusCode::SUCCESS;
       }
       // Here we open the file!
-      if ( !reconnect( ( *fi ).second ).isSuccess() ) {
+      if ( !reconnect( fi->second.get() ).isSuccess() ) {
         if ( m_quarantine ) s_badFiles.insert( dsn );
         m_incSvc->fireIncident( Incident( dsn, IncidentType::FailInputFile ) );
         error( "connectDataIO> Cannot connect to database: PFN=" + dsn + " FID=" + fid ).ignore();
