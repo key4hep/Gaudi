@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -71,6 +71,75 @@ namespace Gaudi::Histograming::Sink::detail {
   inline T sqrt_or_zero( const T x ) {
     return ( x > 0 ? std::sqrt( x ) : T{ 0 } );
   }
+
+  /** Numerically stable accumulator of the weighted mean and central moments (up to the 4th) of a distribution.
+   *
+   *  The statistics printed for a histogram are computed from its bins. Forming them from the raw sums of x, x^2,
+   *  x^3 and x^4, as E[x^2] - E[x]^2 etc., cancels catastrophically whenever the width of the distribution is small
+   *  compared to the distance of its mean from zero: in the extreme case of a single populated bin the variance is
+   *  exactly zero, but the result is rounding noise of order 1e-16 * mean^2, and the skewness and kurtosis, which
+   *  divide by powers of the standard deviation, are then garbage of order 1e8 to 1e16. As the noise depends on the
+   *  last bits of the weights, which for profile histograms are sums of floating point values, the printed numbers
+   *  vary between platforms, compilers and even runs.
+   *
+   *  This accumulator instead updates the mean and the sums of powers of the deviations from the mean incrementally
+   *  for each (value, weight) pair (Pebay 2008, SAND2008-6212, eqs. 3.1 for the combination of two sets), which has
+   *  no such cancellation. It is exact for a single populated bin (zero width, skewness and kurtosis), and gives the
+   *  same results as the naive sums, within rounding, whenever those are well conditioned.
+   */
+  class WeightedMoments {
+  public:
+    /// Add a value with a weight. Entries with a weight that is not positive are ignored.
+    void add( const double x, const double w ) {
+      if ( !( w > 0.0 ) ) { return; }
+      // the weights before and after this entry, and the products of them used below
+      const auto wA  = m_sumW;
+      const auto wN  = ( wA + w );
+      const auto wN2 = ( wN * wN );
+      const auto wN3 = ( wN2 * wN );
+      const auto w2  = ( w * w );
+      const auto wAw = ( wA * w );
+      // the deviation of the value from the mean so far, and its powers
+      const auto delta  = ( x - m_mean );
+      const auto delta2 = ( delta * delta );
+      const auto delta3 = ( delta2 * delta );
+      const auto delta4 = ( delta2 * delta2 );
+      // the sums of powers of the deviations from the mean, from their values before this update
+      const auto dM4 = ( ( ( ( wAw * ( ( ( wA * wA ) - wAw ) + w2 ) ) / wN3 ) * delta4 ) +
+                         ( ( ( ( 6.0 * w2 ) * m_m2 ) / wN2 ) * delta2 ) );
+      m_m4 += ( dM4 - ( ( ( ( 4.0 * w ) * m_m3 ) / wN ) * delta ) );
+      m_m3 += ( ( ( ( wAw * ( wA - w ) ) / wN2 ) * delta3 ) - ( ( ( ( 3.0 * w ) * m_m2 ) / wN ) * delta ) );
+      m_m2 += ( ( wAw / wN ) * delta2 );
+      m_mean += ( delta * ( w / wN ) );
+      m_sumW = wN;
+    }
+    /// Sum of the weights
+    double sumW() const { return m_sumW; }
+    /// Weighted mean
+    double mean() const { return m_mean; }
+    /// Variance, the second central moment
+    double variance() const { return ( ( m_sumW > 0.0 ) ? ( m_m2 / m_sumW ) : 0.0 ); }
+    /// Standard deviation
+    double stddev() const { return sqrt_or_zero( variance() ); }
+    /// Skewness, zero if there is no width
+    double skewness() const {
+      const auto m2 = variance();
+      const auto s3 = ( m2 * sqrt_or_zero( m2 ) );
+      return ( ( s3 > 0.0 ) ? ( ( m_m3 / m_sumW ) / s3 ) : 0.0 );
+    }
+    /// Excess kurtosis, zero if there is no width
+    double kurtosis() const {
+      const auto m2 = variance();
+      return ( ( m2 > 0.0 ) ? ( ( ( m_m4 / m_sumW ) / ( m2 * m2 ) ) - 3.0 ) : 0.0 );
+    }
+
+  private:
+    double m_sumW{ 0 };
+    double m_mean{ 0 };
+    double m_m2{ 0 };
+    double m_m3{ 0 };
+    double m_m4{ 0 };
+  };
 
 } // namespace Gaudi::Histograming::Sink::detail
 
@@ -655,45 +724,23 @@ namespace Gaudi::Histograming::Sink {
     // Compute fist and second momenta for normal dimension
     // Compute 1st and 2nd momenta for the profile dimension
     unsigned int              nEntries{ 0 }, nAllEntries{ 0 };
-    FPType                    totalSumW{ 0 };
-    FPType                    sumX{ 0 }, sum2X{ 0 }, sum3X{ 0 }, sum4X{ 0 };
+    detail::WeightedMoments   momentsX;
     const details::BinAvValue xBinAv( minValueX, maxValueX, nBinsX, std::is_integral_v<Arithmetic> );
     for ( unsigned int nx = 0; nx <= nBinsX + 1; ++nx ) {
       auto const& [tmp, sumw2] = gaudiHisto.binValue( nx );
       auto const& [nent, sumw] = tmp;
       nAllEntries += nent;
       if ( nx > 0 && nx <= nBinsX ) {
-        const FPType binXValue = xBinAv( nx );
         nEntries += nent;
-        const auto sumw_abs = abs( sumw );
-        totalSumW += sumw_abs;
-        auto val = binXValue * sumw_abs;
-        sumX += val;
-        val *= binXValue;
-        sum2X += val;
-        val *= binXValue;
-        sum3X += val;
-        val *= binXValue;
-        sum4X += val;
+        momentsX.add( xBinAv( nx ), abs( sumw ) );
       }
     }
     const std::string ftitle = detail::formatTitle( gaudiHisto.title(), stringsWidth - 2 );
-    if ( nEntries == 0 || !( abs( totalSumW ) > 0 ) ) { return ""; }
-    const FPType meanX     = sumX / totalSumW;
-    const FPType sigmaX2   = ( sum2X / totalSumW ) - std::pow( meanX, 2 );
-    const FPType stddevX   = detail::sqrt_or_zero( sigmaX2 );
-    const FPType EX3       = sum3X / totalSumW;
-    const FPType A         = sigmaX2 * stddevX;
-    const FPType skewnessX = ( abs( A ) > 0.0 ? ( EX3 - ( 3 * sigmaX2 + meanX * meanX ) * meanX ) / A : 0.0 );
-    const FPType B         = sigmaX2 * sigmaX2;
-    const FPType kurtosisX =
-        ( abs( B ) > 0.0 && abs( A ) > 0.0
-              ? ( sum4X / totalSumW - meanX * ( 4 * EX3 - meanX * ( 6 * sigmaX2 + 3 * meanX * meanX ) ) ) / B
-              : 3.0 );
+    if ( ( nEntries == 0 ) || !( abs( momentsX.sumW() ) > 0 ) ) { return ""; }
     // print
     return fmt::format( fmt::runtime( detail::histo1DFormatting ), detail::formatName( name, stringsWidth ),
-                        stringsWidth, stringsWidth, ftitle, stringsWidth, detail::IntWithFixedWidth{ nEntries }, meanX,
-                        stddevX, skewnessX, kurtosisX - FPType{ 3.0 } );
+                        stringsWidth, stringsWidth, ftitle, stringsWidth, detail::IntWithFixedWidth{ nEntries },
+                        momentsX.mean(), momentsX.stddev(), momentsX.skewness(), momentsX.kurtosis() );
   }
 
   template <Gaudi::Accumulators::atomicity Atomicity = Gaudi::Accumulators::atomicity::full,
@@ -718,9 +765,7 @@ namespace Gaudi::Histograming::Sink {
     // Compute fist and second momenta for normal dimenstion
     // Compute 1st and 2nd momenta for the profile dimension
     FPType                    nEntries{ 0 }, nAllEntries{ 0 };
-    FPType                    totalSumW{ 0 };
-    FPType                    sumX{ 0 }, sumY{ 0 };
-    FPType                    sum2X{ 0 }, sum2Y{ 0 };
+    detail::WeightedMoments   momentsX, momentsY;
     const details::BinAvValue xBinAv( minValueX, maxValueX, nBinsX, std::is_integral_v<Arithmetic> );
     const details::BinAvValue yBinAv( minValueY, maxValueY, nBinsY, std::is_integral_v<Arithmetic> );
     for ( unsigned int ny = 0; ny <= nBinsY + 1; ++ny ) {
@@ -730,29 +775,18 @@ namespace Gaudi::Histograming::Sink {
         auto const& [nent, sumw] = tmp;
         nAllEntries += nent;
         if ( nx > 0 && ny > 0 && nx <= nBinsX && ny <= nBinsY ) {
-          const FPType binXValue = xBinAv( nx );
-          const FPType binYValue = yBinAv( ny );
           nEntries += nent;
           const auto sumw_abs = abs( sumw );
-          totalSumW += sumw_abs;
-          sumX += binXValue * sumw_abs;
-          sum2X += binXValue * binXValue * sumw_abs;
-          sumY += binYValue * sumw_abs;
-          sum2Y += binYValue * binYValue * sumw_abs;
+          momentsX.add( xBinAv( nx ), sumw_abs );
+          momentsY.add( yBinAv( ny ), sumw_abs );
         }
       }
     }
-    const FPType meanX = abs( totalSumW ) > 0 ? sumX / totalSumW : 0.0;
-    const FPType stddevX =
-        abs( totalSumW ) > 0 ? detail::sqrt_or_zero( ( sum2X - sumX * ( sumX / totalSumW ) ) / totalSumW ) : 0.0;
-    const FPType meanY = abs( totalSumW ) > 0 ? sumY / totalSumW : 0.0;
-    const FPType stddevY =
-        abs( totalSumW ) > 0 ? detail::sqrt_or_zero( ( sum2Y - sumY * ( sumY / totalSumW ) ) / totalSumW ) : 0.0;
     // print
     const std::string ftitle = detail::formatTitle( gaudiHisto.title(), stringsWidth - 2 );
     return fmt::format( fmt::runtime( detail::histo2DFormatting ), detail::formatName( name, stringsWidth ),
-                        stringsWidth, stringsWidth, ftitle, stringsWidth, nEntries, nAllEntries, meanX, stddevX, meanY,
-                        stddevY );
+                        stringsWidth, stringsWidth, ftitle, stringsWidth, nEntries, nAllEntries, momentsX.mean(),
+                        momentsX.stddev(), momentsY.mean(), momentsY.stddev() );
   }
 
   template <Gaudi::Accumulators::atomicity Atomicity = Gaudi::Accumulators::atomicity::full,
@@ -781,9 +815,7 @@ namespace Gaudi::Histograming::Sink {
     // Compute fist and second momenta for normal dimenstion
     // Compute 1st and 2nd momenta for the profile dimension
     FPType                    nEntries{ 0 }, nAllEntries{ 0 };
-    FPType                    totalSumW{};
-    FPType                    sumX{ 0 }, sumY{ 0 }, sumZ{ 0 };
-    FPType                    sum2X{ 0 }, sum2Y{ 0 }, sum2Z{ 0 };
+    detail::WeightedMoments   momentsX, momentsY, momentsZ;
     const details::BinAvValue xBinAv( minValueX, maxValueX, nBinsX, std::is_integral_v<Arithmetic> );
     const details::BinAvValue yBinAv( minValueY, maxValueY, nBinsY, std::is_integral_v<Arithmetic> );
     const details::BinAvValue zBinAv( minValueZ, maxValueZ, nBinsZ, std::is_integral_v<Arithmetic> );
@@ -796,36 +828,20 @@ namespace Gaudi::Histograming::Sink {
           auto const& [nent, sumw] = tmp;
           nAllEntries += nent;
           if ( nx > 0 && ny > 0 && nz > 0 && nx <= nBinsX && ny <= nBinsY && nz <= nBinsZ ) {
-            const FPType binXValue = xBinAv( nx );
-            const FPType binYValue = yBinAv( ny );
-            const FPType binZValue = zBinAv( nz );
             nEntries += nent;
             const auto sumw_abs = abs( sumw );
-            totalSumW += sumw_abs;
-            sumX += binXValue * sumw_abs;
-            sum2X += binXValue * binXValue * sumw_abs;
-            sumY += binYValue * sumw_abs;
-            sum2Y += binYValue * binYValue * sumw_abs;
-            sumZ += binZValue * sumw_abs;
-            sum2Z += binZValue * binZValue * sumw_abs;
+            momentsX.add( xBinAv( nx ), sumw_abs );
+            momentsY.add( yBinAv( ny ), sumw_abs );
+            momentsZ.add( zBinAv( nz ), sumw_abs );
           }
         }
       }
     }
-    const FPType meanX = abs( totalSumW ) > 0 ? sumX / totalSumW : 0.0;
-    const FPType stddevX =
-        abs( totalSumW ) > 0 ? detail::sqrt_or_zero( ( sum2X - sumX * ( sumX / totalSumW ) ) / totalSumW ) : 0.0;
-    const FPType meanY = abs( totalSumW ) > 0 ? sumY / totalSumW : 0.0;
-    const FPType stddevY =
-        abs( totalSumW ) > 0 ? detail::sqrt_or_zero( ( sum2Y - sumY * ( sumY / totalSumW ) ) / totalSumW ) : 0.0;
-    const FPType meanZ = abs( totalSumW ) > 0 ? sumZ / totalSumW : 0.0;
-    const FPType stddevZ =
-        abs( totalSumW ) > 0 ? detail::sqrt_or_zero( ( sum2Z - sumZ * ( sumZ / totalSumW ) ) / totalSumW ) : 0.0;
     // print
     const std::string ftitle = detail::formatTitle( gaudiHisto.title(), stringsWidth - 2 );
     return fmt::format( fmt::runtime( detail::histo3DFormatting ), detail::formatName( name, stringsWidth ),
-                        stringsWidth, stringsWidth, ftitle, stringsWidth, nEntries, nAllEntries, meanX, stddevX, meanY,
-                        stddevY, meanZ, stddevZ );
+                        stringsWidth, stringsWidth, ftitle, stringsWidth, nEntries, nAllEntries, momentsX.mean(),
+                        momentsX.stddev(), momentsY.mean(), momentsY.stddev(), momentsZ.mean(), momentsZ.stddev() );
   }
 
   struct BinAccessor {
@@ -868,38 +884,20 @@ namespace Gaudi::Histograming::Sink {
     const auto  nAllEntries = j.at( "nEntries" ).get<unsigned int>();
     // compute the various momenta
     BinAccessor               ba{ type, j };
-    double                    sumX{}, sum2X{}, sum3X{}, sum4X{}, nEntries{ 0 };
+    double                    nEntries{ 0 };
+    detail::WeightedMoments   momentsX;
     const details::BinAvValue xBinAv( minValueX, maxValueX, nBinsX, ArthTypeAccessor::is_integral( type ) );
     for ( unsigned int nx = 1; nx <= nBinsX; ++nx ) {
-      const double binXValue = xBinAv( nx );
-      const auto   n         = ba[nx];
+      const auto n = ba[nx];
       nEntries += n;
-      auto val = binXValue * n;
-      sumX += val;
-      val *= binXValue;
-      sum2X += val;
-      val *= binXValue;
-      sum3X += val;
-      val *= binXValue;
-      sum4X += val;
+      momentsX.add( xBinAv( nx ), n );
     }
     const std::string ftitle = detail::formatTitle( title, stringsWidth - 2 );
     if ( !( abs( nEntries ) > 0.0 ) ) { return ""; }
-    const double meanX     = sumX / nEntries;
-    const double sigmaX2   = ( sum2X / nEntries ) - std::pow( meanX, 2 );
-    const double stddevX   = detail::sqrt_or_zero( sigmaX2 );
-    const double EX3       = sum3X / nEntries;
-    const double A         = sigmaX2 * stddevX;
-    const double skewnessX = ( abs( A ) > 0.0 ? ( EX3 - ( 3 * sigmaX2 + meanX * meanX ) * meanX ) / A : 0.0 );
-    const double B         = sigmaX2 * sigmaX2;
-    const double kurtosisX =
-        ( abs( B ) > 0.0 && abs( A ) > 0.0
-              ? ( sum4X / nEntries - meanX * ( 4 * EX3 - meanX * ( 6 * sigmaX2 + 3 * meanX * meanX ) ) ) / B
-              : 3.0 );
     // print
     return fmt::format( fmt::runtime( detail::histo1DFormatting ), detail::formatName( name, stringsWidth ),
                         stringsWidth, stringsWidth, ftitle, stringsWidth, detail::IntWithFixedWidth{ nAllEntries },
-                        meanX, stddevX, skewnessX, kurtosisX - 3.0 );
+                        momentsX.mean(), momentsX.stddev(), momentsX.skewness(), momentsX.kurtosis() );
   }
 
   inline std::string printHistogram2D( std::string_view type, std::string_view name, std::string_view title,
@@ -916,35 +914,24 @@ namespace Gaudi::Histograming::Sink {
     // compute the various memneta
     BinAccessor               ba{ type, j };
     double                    nEntries{};
-    double                    sumX{}, sumY{};
-    double                    sum2X{}, sum2Y{};
+    detail::WeightedMoments   momentsX, momentsY;
     const auto                isInt = ArthTypeAccessor::is_integral( type );
     const details::BinAvValue xBinAv( minValueX, maxValueX, nBinsX, isInt );
     const details::BinAvValue yBinAv( minValueY, maxValueY, nBinsY, isInt );
     for ( unsigned int ny = 1; ny <= nBinsY; ++ny ) {
       const auto offset = ny * ( nBinsX + 2 );
       for ( unsigned int nx = 1; nx <= nBinsX; ++nx ) {
-        const double binXValue = xBinAv( nx );
-        const double binYValue = yBinAv( ny );
-        const auto   n         = ba[offset + nx];
+        const auto n = ba[offset + nx];
         nEntries += n;
-        sumX += n * binXValue;
-        sum2X += n * binXValue * binXValue;
-        sumY += n * binYValue;
-        sum2Y += n * binYValue * binYValue;
+        momentsX.add( xBinAv( nx ), n );
+        momentsY.add( yBinAv( ny ), n );
       }
     }
-    const double meanX = abs( nEntries ) > 0 ? sumX / nEntries : 0.0;
-    const double stddevX =
-        abs( nEntries ) > 0 ? detail::sqrt_or_zero( ( sum2X - sumX * ( sumX / nEntries ) ) / nEntries ) : 0.0;
-    const double meanY = abs( nEntries ) > 0 ? sumY / nEntries : 0.0;
-    const double stddevY =
-        abs( nEntries ) > 0 ? detail::sqrt_or_zero( ( sum2Y - sumY * ( sumY / nEntries ) ) / nEntries ) : 0.0;
     // print
     const std::string ftitle = detail::formatTitle( title, stringsWidth - 2 );
     return fmt::format( fmt::runtime( detail::histo2DFormatting ), detail::formatName( name, stringsWidth ),
-                        stringsWidth, stringsWidth, ftitle, stringsWidth, nEntries, nAllEntries, meanX, stddevX, meanY,
-                        stddevY );
+                        stringsWidth, stringsWidth, ftitle, stringsWidth, nEntries, nAllEntries, momentsX.mean(),
+                        momentsX.stddev(), momentsY.mean(), momentsY.stddev() );
   }
 
   inline std::string printHistogram3D( std::string_view type, std::string_view name, std::string_view title,
@@ -964,8 +951,7 @@ namespace Gaudi::Histograming::Sink {
     // compute the various memneta
     BinAccessor               ba{ type, j };
     double                    nEntries{};
-    double                    sumX{}, sumY{}, sumZ{};
-    double                    sum2X{}, sum2Y{}, sum2Z{};
+    detail::WeightedMoments   momentsX, momentsY, momentsZ;
     const auto                isInt = ArthTypeAccessor::is_integral( type );
     const details::BinAvValue xBinAv( minValueX, maxValueX, nBinsX, isInt );
     const details::BinAvValue yBinAv( minValueY, maxValueY, nBinsY, isInt );
@@ -975,34 +961,19 @@ namespace Gaudi::Histograming::Sink {
       for ( unsigned int ny = 1; ny <= nBinsY; ++ny ) {
         const auto offset = ( offsetz + ny ) * ( nBinsX + 2 );
         for ( unsigned int nx = 1; nx <= nBinsX; ++nx ) {
-          const double binXValue = xBinAv( nx );
-          const double binYValue = yBinAv( ny );
-          const double binZValue = zBinAv( nz );
-          const auto   n         = ba[offset + nx];
+          const auto n = ba[offset + nx];
           nEntries += n;
-          sumX += n * binXValue;
-          sum2X += n * binXValue * binXValue;
-          sumY += n * binYValue;
-          sum2Y += n * binYValue * binYValue;
-          sumZ += n * binZValue;
-          sum2Z += n * binZValue * binZValue;
+          momentsX.add( xBinAv( nx ), n );
+          momentsY.add( yBinAv( ny ), n );
+          momentsZ.add( zBinAv( nz ), n );
         }
       }
     }
-    const double meanX = abs( nEntries ) > 0 ? sumX / nEntries : 0.0;
-    const double stddevX =
-        abs( nEntries ) > 0 ? detail::sqrt_or_zero( ( sum2X - sumX * ( sumX / nEntries ) ) / nEntries ) : 0.0;
-    const double meanY = abs( nEntries ) > 0 ? sumY / nEntries : 0.0;
-    const double stddevY =
-        abs( nEntries ) > 0 ? detail::sqrt_or_zero( ( sum2Y - sumY * ( sumY / nEntries ) ) / nEntries ) : 0.0;
-    const double meanZ = abs( nEntries ) > 0 ? sumZ / nEntries : 0.0;
-    const double stddevZ =
-        abs( nEntries ) > 0 ? detail::sqrt_or_zero( ( sum2Z - sumZ * ( sumZ / nEntries ) ) / nEntries ) : 0.0;
     // print
     const std::string ftitle = detail::formatTitle( title, stringsWidth - 2 );
     return fmt::format( fmt::runtime( detail::histo3DFormatting ), detail::formatName( name, stringsWidth ),
-                        stringsWidth, stringsWidth, ftitle, stringsWidth, nEntries, nAllEntries, meanX, stddevX, meanY,
-                        stddevY, meanZ, stddevZ );
+                        stringsWidth, stringsWidth, ftitle, stringsWidth, nEntries, nAllEntries, momentsX.mean(),
+                        momentsX.stddev(), momentsY.mean(), momentsY.stddev(), momentsZ.mean(), momentsZ.stddev() );
   }
 
 } // namespace Gaudi::Histograming::Sink
