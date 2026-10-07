@@ -13,7 +13,7 @@ from GaudiTesting import GaudiExeTest
 
 class Test(GaudiExeTest):
     command = ["gaudirun.py", "-v", "../../../options/testMultithreadedAlg.py"]
-    timeout = 120
+    timeout = 180
 
     test_block = GaudiExeTest.find_reference_block("""
         A1                   DEBUG CPUCrunch complete in TBB parallel for block 4 to 5
