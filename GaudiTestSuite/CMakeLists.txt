@@ -254,5 +254,3 @@ gaudi_add_dictionary(GaudiTestSuiteDict
 
 # Install python modules
 gaudi_install(PYTHON)
-# Install other scripts
-gaudi_install(SCRIPTS)
