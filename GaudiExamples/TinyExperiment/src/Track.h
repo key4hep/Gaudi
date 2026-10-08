@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -10,6 +10,7 @@
 \***********************************************************************************/
 #pragma once
 
+// STL includes
 #include <vector>
 
 namespace Gaudi::Example::TinyExperiment {
@@ -19,9 +20,6 @@ namespace Gaudi::Example::TinyExperiment {
    * fully defined by an angle theta
    */
   struct Track {
-    // This default constructor is neede priori to C++20 in order to allow
-    // emplace_back for Tracks
-    Track( float _theta ) : theta( _theta ) {}
     float theta;
   };
 
