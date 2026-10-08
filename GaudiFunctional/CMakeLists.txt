@@ -16,5 +16,4 @@ GaudiFunctional
 gaudi_add_header_only_library(Functional
     LINK
         Gaudi::GaudiKernel
-        Rangev3::rangev3 # fallback for std::views::zip and std::views::as_const in zip.h
 )

@@ -401,12 +401,12 @@ namespace Gaudi::Histograming::Sink {
       TDirectory* currentDir = file.GetDirectory( "" );
       for ( auto&& part :
             dir | std::views::transform( []( char c ) { return c == '.' ? '/' : c; } ) | std::views::split( '/' ) ) {
+        if ( !currentDir ) break;
         std::string const d( std::ranges::begin( part ), std::ranges::end( part ) );
         if ( auto next = currentDir->GetDirectory( d.c_str() ) )
           currentDir = next;
         else
           currentDir = currentDir->mkdir( d.c_str() );
-        if ( !currentDir ) break;
       }
       if ( !currentDir )
         throw GaudiException( fmt::format( "Could not create directory {}", dir ), "Histogram::Sink::Root",

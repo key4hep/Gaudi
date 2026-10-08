@@ -14,15 +14,8 @@
 #  include <GaudiKernel/GaudiException.h>
 #  include <sstream>
 #endif
+#include <ranges>
 #include <utility>
-
-#if defined( __cpp_lib_ranges_zip ) && defined( __cpp_lib_ranges_as_const )
-#  define GAUDI_FUNCTIONAL_USES_STD_RANGES 1
-#  include <ranges>
-#else
-#  include <range/v3/view/const.hpp>
-#  include <range/v3/view/zip.hpp>
-#endif
 
 namespace Gaudi::Functional::details {
   // CRJ : Stuff for zipping
@@ -68,11 +61,7 @@ namespace Gaudi::Functional::details {
 #ifndef NDEBUG
       verifySizes( args... );
 #endif
-#if defined( GAUDI_FUNCTIONAL_USES_STD_RANGES )
       return std::ranges::zip_view( std::forward<Args>( args )... );
-#else
-      return ranges::views::zip( std::forward<Args>( args )... );
-#endif
     }
 
     /// Zips multiple containers together to form a single const range
@@ -81,11 +70,7 @@ namespace Gaudi::Functional::details {
 #ifndef NDEBUG
       verifySizes( args... );
 #endif
-#if defined( GAUDI_FUNCTIONAL_USES_STD_RANGES )
       return std::ranges::as_const_view( std::ranges::zip_view( std::forward<Args>( args )... ) );
-#else
-      return ranges::views::const_( ranges::views::zip( std::forward<Args>( args )... ) );
-#endif
     }
   } // namespace zip
 } // namespace Gaudi::Functional::details
