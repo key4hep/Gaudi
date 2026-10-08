@@ -887,6 +887,9 @@ int createAppMgr()
                                                                                                  // message
   propMgr->setProperty( "OutputLevel", 7 ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ ); // No other printout
                                                                                                     // messages
+  // do not start ROOT (and its interpreter) unless a component needs it
+  propMgr->setProperty( "EnableROOTThreadSafety", false ).ignore();
+  propMgr->setProperty( "UseMessageSvcForROOTMessages", false ).ignore();
   appUI->configure().ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
   auto msgSvc = SmartIF<IMessageSvc>{ iface }.as<IProperty>();
   msgSvc->setPropertyRepr( "setWarning", "['DefaultName', 'PropertyHolder']" )
