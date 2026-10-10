@@ -155,13 +155,6 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug" AND CMAKE_CXX_COMPILER_ID MATCHES "Clang|GN
     set_source_files_properties(src/Histograms/CounterHistos.cpp PROPERTIES COMPILE_OPTIONS "-Og")
 endif()
 
-# Build the executable
-gaudi_add_executable(Allocator
-                        SOURCES src/Allocator/Allocator.cpp
-                                src/Allocator/MyClass1A.cpp
-                                src/Allocator/MyClass1.cpp
-                        LINK GaudiTestSuiteLib
-                            GaudiKernel)
 gaudi_add_executable(testAppMgrStateMachine
                      SOURCES src/testing/TestAppMgrStateMachine.cpp
                      LINK GaudiKernel)

@@ -324,9 +324,9 @@ Look and feel of typical sub-project ``CMakeLists.txt``:
       PRIVATE src/EvtColsEx/EvtColAlg.cpp src/Histograms/Aida2Root.cpp)
     target_link_libraries(SubdirName PRIVATE AIDA::aida)
   endif()
-  # Build the executable
-  gaudi_add_executable(Allocator
-    SOURCES src/Allocator/Allocator.cpp src/Allocator/MyClass1.cpp
+  # Build an executable
+  gaudi_add_executable(MyExecutable
+    SOURCES src/main.cpp
     LINK SubdirNameLib GaudiKernel)
   # Generate GaudiExamples_user.confdb
   gaudi_generate_confuserdb()
