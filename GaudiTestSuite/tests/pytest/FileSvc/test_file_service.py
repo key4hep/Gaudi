@@ -72,8 +72,9 @@ def config():
     loopmgr = C.HiveSlimEventLoopMgr(SchedulerName="AvalancheSchedulerSvc")
     whiteboard = C.HiveWhiteBoard("EventDataSvc", EventSlots=5)
     svcs = [
-        incident_listener,
         fileSvc,
+        # Listeners initialized after FileSvc must also discover its outputs.
+        incident_listener,
         whiteboard,
     ]
     return (
