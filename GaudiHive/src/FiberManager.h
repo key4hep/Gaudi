@@ -13,6 +13,7 @@
 #include <boost/fiber/algo/shared_work.hpp>
 #include <boost/fiber/condition_variable.hpp>
 #include <boost/fiber/fiber.hpp>
+#include <boost/fiber/fixedsize_stack.hpp>
 #include <boost/fiber/mutex.hpp>
 
 #include <thread>
@@ -43,7 +44,7 @@ public:
    * fiber scheduling algorithm.
    *
    *    * */
-  FiberManager( int n_threads );
+  FiberManager( int n_threads, std::size_t stackSize = 16ULL * 1024 * 1024 );
   ~FiberManager();
 
   /** Schedule work to run on the asynchronous pool.
@@ -60,16 +61,23 @@ public:
    * */
   template <typename F>
   void schedule( F&& func ) {
-    // Add a new fiber invoking the function to the shared work queue, then notify the workers in case they where
+    // Add a new fiber invoking the function to the shared work queue, then notify the workers in case they were
     // sleeping.
-    boost::fibers::fiber( boost::fibers::launch::post, std::forward<F>( func ) ).detach();
+    boost::fibers::fiber( boost::fibers::launch::post, std::allocator_arg, StackAlloc( m_stackSize ),
+                          std::forward<F>( func ) )
+        .detach();
     for ( auto* p : m_schedAlgoList ) { p->notify(); }
   }
 
 private:
-  using SchedAlgo = boost::fibers::algo::shared_work;
+  /// Stack allocator used for fibers
+  using StackAlloc = boost::fibers::fixedsize_stack;
+  using SchedAlgo  = boost::fibers::algo::shared_work;
   boost::fibers::condition_variable m_shuttingDown_cv{};
   boost::fibers::mutex              m_shuttingDown_mtx{};
   std::vector<std::jthread>         m_threads{};
   std::vector<SchedAlgo*>           m_schedAlgoList{};
+
+  /// Stack size for fibers -- virtual memory so this is not consume
+  std::size_t m_stackSize;
 };

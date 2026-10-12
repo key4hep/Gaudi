@@ -15,7 +15,7 @@
 #  include <boost/fiber/stack_allocator_wrapper.hpp>
 #endif
 
-FiberManager::FiberManager( int n_threads ) {
+FiberManager::FiberManager( int n_threads, std::size_t stackSize ) : m_stackSize( stackSize ) {
   // Start a fiber scheduler with a shared work queue on the current thread.
   // The fiber scheduler is configured not to sleep in case there are no ready fibers, but this situation should never
   // happen as the main fiber of this thread should never be suspended so it's always active and scheduler will never
@@ -35,7 +35,7 @@ FiberManager::FiberManager( int n_threads ) {
       m_schedAlgoList.at( i ) = algo_ptr;
 #if ( BOOST_VERSION >= 108400 )
       boost::fibers::initialize_thread( algo_ptr,
-                                        boost::fibers::make_stack_allocator_wrapper<boost::fibers::default_stack>() );
+                                        boost::fibers::make_stack_allocator_wrapper<StackAlloc>( m_stackSize ) );
 #else
       boost::fibers::context::active()->get_scheduler()->set_algo( algo_ptr );
 #endif
