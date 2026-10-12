@@ -103,7 +103,8 @@ StatusCode AvalancheSchedulerSvc::initialize() {
   std::binary_semaphore fiber_manager_initalized{ 0 };
   m_thread = std::thread( [this, &fiber_manager_initalized]() {
     // Initialize FiberManager
-    this->m_fiberManager = std::make_unique<FiberManager>( this->m_numOffloadThreads.value() );
+    this->m_fiberManager =
+        std::make_unique<FiberManager>( this->m_numOffloadThreads.value(), this->m_fiberStackSize.value() );
     fiber_manager_initalized.release();
     this->activate();
   } );
