@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -70,6 +70,7 @@ private:
   Gaudi::Property<std::vector<std::pair<double, double>>> m_2{ this, "VectorOfPairsDD" };
   Gaudi::Property<std::vector<std::vector<std::string>>>  m_3{ this, "VectorOfVectorsString" };
   Gaudi::Property<std::vector<std::vector<double>>>       m_4{ this, "VectorOfVectorsDouble" };
+  Gaudi::Property<std::vector<std::vector<float>>>        m_17{ this, "VectorOfVectorsFloat" };
 
   Gaudi::Property<std::map<int, double>>                           m_5{ this, "MapIntDouble" };
   Gaudi::Property<std::map<std::string, std::string>>              m_6{ this, "MapStringString" };
@@ -132,6 +133,7 @@ StatusCode ExtendedProperties::execute() {
   always() << " \t" << m_2 << endmsg;
   always() << " \t" << m_3 << endmsg;
   always() << " \t" << m_4 << endmsg;
+  always() << " \t" << m_17 << endmsg;
   always() << " \t" << m_5 << endmsg;
   always() << " \t" << m_6 << endmsg;
   always() << " \t" << m_7 << endmsg;

@@ -288,6 +288,15 @@ namespace Gaudi {
      *  @date 2006-05-14
      */
     GAUDI_API StatusCode parse( std::vector<std::vector<double>>& result, std::string_view input );
+    /** parse the <c>std::vector\<std::vector\<float\> \></c> value
+     *
+     *  @see Gaudi::Parsers::VectorGrammar
+     *  @see Gaudi::Parsers::RealGrammar
+     *  @param result (output) vector with vectors of floats
+     *  @param input  (input) the string to be parsed
+     *  @return status code
+     */
+    GAUDI_API StatusCode parse( std::vector<std::vector<float>>& result, std::string_view input );
     /** parse the <c>std::vector\<std::vector\<int\> \></c> value
      *
      *  @see Gaudi::Parsers::VectorGrammar

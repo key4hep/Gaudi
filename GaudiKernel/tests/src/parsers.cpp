@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -117,6 +117,15 @@ BOOST_AUTO_TEST_CASE( test_VectorGramar ) {
     BOOST_CHECK_CLOSE( result[0][0], 1, 1.e-4 );
     BOOST_CHECK_CLOSE( result[0][1], 2, 1.e-4 );
     BOOST_CHECK_CLOSE( result[1][0], 3, 1.e-4 );
+  }
+
+  {
+    std::vector<std::vector<float>> result;
+    BOOST_CHECK( parse( result, "[[1.5, 2]/* Test comments */,[3]]" ) );
+    BOOST_CHECK_EQUAL( result.size(), 2 );
+    BOOST_CHECK_CLOSE( result[0][0], 1.5f, 1.e-4 );
+    BOOST_CHECK_CLOSE( result[0][1], 2.f, 1.e-4 );
+    BOOST_CHECK_CLOSE( result[1][0], 3.f, 1.e-4 );
   }
 
   {
