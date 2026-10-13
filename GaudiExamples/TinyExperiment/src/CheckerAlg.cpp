@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,14 +8,18 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-
+// Local includes
 #include "MCTrack.h"
 #include "Track.h"
 
+// Framework includes
 #include <Gaudi/Accumulators.h>
 #include <Gaudi/Functional/Consumer.h>
 
-#include <climits>
+// STL includes
+#include <algorithm>
+#include <cmath>
+#include <string>
 
 namespace Gaudi::Example::TinyExperiment {
 
@@ -31,24 +35,19 @@ namespace Gaudi::Example::TinyExperiment {
 
     void operator()( MCTracks const& mcTracks, Tracks const& tracks ) const override {
       for ( auto const& track : tracks ) {
-        MCTracks selection;
-        selection.reserve( 10 );
-        std::copy_if( mcTracks.begin(), mcTracks.end(), std::back_inserter( selection ),
-                      [track, this]( MCTrack mcTrack ) { return almostEqual( track.theta, mcTrack.theta ); } );
-        if ( selection.size() == 0 ) {
-          ++n_ghostTracks;
-        } else {
+        bool found =
+            std::ranges::any_of( mcTracks, [&]( MCTrack const& mc ) { return almostEqual( track.theta, mc.theta ); } );
+        if ( found ) {
           ++n_foundTracks;
+        } else {
+          ++n_ghostTracks;
         }
       }
-      for ( auto const& mcTrack : mcTracks ) {
-        Tracks selection;
-        selection.reserve( 10 );
-        std::copy_if( tracks.begin(), tracks.end(), std::back_inserter( selection ),
-                      [mcTrack, this]( Track track ) { return almostEqual( track.theta, mcTrack.theta ); } );
-        if ( selection.size() == 0 ) {
+      for ( auto const& mc : mcTracks ) {
+        auto n = std::ranges::count_if( tracks, [&]( Track const& t ) { return almostEqual( t.theta, mc.theta ); } );
+        if ( n == 0 ) {
           ++n_lostTracks;
-        } else if ( selection.size() > 1 ) {
+        } else if ( n > 1 ) {
           ++n_duplicatedTracks;
         }
       }

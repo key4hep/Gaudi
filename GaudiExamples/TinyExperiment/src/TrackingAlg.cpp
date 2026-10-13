@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -9,13 +9,17 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 
+// Local includes
 #include "Hit.h"
 #include "Track.h"
 
+// Framework includes
 #include <Gaudi/Accumulators.h>
 #include <Gaudi/Functional/Transformer.h>
 
+// STD includes
 #include <cmath>
+#include <numbers>
 #include <vector>
 
 namespace Gaudi::Example::TinyExperiment {
@@ -34,21 +38,22 @@ namespace Gaudi::Example::TinyExperiment {
       std::vector<unsigned int> bins( m_nBins, 0 );
       for ( auto const& hit : hits ) {
         auto theta = std::atan( hit.y / hit.x );
-        auto index = static_cast<unsigned int>( ( theta + M_PI / 2 ) / M_PI * m_nBins );
+        auto index = static_cast<unsigned int>( ( theta + std::numbers::pi_v<float> / 2 ) / std::numbers::pi_v<float> *
+                                                m_nBins );
         ++bins.at( index );
       }
       // extract tracks
       Tracks tracks;
       tracks.reserve( hits.size() / 10 );
       for ( unsigned int n = 0; n < m_nBins; n++ ) {
-        if ( bins[n] > 0 ) {}
         if ( bins[n] >= m_sensibility ) {
-          tracks.emplace_back( -M_PI / 2 + ( M_PI * ( n + 0.5f ) ) / m_nBins );
+          tracks.emplace_back( -std::numbers::pi_v<float> / 2 +
+                               ( std::numbers::pi_v<float> * ( n + 0.5f ) ) / m_nBins );
           ++n_tracks;
         }
       }
       return tracks;
-    };
+    }
 
   private:
     Gaudi::Property<unsigned int> m_nBins{ this, "NumberBins", 180, "Number of bins in the Hough Transform for theta" };
