@@ -49,6 +49,7 @@ def validate(stdout):
         ],
         "VectorOfPairsII": [(1, 1), (2, 1), (3, 2), (4, 3), (5, 5)],
         "VectorOfVectorsDouble": [[0.0, 1.0, 2.0], [0.0, -0.5, -0.25]],
+        "VectorOfVectorsFloat": [[0.0, 1.5, 2.0], [-0.5, -0.25]],
         "VectorOfVectorsString": [["a", "b", "c"], ["A", "B", "C"]],
         "EmptyMap": {},
         "EmptyVector": [],

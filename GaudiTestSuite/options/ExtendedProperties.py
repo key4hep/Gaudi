@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -32,6 +32,9 @@ xProps.VectorOfVectorsString = [["a", "b", "c"], ["A", "B", "C"]]
 
 # std::vector<std::vector<double> >
 xProps.VectorOfVectorsDouble = [[0, 1, 2], [0, -0.5, -0.25]]
+
+# std::vector<std::vector<float> >
+xProps.VectorOfVectorsFloat = [[0, 1.5, 2], [-0.5, -0.25]]
 
 # std::map<int,double>
 xProps.MapIntDouble = {1: 0.1, 2: 0.2, 3: 0.3}
