@@ -17,6 +17,7 @@
 #include <TFile.h>
 #include <boost/algorithm/string.hpp>
 #include <memory>
+#include <mutex>
 #include <optional>
 #include <string>
 #include <unordered_map>
@@ -29,8 +30,8 @@
  * unintentionally overwritten or duplicated.
  *
  * Files can be accessed via an identifier and should be listed at configuration time
- * through the Config property. Opening a distinct physical file emits a
- * CONNECTED_OUTPUT ContextIncident<TFile*> when IncidentSvc is available.
+ * through the Config property. Each distinct physical file is announced by a
+ * CONNECTED_OUTPUT ContextIncident<TFile*> at start(), when IncidentSvc is available.
  *
  * Note that the paths given to Config property are URL syntax, that is they support
  * extra paremeters in key=vlaue form after a '?' and seprated by '&'
@@ -45,6 +46,8 @@ public:
   FileSvc( const std::string& name, ISvcLocator* svc );
 
   StatusCode initialize() override;
+
+  StatusCode start() override;
 
   StatusCode finalize() override;
 
@@ -87,6 +90,7 @@ private:
 
   // Vector to hold all files unique pointers
   std::vector<std::shared_ptr<TFile>> m_files;
+  std::once_flag                      m_announceOutputs;
 };
 
 DECLARE_COMPONENT( FileSvc )
@@ -162,8 +166,6 @@ FileSvc::FileSvc( const std::string& name, ISvcLocator* svc ) : base_class( name
 
 StatusCode FileSvc::initialize() {
   return Service::initialize().andThen( [this]() {
-    auto incidentSvc = service<IIncidentSvc>( "IncidentSvc", false );
-
     if ( checkConfig( m_config, *this ).isFailure() ) { return StatusCode::FAILURE; }
 
     for ( const auto& [identifier, path] : m_config ) {
@@ -181,11 +183,6 @@ StatusCode FileSvc::initialize() {
         if ( auto file = openFile( path, params["mode"], compress ) ) {
           m_files.push_back( std::move( file ) );
           m_identifiers[boost::to_lower_copy( identifier )] = m_files.size() - 1;
-          auto* outputFile                                  = m_files.back().get();
-          if ( incidentSvc ) {
-            incidentSvc->fireIncident(
-                ContextIncident<TFile*>( outputFile->GetName(), "CONNECTED_OUTPUT", outputFile ) );
-          }
         } else {
           error() << "Failed to open file: " << params["path"] << endmsg;
           return StatusCode::FAILURE;
@@ -194,6 +191,21 @@ StatusCode FileSvc::initialize() {
     }
 
     return StatusCode::SUCCESS;
+  } );
+}
+
+StatusCode FileSvc::start() {
+  return Service::start().andThen( [this] {
+    // All services have now initialized and registered their listeners, including
+    // those ordered after FileSvc so that they finalize before its files close.
+    // Announce physical files, not identifiers, and do not repeat on stop/start.
+    std::call_once( m_announceOutputs, [this] {
+      if ( auto incidentSvc = service<IIncidentSvc>( "IncidentSvc", false ) ) {
+        for ( auto const& file : m_files ) {
+          incidentSvc->fireIncident( ContextIncident<TFile*>( file->GetName(), "CONNECTED_OUTPUT", file.get() ) );
+        }
+      }
+    } );
   } );
 }
 
