@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -40,18 +40,6 @@ namespace details {
   // argument_t<lambda> will be equal to Arg_t
   template <typename lambda>
   using argument_t = typename arg_helper<lambda>::type;
-
-  template <typename Fun>
-  auto add_deref( Fun f ) {
-    return compose( f, [=]( auto*... p ) { return f( *p... ); } );
-  }
-
-  template <typename Proj, typename Cmp = std::greater<>>
-  auto make_cmp( Proj p, Cmp cmp = {} ) {
-    static_assert( std::is_reference_v<argument_t<Proj>>, "must be a reference" );
-    static_assert( std::is_const_v<std::remove_reference_t<argument_t<Proj>>>, "must be const" );
-    return [=]( argument_t<Proj> lhs, argument_t<Proj> rhs ) { return cmp( p( lhs ), p( rhs ) ); };
-  }
 } // namespace details
 
 /**
@@ -157,26 +145,6 @@ public:
 
   /// Extraction operators
   friend std::ostream& operator<<( std::ostream& os, const EventIDBase& rhs );
-
-  static auto SortByTimeStamp() {
-    return ::details::add_deref( ::details::make_cmp(
-        []( const EventIDBase& e ) { return std::tie( e.m_time_stamp, e.m_time_stamp_ns_offset ); } ) );
-  }
-
-  static auto SortByRunEvent() {
-    return ::details::add_deref(
-        ::details::make_cmp( []( const EventIDBase& e ) { return std::tie( e.m_run_number, e.m_event_number ); } ) );
-  }
-
-  static auto SortByLumiEvent() {
-    return ::details::add_deref(
-        ::details::make_cmp( []( const EventIDBase& e ) { return std::tie( e.m_lumi_block, e.m_event_number ); } ) );
-  }
-
-  static auto SortByRunLumi() {
-    return ::details::add_deref(
-        ::details::make_cmp( []( const EventIDBase& e ) { return std::tie( e.m_run_number, e.m_lumi_block ); } ) );
-  }
 
 private:
   enum Type { Invalid = 0, RunEvent = 1 << 1, TimeStamp = 1 << 2, LumiEvent = 1 << 3, RunLumi = 1 << 4 };
