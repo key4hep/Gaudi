@@ -360,6 +360,9 @@ if(BUILD_TESTING)
   gaudi_add_executable(test_HistoUtils SOURCES tests/src/RootHistogramUtilsUnitTest.cpp
     LINK GaudiKernel Boost::unit_test_framework ROOT::Hist TEST)
 
+  gaudi_add_executable(test_HistogramStatsStability SOURCES tests/src/HistogramStatsStabilityUnitTest.cpp
+    LINK GaudiKernel Boost::unit_test_framework TEST)
+
   foreach(test_case IN ITEMS 01 02 03 04)
     add_executable(test_StatusCodeFail_case${test_case} tests/src/test_StatusCode_fail.cxx)
     target_include_directories(test_StatusCodeFail_case${test_case} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
