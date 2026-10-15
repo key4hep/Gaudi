@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -9,19 +9,112 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 // Local includes
-#include "HiveSlimEventLoopMgr.h"
 #include "HistogramAgent.h"
-#include <GaudiKernel/StatusCode.h>
 
 // Framework includes
 #include <GaudiKernel/AppReturnCode.h>
 #include <GaudiKernel/DataObject.h>
 #include <GaudiKernel/DataSvc.h>
 #include <GaudiKernel/EventContext.h>
+#include <GaudiKernel/IAlgExecStateSvc.h>
+#include <GaudiKernel/IAlgResourcePool.h>
+#include <GaudiKernel/IDataManagerSvc.h>
+#include <GaudiKernel/IEvtSelector.h>
+#include <GaudiKernel/IHiveWhiteBoard.h>
+#include <GaudiKernel/IIncidentListener.h>
+#include <GaudiKernel/IIncidentSvc.h>
+#include <GaudiKernel/IScheduler.h>
 #include <GaudiKernel/Incident.h>
+#include <GaudiKernel/MinimalEventLoopMgr.h>
+#include <GaudiKernel/SmartIF.h>
+#include <GaudiKernel/StatusCode.h>
 
-// External libraries
+// STL includes
+#include <algorithm>
 #include <chrono>
+#include <cstdint>
+#include <memory>
+#include <vector>
+
+class HiveSlimEventLoopMgr : public extends<Service, IEventProcessor> {
+
+protected:
+  Gaudi::Property<std::string> m_histPersName{ this, "HistogramPersistency", "", "" };
+  Gaudi::Property<std::string> m_evtsel{ this, "EvtSel", "", "" };
+  Gaudi::Property<std::string> m_schedulerName{ this, "SchedulerName", "AvalancheSchedulerSvc",
+                                                "Name of the scheduler to be used" };
+
+  Gaudi::Property<std::vector<unsigned int>> m_eventNumberBlacklist{ this, "EventNumberBlackList", {}, "" };
+  Gaudi::Property<bool> m_abortOnFailure{ this, "AbortOnFailure", true, "Abort job on event failure" };
+
+  /// Reference to the Event Data Service's IDataManagerSvc interface
+  SmartIF<IDataManagerSvc> m_evtDataMgrSvc;
+  /// Reference to the Event Selector
+  SmartIF<IEvtSelector> m_evtSelector;
+  /// Event Iterator
+  IEvtSelector::Context* m_evtContext = nullptr;
+  /// Reference to the Histogram Data Service
+  SmartIF<IDataManagerSvc> m_histoDataMgrSvc;
+  /// Reference to the Histogram Persistency Service
+  SmartIF<IConversionSvc> m_histoPersSvc;
+  /// Reference to the Whiteboard
+  SmartIF<IHiveWhiteBoard> m_whiteboard;
+  /// Reference to the Algorithm resource pool
+  SmartIF<IAlgResourcePool> m_algResourcePool;
+  /// Reference to the AlgExecStateSvc
+  SmartIF<IAlgExecStateSvc> m_algExecStateSvc;
+  /// Property interface of ApplicationMgr
+  SmartIF<IProperty> m_appMgrProperty;
+  /// Flag to avoid to fire the EnvEvent incident twice in a row
+  /// (and also not before the first event)
+  bool m_endEventFired = false;
+  /// A shortcut for the scheduler
+  SmartIF<IScheduler> m_schedulerSvc;
+  /// Clear a slot in the WB
+  StatusCode clearWBSlot( int evtSlot );
+  /// Declare the root address of the event
+  StatusCode declareEventRootAddress();
+  /// Drain the scheduler from all actions that may be queued
+  StatusCode drainScheduler( int& finishedEvents );
+  /// Instance of the incident listener waiting for AbortEvent.
+  SmartIF<IIncidentListener> m_abortEventListener;
+  /// Scheduled stop of event processing
+  bool m_scheduledStop = false;
+  /// Reference to the incident service
+  SmartIF<IIncidentSvc> m_incidentSvc;
+
+  // if finite number of evts is processed use bitset
+  std::vector<uint8_t> m_blackList;
+
+  EventContext::ContextEvt_t m_nevt{ 0 };
+
+public:
+  // inherit base class constructor
+  using extends::extends;
+
+  ~HiveSlimEventLoopMgr() override;
+
+  /// Create event address using event selector
+  StatusCode getEventRoot( IOpaqueAddress*& refpAddr );
+  /// implementation of IService::initialize
+  StatusCode initialize() override;
+  /// implementation of IService::reinitialize
+  StatusCode reinitialize() override;
+  /// implementation of IService::stop
+  StatusCode stop() override;
+  /// implementation of IService::finalize
+  StatusCode finalize() override;
+  /// implementation of IService::nextEvent
+  StatusCode nextEvent( int maxevt ) override;
+  /// implementation of IEventProcessor::createEventContext()
+  EventContext createEventContext() override;
+  /// implementation of IEventProcessor::executeEvent(EventContext&&)
+  StatusCode executeEvent( EventContext&& ctx ) override;
+  /// implementation of IEventProcessor::executeRun()
+  StatusCode executeRun( int maxevt ) override;
+  /// implementation of IEventProcessor::stopRun()
+  StatusCode stopRun() override;
+};
 
 // Instantiation of a static factory class used by clients to create instances of this service
 DECLARE_COMPONENT( HiveSlimEventLoopMgr )
@@ -271,8 +364,8 @@ StatusCode HiveSlimEventLoopMgr::executeEvent( EventContext&& ctx ) {
   m_algExecStateSvc->reset( ctx );
 
   // Check if event number is in blacklist
-  if ( m_blackListBS != nullptr ) { // we are processing a finite number of events, use bitset blacklist
-    if ( m_blackListBS->test( ctx.evt() ) ) {
+  if ( !m_blackList.empty() ) { // we are processing a finite number of events, use bitset blacklist
+    if ( m_blackList.at( ctx.evt() ) ) {
       VERBOSE_MSG << "Event " << ctx.evt() << " on black list" << endmsg;
       m_whiteboard->freeStore( ctx.slot() ).ignore( /* AUTOMATICALLY ADDED FOR gaudi/Gaudi!763 */ );
       return StatusCode::RECOVERABLE;
@@ -319,10 +412,10 @@ StatusCode HiveSlimEventLoopMgr::executeRun( int maxevt ) {
 
   if ( maxevt > 0 ) { // finite number of events to process
     const unsigned int umaxevt = static_cast<unsigned int>( maxevt );
-    m_blackListBS              = std::make_unique<boost::dynamic_bitset<>>( maxevt ); // all initialized to zero
-    for ( unsigned int i = 0; i < m_eventNumberBlacklist.size() && m_eventNumberBlacklist[i] <= umaxevt;
+    m_blackList.assign( maxevt, 0 ); // all initialized to 0
+    for ( unsigned int i = 0; i < m_eventNumberBlacklist.size() && m_eventNumberBlacklist[i] < umaxevt;
           ++i ) { // black list is sorted in init
-      m_blackListBS->set( m_eventNumberBlacklist[i], true );
+      m_blackList[m_eventNumberBlacklist[i]] = 1;
     }
   }
 
@@ -330,7 +423,7 @@ StatusCode HiveSlimEventLoopMgr::executeRun( int maxevt ) {
   sc = nextEvent( maxevt );
   if ( sc.isFailure() ) eventfailed = true;
 
-  m_blackListBS.reset( nullptr );
+  m_blackList.clear();
 
   return eventfailed ? StatusCode::FAILURE : StatusCode::SUCCESS;
 }
