@@ -10,22 +10,12 @@
 \***********************************************************************************/
 #pragma once
 
-// std includes
-#include <algorithm>
-#include <memory>
-#include <sstream>
-#include <unordered_map>
-#include <variant>
-#include <vector>
-
-#include <boost/filesystem.hpp>
-#include <boost/graph/adjacency_list.hpp>
-#include <boost/graph/graphml.hpp>
-
-// fwk includes
+// Local includes
 #include "../AlgsExecutionStates.h"
 #include "../EventSlot.h"
 #include "Visitors/IGraphVisitor.h"
+
+// Framework includes
 #include <Gaudi/Algorithm.h>
 #include <GaudiKernel/CommonMessaging.h>
 #include <GaudiKernel/DataObject.h>
@@ -34,6 +24,19 @@
 #include <GaudiKernel/ITimelineSvc.h>
 #include <GaudiKernel/TaggedBool.h>
 #include <GaudiKernel/TimelineEvent.h>
+
+// STL includes
+#include <algorithm>
+#include <filesystem>
+#include <memory>
+#include <sstream>
+#include <unordered_map>
+#include <variant>
+#include <vector>
+
+// Boost includes
+#include <boost/graph/adjacency_list.hpp>
+#include <boost/graph/graphml.hpp>
 
 namespace concurrency {
   using Concurrent     = Gaudi::tagged_bool<class Concurrent_tag>;
@@ -685,9 +688,9 @@ namespace concurrency {
     /// Print out control flow of Algorithms and Sequences
     std::string dumpControlFlow() const;
     /// dump to file the precedence rules
-    void dumpPrecRules( const boost::filesystem::path&, const EventSlot& slot );
+    void dumpPrecRules( const std::filesystem::path&, const EventSlot& slot );
     /// dump to file the precedence trace
-    void dumpPrecTrace( const boost::filesystem::path&, const EventSlot& slot );
+    void dumpPrecTrace( const std::filesystem::path&, const EventSlot& slot );
     /// set cause-effect connection between two algorithms in the precedence trace
     void addEdgeToPrecTrace( const AlgorithmNode* u, const AlgorithmNode* v );
     ///

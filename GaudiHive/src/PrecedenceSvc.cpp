@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,17 +8,23 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
+
+// Local includes
 #include "PrecedenceSvc.h"
 #include "EventSlot.h"
 #include "PRGraph/Visitors/Promoters.h"
 #include "PRGraph/Visitors/Rankers.h"
 #include "PRGraph/Visitors/Validators.h"
 
+// Framework includes
 #include <Gaudi/Algorithm.h>
 #include <Gaudi/Sequence.h>
 
-// C++
+// STL includes
+#include <cstdlib>
+#include <filesystem>
 #include <fstream>
+#include <unistd.h>
 
 #define ON_DEBUG if ( msgLevel( MSG::DEBUG ) )
 #define ON_VERBOSE if ( msgLevel( MSG::VERBOSE ) )
@@ -39,13 +45,13 @@ StatusCode PrecedenceSvc::initialize() {
 
   // prepare a directory to dump precedence analysis files to.
   if ( m_dumpPrecTrace || m_dumpPrecRules ) {
-    if ( !boost::filesystem::create_directory( m_dumpDirName ) ) {
-      error() << "Could not create directory " << m_dumpDirName
-              << "required "
-                 "for task precedence tracing"
+    std::string pattern = "precedence.analysis.XXXXXX";
+    if ( !mkdtemp( pattern.data() ) ) {
+      error() << "Could not create directory \"precedence.analysis.XXXXXX\" required for task precedence tracing"
               << endmsg;
       return StatusCode::FAILURE;
     }
+    m_dumpDirName = pattern; // Save the generated path
   }
 
   if ( m_dumpPrecRules ) m_PRGraph.enableAnalysis();
@@ -330,8 +336,8 @@ void PrecedenceSvc::dumpPrecedenceRules( const EventSlot& slot ) {
     fileName = m_dumpPrecRulesFile;
   }
 
-  boost::filesystem::path pth{ m_dumpDirName };
-  pth.append( fileName );
+  std::filesystem::path pth{ m_dumpDirName };
+  pth /= fileName;
 
   m_PRGraph.dumpPrecRules( pth, slot );
 }
@@ -357,8 +363,8 @@ void PrecedenceSvc::dumpPrecedenceTrace( const EventSlot& slot ) {
     fileName = m_dumpPrecTraceFile;
   }
 
-  boost::filesystem::path pth{ m_dumpDirName };
-  pth.append( fileName );
+  std::filesystem::path pth{ m_dumpDirName };
+  pth /= fileName;
 
   m_PRGraph.dumpPrecTrace( pth, slot );
 }
