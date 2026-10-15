@@ -8,14 +8,20 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
+
+// Local includes
 #include "PrecedenceRulesGraph.h"
 #include "Visitors/Promoters.h"
 
+// Framework includes
 #include <GaudiKernel/DataHandleFinder.h>
 
+// STL includes
 #include <algorithm>
-#include <boost/property_map/transform_value_property_map.hpp>
 #include <fstream>
+
+// Boost includes
+#include <boost/property_map/transform_value_property_map.hpp>
 
 #define ON_DEBUG if ( msgLevel( MSG::DEBUG ) )
 #define ON_VERBOSE if ( msgLevel( MSG::VERBOSE ) )
@@ -622,7 +628,7 @@ namespace concurrency {
 
   //---------------------------------------------------------------------------
 
-  void PrecedenceRulesGraph::dumpPrecRules( const boost::filesystem::path& fileName, const EventSlot& slot ) {
+  void PrecedenceRulesGraph::dumpPrecRules( const std::filesystem::path& fileName, const EventSlot& slot ) {
     std::ofstream myfile;
     myfile.open( fileName.c_str(), std::ios::app );
 
@@ -663,7 +669,7 @@ namespace concurrency {
   }
 
   //---------------------------------------------------------------------------
-  void PrecedenceRulesGraph::dumpPrecTrace( const boost::filesystem::path& fileName, const EventSlot& slot ) {
+  void PrecedenceRulesGraph::dumpPrecTrace( const std::filesystem::path& fileName, const EventSlot& slot ) {
     std::ofstream myfile;
     myfile.open( fileName.c_str(), std::ios::app );
 

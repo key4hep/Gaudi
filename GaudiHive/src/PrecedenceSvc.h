@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -10,14 +10,18 @@
 \***********************************************************************************/
 #pragma once
 
+// Local includes
 #include "IPrecedenceSvc.h"
 #include "PRGraph/PrecedenceRulesGraph.h"
 
-// Framework include files
+// Framework include
 #include <GaudiKernel/IAlgResourcePool.h>
 #include <GaudiKernel/Service.h>
 
-#include <boost/filesystem.hpp>
+// STL includes
+#include <cstdlib>
+#include <filesystem>
+#include <unistd.h>
 
 /** @class PrecedenceSvc PrecedenceSvc.h GaudiHive/PrecedenceSvc.h
  *
@@ -86,8 +90,7 @@ private:
   /// Scheduling strategy
   Gaudi::Property<bool> m_ignoreDFRules{ this, "IgnoreDFRules", false, "Ignore the data flow rules." };
   /// Precedence analysis facilities
-  boost::filesystem::path m_dumpDirName{
-      boost::filesystem::unique_path( boost::filesystem::path( "precedence.analysis.%%%%" ) ) };
+  std::filesystem::path        m_dumpDirName;
   Gaudi::Property<bool>        m_dumpPrecTrace{ this, "DumpPrecedenceTrace", false,
                                          "Dump task precedence traces for each event." };
   Gaudi::Property<std::string> m_dumpPrecTraceFile{
