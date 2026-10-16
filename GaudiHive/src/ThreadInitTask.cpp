@@ -93,6 +93,6 @@ void ThreadInitTask::operator()() const {
 
   if ( m_barrier ) {
     log << MSG::DEBUG << "waiting at barrier in thread 0x" << std::hex << pthread_self() << std::dec << endmsg;
-    m_barrier->wait();
+    m_barrier->arrive_and_wait();
   }
 }
