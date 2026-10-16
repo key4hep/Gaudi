@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -12,6 +12,7 @@
 
 // C++ include files
 #include <map>
+#include <memory>
 // Framework include files
 #include <GaudiKernel/Service.h>
 #include <GaudiUtils/IIODataManager.h>
@@ -46,8 +47,9 @@ namespace Gaudi {
       Entry( CSTR tech, bool k, IoType iot, IDataConnection* con )
           : type( tech ), ioType( iot ), connection( con ), keepOpen( k ) {}
     };
-    typedef std::map<std::string, Entry*>      ConnectionMap;
-    typedef std::map<std::string, std::string> FidMap;
+    /// Book-keeping entries are owned by the map. The connections they refer to are owned by the clients.
+    typedef std::map<std::string, std::unique_ptr<Entry>> ConnectionMap;
+    typedef std::map<std::string, std::string>            FidMap;
 
     Gaudi::Property<std::string> m_catalogSvcName{ this, "CatalogType", "Gaudi::MultiFileCatalog/FileCatalog",
                                                    "name of the file catalog service" };
