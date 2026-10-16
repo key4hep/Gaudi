@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,11 +8,55 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#include "HiveTestAlgorithm.h"
+
+// Framework includes
+#include <Gaudi/Property.h>
+#include <GaudiKernel/Algorithm.h>
+#include <GaudiKernel/DataObjectHandle.h>
 #include <GaudiKernel/MsgStream.h>
 #include <GaudiKernel/ThreadLocalContext.h>
 
+// STL includes
 #include <atomic>
+#include <memory>
+#include <string>
+#include <vector>
+
+class GAUDI_API HiveTestAlgorithm : public Algorithm {
+public:
+  /**
+   ** Constructor(s)
+   **/
+  using Algorithm::Algorithm;
+
+  /*****************************
+   ** Public Function Members **
+   *****************************/
+
+  StatusCode initialize() override;
+  StatusCode execute() override;
+  StatusCode finalize() override;
+
+  // BH: concurrency additions
+  virtual const std::vector<std::string> get_inputs();
+  virtual const std::vector<std::string> get_outputs();
+
+private:
+  /**************************
+   ** Private Data Members **
+   **************************/
+
+  /**
+   ** The total events seen.
+   **/
+  int m_total = 0;
+
+  Gaudi::Property<std::vector<std::string>> m_inputs{ this, "Input", {}, "List of required inputs" };
+  Gaudi::Property<std::vector<std::string>> m_outputs{ this, "Output", {}, "List of provided outputs" };
+
+  std::vector<std::unique_ptr<DataObjectHandle<DataObject>>> m_inputHandles;
+  std::vector<std::unique_ptr<DataObjectHandle<DataObject>>> m_outputHandles;
+};
 
 DECLARE_COMPONENT( HiveTestAlgorithm )
 

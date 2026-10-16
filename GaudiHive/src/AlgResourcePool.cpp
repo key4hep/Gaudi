@@ -8,12 +8,105 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#include "AlgResourcePool.h"
+
+// Framework includes
 #include <Gaudi/Sequence.h>
+#include <GaudiKernel/IAlgManager.h>
+#include <GaudiKernel/IAlgResourcePool.h>
+#include <GaudiKernel/IAlgorithm.h>
 #include <GaudiKernel/ISvcLocator.h>
+#include <GaudiKernel/Service.h>
+
+// STL includes
+#include <atomic>
 #include <functional>
+#include <list>
+#include <map>
+#include <mutex>
 #include <queue>
 #include <sstream>
+#include <string>
+#include <string_view>
+#include <tbb/concurrent_queue.h>
+#include <unordered_map>
+#include <vector>
+
+/** @class AlgResourcePool AlgResourcePool.h GaudiHive/AlgResourcePool.h
+
+    The AlgResourcePool is a concrete implementation of the IAlgResourcePool interface.
+    It either creates all instances up front or lazily.
+    Internal bookkeeping is done via hashes of the algorithm names.
+
+    @author Benedikt Hegner
+*/
+class AlgResourcePool : public extends<Service, IAlgResourcePool> {
+public:
+  // Standard constructor
+  using extends::extends;
+  // Standard destructor
+  ~AlgResourcePool() override;
+
+  StatusCode start() override;
+  StatusCode initialize() override;
+  /// Acquire a certain algorithm using its name
+  StatusCode acquireAlgorithm( std::string_view name, IAlgorithm*& algo, bool blocking = false ) override;
+  /// Release a certain algorithm
+  StatusCode releaseAlgorithm( std::string_view name, IAlgorithm*& algo ) override;
+  /// Acquire units of a certain resource
+  StatusCode acquireResource( std::string_view name, unsigned int value ) override;
+  /// Release a certain resource
+  StatusCode releaseResource( std::string_view name, unsigned int value ) override;
+
+  std::list<IAlgorithm*> getFlatAlgList() override;
+  std::list<IAlgorithm*> getTopAlgList() override;
+
+  StatusCode stop() override;
+  StatusCode finalize() override;
+
+private:
+  typedef tbb::concurrent_bounded_queue<IAlgorithm*> concurrentQueueIAlgPtr;
+
+  std::mutex m_resource_mutex;
+
+  std::map<size_t, concurrentQueueIAlgPtr*> m_algqueue_map;
+  std::map<size_t, size_t>                  m_n_of_allowed_instances;
+  std::map<size_t, unsigned int>            m_n_of_created_instances;
+
+  /// Decode the top Algorithm list
+  StatusCode decodeTopAlgs();
+
+  /// Recursively flatten an algList
+  StatusCode flattenSequencer( IAlgorithm* sequencer, std::list<IAlgorithm*>& alglist,
+                               unsigned int recursionDepth = 0 );
+
+  /// Dump recorded Algorithm instance misses
+  void dumpInstanceMisses() const;
+  /// Counters for Algorithm instance misses
+  std::unordered_map<std::string_view, unsigned int> m_algInstanceMisses;
+
+  Gaudi::Property<bool>                     m_lazyCreation{ this, "CreateLazily", false, "" };
+  Gaudi::Property<std::vector<std::string>> m_topAlgNames{
+      this, "TopAlg", {}, "Names of the algorithms to be passed to the algorithm manager" };
+  Gaudi::Property<bool> m_overrideUnClonable{ this, "OverrideUnClonable", false,
+                                              "Override the un-clonability of algorithms. Use with caution!" };
+  Gaudi::Property<bool> m_countAlgInstMisses{
+      this, "CountAlgorithmInstanceMisses", false,
+      "Count and print out algorithm instance misses. Useful for finding ways to improve throughput scalability." };
+  Gaudi::Property<IAlgorithm::AlgResources_t> m_availableResources{
+      this, "AvailableResources", {}, "Available named resources and their amounts" };
+  Gaudi::Property<int> m_missingResourceMsgLevel{
+      this, "MissingResourceMessageLevel", MSG::DEBUG,
+      "Message level in case an algorithm cannot be schedule due to a missing resource" };
+
+  /// The list of all algorithms created within the Pool which are not top
+  std::list<IAlgorithm*> m_algList;
+
+  /// The list of top algorithms
+  std::list<IAlgorithm*> m_topAlgList;
+
+  /// The flat list of algorithms w/o clones
+  std::list<IAlgorithm*> m_flatUniqueAlgList;
+};
 
 // Instantiation of a static factory class used by clients to create instances of this service
 DECLARE_COMPONENT( AlgResourcePool )
