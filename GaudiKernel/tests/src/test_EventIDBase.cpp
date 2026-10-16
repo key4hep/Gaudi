@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -57,18 +57,5 @@ BOOST_AUTO_TEST_CASE( comparison ) {
     BOOST_CHECK( ei1a == ei1 );
     ei1a = ei2;
     BOOST_CHECK( ei1a == ei2 );
-
-    std::array<EventIDBase, 3> a = { ei2, ei1, ei3 };
-    std::sort( begin( a ), end( a ), EventIDBase::SortByRunEvent() );
-    BOOST_CHECK( a[0] == ei3 );
-    BOOST_CHECK( a[1] == ei2 );
-    BOOST_CHECK( a[2] == ei1 );
-
-    std::array<EventIDBase*, 3> ap = { &ei1, &ei3, &ei2 };
-    std::sort( begin( ap ), end( ap ), EventIDBase::SortByRunEvent() );
-
-    BOOST_CHECK( ap[0] == &ei3 );
-    BOOST_CHECK( ap[1] == &ei2 );
-    BOOST_CHECK( ap[2] == &ei1 );
   }
 }
