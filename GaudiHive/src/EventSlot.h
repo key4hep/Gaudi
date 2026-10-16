@@ -10,13 +10,18 @@
 \***********************************************************************************/
 #pragma once
 
-// Framework includes
+// Local includes
 #include "AlgsExecutionStates.h"
+
+// Framework includes
 #include <GaudiKernel/EventContext.h>
 
+// STL includes
+#include <memory>
 #include <string>
 #include <tuple>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 /// Class representing an event slot

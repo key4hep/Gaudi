@@ -8,13 +8,22 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
+
+// Local includes
 #include "ThreadInitTask.h"
+
+// Framework includes
 #include <GaudiKernel/IMessageSvc.h>
 #include <GaudiKernel/ISvcLocator.h>
 #include <GaudiKernel/IThreadInitTool.h>
 #include <GaudiKernel/MsgStream.h>
 #include <GaudiKernel/SmartIF.h>
 #include <GaudiKernel/ToolHandle.h>
+
+// STL includes
+#include <atomic>
+#include <ios>
+#include <pthread.h>
 #include <thread>
 
 namespace Gaudi {

@@ -16,7 +16,7 @@
 #include "FiberManager.h"
 #include "PrecedenceSvc.h"
 
-// Framework include files
+// Framework includes
 #include <GaudiKernel/IAlgExecStateSvc.h>
 #include <GaudiKernel/IAlgResourcePool.h>
 #include <GaudiKernel/ICondSvc.h>
@@ -26,8 +26,12 @@
 #include <GaudiKernel/IThreadPoolSvc.h>
 #include <GaudiKernel/Service.h>
 
-// C++ include files
+// STL includes
+#include <atomic>
+#include <chrono>
+#include <cstdint>
 #include <functional>
+#include <map>
 #include <memory>
 #include <queue>
 #include <string>
