@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -193,7 +193,11 @@ StatusCode RootHistCnv::RNTupleCnv::updateRep( IOpaqueAddress* pAddr, DataObject
     }
   } else {
     log << MSG::WARNING << "empty ntuple: " << pObj->registry()->identifier() << endmsg;
-    return createRep( pObj, pAddr );
+    StatusCode status = createRep( pObj, pAddr );
+    // createRep() allocates a new address but can't hand it back through updateRep()'s by-value
+    // argument, so register it here ourselves (same pattern as NTupleSvc::writeRecord()).
+    if ( status.isSuccess() && pAddr ) { pObj->registry()->setAddress( pAddr ); }
+    return status;
   }
   return StatusCode::FAILURE;
 }
