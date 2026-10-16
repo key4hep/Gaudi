@@ -24,8 +24,11 @@
 #  include <catch2/catch_test_macros.hpp>
 #endif
 
+#include <condition_variable>
 #include <cstdlib>
+#include <mutex>
 #include <string_view>
+#include <vector>
 
 using namespace std::chrono_literals;
 using Gaudi::Utils::PeriodicAction;
@@ -42,6 +45,42 @@ namespace {
     }
     return false;
   }
+
+  /// Records when the action runs, so checks can wait for calls instead of racing a fixed sleep.
+  class Recorder {
+  public:
+    void operator()() {
+      {
+        std::scoped_lock lock{ m_mutex };
+        m_calls.push_back( PeriodicAction::clock::now() );
+      }
+      m_cv.notify_all();
+    }
+    /// Wait (generously) until at least n calls happened.
+    bool wait_for( std::size_t n, std::chrono::seconds timeout = 10s ) {
+      std::unique_lock lock{ m_mutex };
+      return m_cv.wait_for( lock, timeout, [&] { return m_calls.size() >= n; } );
+    }
+    std::vector<PeriodicAction::time_point> calls() {
+      std::scoped_lock lock{ m_mutex };
+      return m_calls;
+    }
+
+  private:
+    std::mutex                              m_mutex;
+    std::condition_variable                 m_cv;
+    std::vector<PeriodicAction::time_point> m_calls;
+  };
+
+  /// Calls may be late under load but never early: call k happens at least offsets[k] after t0.
+  void check_not_early( const std::vector<PeriodicAction::time_point>& calls, PeriodicAction::time_point t0,
+                        const std::vector<std::chrono::milliseconds>& offsets ) {
+    REQUIRE( calls.size() >= offsets.size() );
+    for ( std::size_t k = 0; k < offsets.size(); ++k ) {
+      INFO( "call " << k );
+      CHECK( calls[k] - t0 >= offsets[k] );
+    }
+  }
 } // namespace
 
 TEST_CASE( "PeriodicAction" ) {
@@ -49,58 +88,72 @@ TEST_CASE( "PeriodicAction" ) {
     WARN( "Skipping timing-sensitive PeriodicAction checks: unreliable under sanitizer instrumentation" );
     return;
   }
+  // The checks below only assume that calls are never early. How late they are depends on the
+  // load of the machine, so the tests wait for the calls they need rather than counting the calls
+  // made within a fixed sleep.
+
   SECTION( "default" ) {
-    int counter{ 0 };
+    Recorder   rec;
+    const auto t0 = PeriodicAction::clock::now();
     {
-      PeriodicAction periodic{ [&counter]() { ++counter; }, 100ms };
-      std::this_thread::sleep_for( 210ms );
+      PeriodicAction periodic{ std::ref( rec ), 100ms };
+      REQUIRE( rec.wait_for( 2 ) );
     }
-    CHECK( counter == 2 );
+    check_not_early( rec.calls(), t0, { 100ms, 200ms } );
   }
 
   SECTION( "manual start" ) {
-    int counter{ 0 };
+    Recorder rec;
     {
-      PeriodicAction periodic{ [&counter]() { ++counter; }, 100ms, false };
+      PeriodicAction periodic{ std::ref( rec ), 100ms, false };
       std::this_thread::sleep_for( 100ms );
+      CHECK( rec.calls().empty() );
+      const auto t0 = PeriodicAction::clock::now();
       periodic.start();
-      std::this_thread::sleep_for( 210ms );
+      REQUIRE( rec.wait_for( 2 ) );
       periodic.stop();
+      const auto n = rec.calls().size();
       std::this_thread::sleep_for( 100ms );
+      CHECK( rec.calls().size() == n ); // no calls after stop
+      check_not_early( rec.calls(), t0, { 100ms, 200ms } );
     }
-    CHECK( counter == 2 );
   }
 
   SECTION( "slow action" ) {
     // ensure that intervals do not depend on speed of action,
-    // i.e. 300ms mean 3 calls every 100ms even if the action takes 70ms
-    int counter{ 0 };
+    // i.e. one call every 100ms even if the action takes 70ms
+    Recorder   rec;
+    const auto t0 = PeriodicAction::clock::now();
     {
-      PeriodicAction periodic{ [&counter]() {
-                                ++counter;
+      PeriodicAction periodic{ [&rec]() {
+                                rec();
                                 std::this_thread::sleep_for( 70ms );
                               },
                                100ms };
-      std::this_thread::sleep_for( 310ms );
+      REQUIRE( rec.wait_for( 4 ) );
     }
-    CHECK( counter == 3 );
+    const auto calls = rec.calls();
+    check_not_early( calls, t0, { 100ms, 200ms, 300ms, 400ms } );
+    // if the action time added up the calls would be 170ms apart; allow plenty of jitter around 100ms
+    CHECK( ( calls[3] - calls[0] ) / 3 < 150ms );
   }
 
   SECTION( "skipping invocations" ) {
     // if the action happens to take more than the allocated time we
     // skip the next invocation(s) to make sure we call it only on
     // a multiple of the interval
-    int counter{ 0 };
+    Recorder   rec;
+    const auto t0 = PeriodicAction::clock::now();
     {
-      // here we have one invocation at t == 100ms, 300ms and 500ms (we skip that at 200ms and 400ms)
-      PeriodicAction periodic{ [&counter]() {
-                                ++counter;
+      // here we have one invocation at t >= 100ms, 300ms and 500ms (we skip that at 200ms and 400ms)
+      PeriodicAction periodic{ [&rec]() {
+                                rec();
                                 std::this_thread::sleep_for( 150ms );
                               },
                                100ms };
-      std::this_thread::sleep_for( 510ms );
+      REQUIRE( rec.wait_for( 3 ) );
     }
-    CHECK( counter == 3 );
+    check_not_early( rec.calls(), t0, { 100ms, 300ms, 500ms } );
   }
 
   SECTION( "zero duration" ) {
@@ -114,11 +167,12 @@ TEST_CASE( "PeriodicAction" ) {
   }
 
   SECTION( "repetitions" ) {
-    int counter{ 0 };
+    Recorder rec;
     {
-      PeriodicAction periodic{ [&counter]() { ++counter; }, 2ms, true, 3 };
+      PeriodicAction periodic{ std::ref( rec ), 2ms, true, 3 };
+      REQUIRE( rec.wait_for( 3 ) );
       std::this_thread::sleep_for( 20ms );
     }
-    CHECK( counter == 3 );
+    CHECK( rec.calls().size() == 3 );
   }
 }
