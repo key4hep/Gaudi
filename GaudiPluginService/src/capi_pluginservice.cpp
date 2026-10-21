@@ -14,25 +14,8 @@
 #define GAUDI_PLUGIN_SERVICE_V2
 #include <Gaudi/PluginService.h>
 
-#include <stdint.h>
-
 #include <sstream>
 #include <string>
-#include <vector>
-
-#define CGAUDI_HASCLASSVISIBILITY
-
-#if defined( CGAUDI_HASCLASSVISIBILITY )
-#  define CGAUDI_IMPORT __attribute__( ( visibility( "default" ) ) )
-#  define CGAUDI_EXPORT __attribute__( ( visibility( "default" ) ) )
-#  define CGAUDI_LOCAL __attribute__( ( visibility( "hidden" ) ) )
-#else
-#  define CGAUDI_IMPORT
-#  define CGAUDI_EXPORT
-#  define CGAUDI_LOCAL
-#endif
-
-#define CGAUDI_API CGAUDI_EXPORT
 
 using namespace Gaudi::PluginService::v2::Details;
 
@@ -53,19 +36,16 @@ typedef struct {
   const char*        key;
 } cgaudi_property_t;
 
-CGAUDI_API
-cgaudi_pluginsvc_t cgaudi_pluginsvc_instance( void ) {
+cgaudi_pluginsvc_t cgaudi_pluginsvc_instance() {
   static Registry& cxxreg = Registry::instance();
   return { &cxxreg };
 }
 
-CGAUDI_API
 int cgaudi_pluginsvc_get_factory_size( cgaudi_pluginsvc_t self ) {
   const Registry::FactoryMap& fmap = static_cast<const Registry*>( self.registry )->factories();
   return int( fmap.size() );
 }
 
-CGAUDI_API
 cgaudi_factory_t cgaudi_pluginsvc_get_factory_at( cgaudi_pluginsvc_t self, int n ) {
   const Registry* reg       = static_cast<const Registry*>( self.registry );
   const auto&     factories = reg->factories();
@@ -73,13 +53,11 @@ cgaudi_factory_t cgaudi_pluginsvc_get_factory_at( cgaudi_pluginsvc_t self, int n
   return { self, next( begin( factories ), n )->first.c_str() };
 }
 
-CGAUDI_API
 const char* cgaudi_factory_get_library( cgaudi_factory_t self ) {
   Registry& reg = Registry::instance();
   return reg.getInfo( self.id ).library.c_str();
 }
 
-CGAUDI_API
 const char* cgaudi_factory_get_type( cgaudi_factory_t self ) {
   Registry&          reg = Registry::instance();
   static std::string cache;
@@ -87,7 +65,6 @@ const char* cgaudi_factory_get_type( cgaudi_factory_t self ) {
   return cache.c_str();
 }
 
-CGAUDI_API
 const char* cgaudi_factory_get_classname( cgaudi_factory_t self ) {
   Registry&          reg = Registry::instance();
   static std::string cache;
@@ -95,14 +72,12 @@ const char* cgaudi_factory_get_classname( cgaudi_factory_t self ) {
   return cache.c_str();
 }
 
-CGAUDI_API
 int cgaudi_factory_get_property_size( cgaudi_factory_t self ) {
   Registry&                    reg = Registry::instance();
   const Registry::FactoryInfo& fi  = reg.getInfo( self.id );
   return int( fi.properties.size() );
 }
 
-CGAUDI_API
 cgaudi_property_t cgaudi_factory_get_property_at( cgaudi_factory_t self, int n ) {
   cgaudi_property_t            cprop{ self.registry, self.id, nullptr };
   Registry&                    reg = Registry::instance();
@@ -111,10 +86,8 @@ cgaudi_property_t cgaudi_factory_get_property_at( cgaudi_factory_t self, int n )
   return cprop;
 }
 
-CGAUDI_API
 const char* cgaudi_property_get_key( cgaudi_property_t self ) { return self.key; }
 
-CGAUDI_API
 const char* cgaudi_property_get_value( cgaudi_property_t self ) {
   Registry&                    reg  = Registry::instance();
   const Registry::FactoryInfo& fi   = reg.getInfo( self.id );
@@ -122,7 +95,6 @@ const char* cgaudi_property_get_value( cgaudi_property_t self ) {
   return prop != fi.properties.end() ? prop->second.c_str() : nullptr;
 }
 
-CGAUDI_API
 const char* cgaudi_pluginsvc_plugin_search_path() {
   static std::string cache = [] {
     std::ostringstream oss;
