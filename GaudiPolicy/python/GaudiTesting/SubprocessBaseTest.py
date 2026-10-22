@@ -208,16 +208,30 @@ class SubprocessBaseTest:
 
         def read_output():
             nonlocal stdout, stderr, exceeded_stream
-            while not exceeded_stream and proc.poll() is None:
-                readable, _, _ = select.select(streams.keys(), [], [], cls.timeout)
+            open_streams = dict(streams)
+            while open_streams and not exceeded_stream:
+                # once the process has exited, only collect what is still in the pipes
+                # (up to the pipe capacity, which a slow reader leaves behind), without
+                # waiting for descendants that may keep them open
+                exited = proc.poll() is not None
+                readable, _, _ = select.select(
+                    open_streams.keys(), [], [], 0 if exited else cls.timeout
+                )
+                if exited and not readable:
+                    break
                 for fileno in readable:
-                    data = os.read(fileno, 1024)
+                    data = os.read(fileno, 65536)
+                    if not data:  # end of file: the write end is closed
+                        del open_streams[fileno]
+                        continue
                     chunks, stream_name = streams[fileno]
                     chunks.append(data)
                     if sum(len(chunk) for chunk in chunks) > STDOUT_LIMIT:
                         exceeded_stream = stream_name
                         break
 
+            if not exceeded_stream:
+                proc.wait()  # both pipes can be closed while the process still runs
             stdout = b"".join(stdout_chunks)
             stderr = b"".join(stderr_chunks)
 
