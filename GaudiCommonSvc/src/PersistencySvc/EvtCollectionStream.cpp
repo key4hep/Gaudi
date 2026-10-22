@@ -17,7 +17,6 @@
 //	Author    : Markus Frank
 //
 //	====================================================================
-#define GAUDISVC_PERSISTENCYSVC_EVTCOLLECTIONSTREAM_CPP
 
 // Framework includes
 #include <GaudiKernel/Algorithm.h>

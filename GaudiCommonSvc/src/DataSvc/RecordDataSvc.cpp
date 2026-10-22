@@ -25,8 +25,11 @@
 // +---------+----------------------------------------------+---------
 //
 //====================================================================
-#define DATASVC_RECORDDATASVC_CPP
 
+// Local includes
+#include "RecordDataSvc.h"
+
+// Framework includes
 #include <GaudiKernel/DataIncident.h>
 #include <GaudiKernel/DataObject.h>
 #include <GaudiKernel/IConversionSvc.h>
@@ -36,8 +39,6 @@
 #include <GaudiKernel/ISvcLocator.h>
 #include <GaudiKernel/RegistryEntry.h>
 #include <GaudiKernel/SmartIF.h>
-
-#include "RecordDataSvc.h"
 
 // Instantiation of a static factory class used by clients to create
 // instances of this service

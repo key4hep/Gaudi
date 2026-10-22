@@ -27,7 +27,6 @@
 // +---------+----------------------------------------------+---------
 //
 //====================================================================
-#define PERSISTENCYSVC_EVTPERSISTENCYSVC_CPP
 
 // Local includes
 #include "PersistencySvc.h"

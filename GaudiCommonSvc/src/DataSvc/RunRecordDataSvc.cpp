@@ -25,8 +25,8 @@
 // +---------+----------------------------------------------+---------
 //
 //====================================================================
-#define DATASVC_RUNRECORDDATASVC_CPP
 
+// Local includes
 #include "RecordDataSvc.h"
 
 /** @class RunRecordDataSvc
