@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -29,9 +29,40 @@
 //====================================================================
 #define PERSISTENCYSVC_EVTPERSISTENCYSVC_CPP
 
-// Implementation specific definitions
-#include "EvtPersistencySvc.h"
+// Local includes
+#include "PersistencySvc.h"
+
+// Framework includes
 #include <GaudiKernel/ISvcLocator.h>
+
+/** EvtPersistencySvc class implementation definition.
+
+    <P> System:  The LHCb Offline System
+    <P> Package: EvtPersistencySvc
+
+     Dependencies:
+    <UL>
+    <LI> PersistencySvc definition:  "Kernel/Interfaces/PersistencySvc.h"
+    </UL>
+
+    History:
+    <PRE>
+    +---------+----------------------------------------------+---------+
+    |    Date |                 Comment                      | Who     |
+    +---------+----------------------------------------------+---------+
+    | 3/11/98 | Initial version                              | M.Frank |
+    +---------+----------------------------------------------+---------+
+    </PRE>
+   @author Markus Frank
+   @version 1.0
+*/
+class EvtPersistencySvc : virtual public PersistencySvc {
+public:
+  /**@name: Object implementation  */
+  //@{
+  /// Standard Constructor
+  EvtPersistencySvc( const std::string& name, ISvcLocator* svc );
+};
 
 // Instantiation of a static factory class used by clients to create
 // instances of this service

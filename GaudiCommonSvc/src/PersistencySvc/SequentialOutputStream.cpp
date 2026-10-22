@@ -8,14 +8,11 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-// standard headers
-#include <limits>
 
-// boost
-#include <boost/filesystem.hpp>
+// Local includes
+#include "OutputStream.h"
 
 // Framework include files
-#include "SequentialOutputStream.h"
 #include <GaudiKernel/DataObject.h>
 #include <GaudiKernel/DataStoreItem.h>
 #include <GaudiKernel/IDataManagerSvc.h>
@@ -23,6 +20,43 @@
 #include <GaudiKernel/IOpaqueAddress.h>
 #include <GaudiKernel/IRegistry.h>
 #include <GaudiKernel/MsgStream.h>
+
+// STL includes
+#include <limits>
+#include <string>
+
+// Boost includes
+#include <boost/filesystem.hpp>
+
+/** @class SequentialOutputStream SequentialOutputStream.h
+ * Extension of OutputStream to write run records after last event
+ *
+ * @author  M.Frank
+ * @version 1.0
+ */
+class SequentialOutputStream : public OutputStream {
+
+protected:
+  /// OutputStream override: Select the different objects and write them to file
+  StatusCode writeObjects() override;
+
+public:
+  using OutputStream::OutputStream;
+
+  StatusCode execute() override;
+
+private:
+  Gaudi::Property<unsigned int> m_eventsPerFile{ this, "EventsPerFile", std::numeric_limits<unsigned int>::max() };
+  Gaudi::Property<bool>         m_numericFilename{ this, "NumericFilename", false };
+  Gaudi::Property<unsigned int> m_nNumbersAdded{ this, "NumbersAdded", 6 };
+
+  // Data members
+  unsigned int m_events = 0;
+  unsigned int m_iFile  = 1;
+
+  // Helper Methods
+  void makeFilename();
+};
 
 // Define the algorithm factory for the standard output data writer
 DECLARE_COMPONENT( SequentialOutputStream )

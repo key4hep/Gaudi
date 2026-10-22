@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -19,13 +19,49 @@
 //	====================================================================
 #define GAUDISVC_PERSISTENCYSVC_EVTCOLLECTIONSTREAM_CPP
 
-// Framework include files
+// Framework includes
+#include <GaudiKernel/Algorithm.h>
+#include <GaudiKernel/DataStoreItem.h>
 #include <GaudiKernel/IDataProviderSvc.h>
 #include <GaudiKernel/INTupleSvc.h>
 #include <GaudiKernel/MsgStream.h>
 
-#include "EvtCollectionStream.h"
-#include <GaudiKernel/DataStoreItem.h>
+// STL includes
+#include <memory>
+#include <string>
+#include <vector>
+
+/** A small to stream Data I/O.
+    Author:  M.Frank
+    Version: 1.0
+*/
+class EvtCollectionStream : public Algorithm {
+protected:
+  Gaudi::Property<std::vector<std::string>> m_itemNames{ this, "ItemList", {}, "vector of item names" };
+  Gaudi::Property<std::string>              m_storeName{ this, "EvtDataSvc", "TagCollectionSvc",
+                                            "name of the service managing the data store" };
+
+  /// Reference to Tuple service for event collection (may or may not be NTuple service)
+  SmartIF<INTupleSvc> m_pTupleSvc;
+  /// Vector of items to be saved to this stream
+  std::vector<std::unique_ptr<DataStoreItem>> m_itemList;
+
+protected:
+  /// Clear item list
+  void clearItems();
+  /// Add item to output streamer list
+  void addItem( const std::string& descriptor );
+
+public:
+  /// Inherited constructor
+  using Algorithm::Algorithm;
+  /// Initialize EvtCollectionStream
+  StatusCode initialize() override;
+  /// Terminate EvtCollectionStream
+  StatusCode finalize() override;
+  /// Working entry point
+  StatusCode execute() override;
+};
 
 // Define the algorithm factory for the standard output data writer
 DECLARE_COMPONENT( EvtCollectionStream )

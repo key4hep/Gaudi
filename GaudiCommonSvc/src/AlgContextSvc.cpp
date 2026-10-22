@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,6 +8,8 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
+
+// Framework includes
 #include <GaudiKernel/ConcurrencyFlags.h>
 #include <GaudiKernel/IAlgContextSvc.h>
 #include <GaudiKernel/IAlgorithm.h>
@@ -17,8 +19,12 @@
 #include <GaudiKernel/MsgStream.h>
 #include <GaudiKernel/Service.h>
 #include <GaudiKernel/StatusCode.h>
-#include <boost/thread.hpp>
+
+// STL includes
 #include <vector>
+
+// Boost includes
+#include <boost/thread.hpp>
 
 // ============================================================================
 /** @class AlgContextSvc
