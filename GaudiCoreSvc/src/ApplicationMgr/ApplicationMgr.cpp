@@ -195,9 +195,9 @@ protected:
   /// behavior can be changed with the parameter "gnoreFailures"
   StatusCode GoToState( Gaudi::StateMachine::State state, bool ignoreFailures = false );
 
-  /// Typedef for the map of component managers, the key is the "id" field
+  /// Using for the map of component managers, the key is the "id" field
   /// of the basic InterfaceID of the managed components.
-  typedef std::map<unsigned long, SmartIF<IComponentManager>> ManagersMap;
+  using ManagersMap = std::map<unsigned long, SmartIF<IComponentManager>>;
   /// Map of known component managers. It contains (at least) the managers for
   /// IService and IAlgorithm. IAlgTool and IAuditor are not mandatory (but a missing
   /// manager for IAlgTool will probably not allow any job to run).

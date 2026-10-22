@@ -59,7 +59,7 @@ namespace Gaudi {
 
     template <typename Iterator, typename Skipper>
     struct StringGrammar : qi::grammar<Iterator, std::string(), qi::locals<char>, Skipper> {
-      typedef std::string ResultT;
+      using ResultT = std::string;
       StringGrammar() : StringGrammar::base_type( str ) {
         begin_quote = enc::char_( "\"'" );
         quote       = enc::char_( qi::_r1 );
@@ -75,7 +75,7 @@ namespace Gaudi {
     };
     template <typename Iterator, typename Skipper>
     struct IdentifierGrammar : qi::grammar<Iterator, Node(), Skipper> {
-      typedef std::string ResultT;
+      using ResultT = std::string;
       IdentifierGrammar() : IdentifierGrammar::base_type( ident ) {
         ident =
             rep::qi::iter_pos[op( qi::_val, qi::_1 )] >> str[op( qi::_val, qi::_1 )][op( qi::_val, Node::kIdentifier )];
@@ -90,7 +90,7 @@ namespace Gaudi {
     };
     template <typename Iterator, typename Skipper>
     struct BoolGrammar : qi::grammar<Iterator, bool(), Skipper> {
-      typedef bool ResultT;
+      using ResultT = bool;
       BoolGrammar() : BoolGrammar::base_type( boolean ) {
         boolean = enc::no_case[qi::lit( "true" )[qi::_val = true] | qi::lit( "false" )[qi::_val = false]];
       }
@@ -98,7 +98,7 @@ namespace Gaudi {
     };
     template <typename Iterator, typename Skipper>
     struct RealGrammar : qi::grammar<Iterator, Node(), Skipper> {
-      typedef bool ResultT;
+      using ResultT = bool;
       RealGrammar() : RealGrammar::base_type( real ) {
         real = qi::raw[qi::double_][op( qi::_val, qi::_1 )][op( qi::_val, Node::kReal )] >> -qi::char_( 'L' ) >>
                -( -qi::char_( '*' ) >> gunit[op( qi::_val, qi::_1 )] );

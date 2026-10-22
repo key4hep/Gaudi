@@ -203,7 +203,7 @@ DECLARE_COMPONENT( EventCollectionSelector )
  */
 class EventCollectionContext : public IEvtSelector::Context {
 public:
-  typedef std::list<std::string> ListName;
+  using ListName = std::list<std::string>;
 
 private:
   GenericAddress*                m_pAddressBuffer{ nullptr };

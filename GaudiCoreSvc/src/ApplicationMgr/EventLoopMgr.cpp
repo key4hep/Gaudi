@@ -333,8 +333,8 @@ StatusCode EventLoopMgr::nextEvent( int maxevt ) {
 
   // DP Monitoring
   // Calculate runtime
-  typedef std::chrono::high_resolution_clock Clock;
-  typedef Clock::time_point                  time_point;
+  using Clock      = std::chrono::high_resolution_clock;
+  using time_point = Clock::time_point;
 
   const float oneOver1024 = 1.f / 1024.f;
 

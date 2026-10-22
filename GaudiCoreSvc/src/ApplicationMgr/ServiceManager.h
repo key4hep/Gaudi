@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -49,9 +49,9 @@ public:
     bool              operator<( const ServiceItem& rhs ) const { return priority < rhs.priority; }
   };
 
-  // typedefs and classes
-  typedef std::list<ServiceItem>                          ListSvc;
-  typedef std::map<std::string, std::string, std::less<>> MapType;
+  // using and classes
+  using ListSvc = std::list<ServiceItem>;
+  using MapType = std::map<std::string, std::string, std::less<>>;
 
   /// default creator
   ServiceManager( IInterface* application );

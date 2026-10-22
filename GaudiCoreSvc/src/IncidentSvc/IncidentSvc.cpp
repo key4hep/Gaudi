@@ -46,11 +46,10 @@ struct isSingleShot_t;
 
 class IncidentSvc : public extends<Service, IIncidentSvc> {
 private:
-  // Typedefs
   // ListenerList should be a list rather than a vector because handing
   // a fired incident may result in a call to addListener.
-  typedef std::list<IIncidentSvc::Listener>                                    ListenerList;
-  typedef GaudiUtils::HashMap<Gaudi::StringKey, std::unique_ptr<ListenerList>> ListenerMap;
+  using ListenerList = std::list<IIncidentSvc::Listener>;
+  using ListenerMap  = GaudiUtils::HashMap<Gaudi::StringKey, std::unique_ptr<ListenerList>>;
 
 public:
   // Inherited Service overrides:
@@ -87,9 +86,9 @@ private:
   /// timer & it's lock
   mutable ChronoEntity m_timer;
   mutable bool         m_timerLock = false;
-  // When TBB supports unique_ptrs in concurrent queue typedef should be changed
-  // typedef tbb::concurrent_queue<std::unique_ptr<Incident>> IncQueue_t;
-  typedef tbb::concurrent_queue<std::unique_ptr<Incident>>             IncQueue_t;
+  // When TBB supports unique_ptrs in concurrent queue should be changed
+  // using tbb::concurrent_queue<std::unique_ptr<Incident>> IncQueue_t;
+  using IncQueue_t = tbb::concurrent_queue<std::unique_ptr<Incident>>;
   tbb::concurrent_unordered_map<EventContext::ContextID_t, IncQueue_t> m_firedIncidents;
 
   /// Event ID for each slot

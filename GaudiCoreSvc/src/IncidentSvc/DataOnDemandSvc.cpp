@@ -109,8 +109,8 @@ class IToolSvc;
  */
 class DataOnDemandSvc : public extends<Service, IIncidentListener> {
 public:
-  typedef std::vector<std::string> Setup;
-  typedef TClass*                  ClassH;
+  using Setup  = std::vector<std::string>;
+  using ClassH = TClass*;
 
   /** @struct Protection
    *  Helper class of the DataOnDemandSvc
@@ -154,8 +154,8 @@ public:
   };
 
 public:
-  typedef GaudiUtils::HashMap<Gaudi::StringKey, Node> NodeMap;
-  typedef GaudiUtils::HashMap<Gaudi::StringKey, Leaf> AlgMap;
+  using NodeMap = GaudiUtils::HashMap<Gaudi::StringKey, Node>;
+  using AlgMap  = GaudiUtils::HashMap<Gaudi::StringKey, Leaf>;
   /// Inherited Service overrides: Service initialization
   StatusCode initialize() override;
   /// Inherited Service overrides: Service finalization
@@ -265,7 +265,7 @@ private:
   Gaudi::Property<Setup> m_nodeMapping{
       this, "Nodes", {}, &DataOnDemandSvc::deprecated_property, "[[deprecated]] use NodeMap" };
 
-  typedef std::map<std::string, std::string> Map;
+  using Map = std::map<std::string, std::string>;
   Gaudi::Property<Map> m_algMap{ this, "AlgMap", {}, &DataOnDemandSvc::force_update, "mapping {'data': 'algorithm'}" };
   Gaudi::Property<Map> m_nodeMap{ this, "NodeMap", {}, &DataOnDemandSvc::force_update, "mapping {'data': 'type'}" };
 
@@ -801,8 +801,8 @@ StatusCode DataOnDemandSvc::execHandler( const std::string& tag, Leaf& l ) {
 void DataOnDemandSvc::dump( const MSG::Level level, const bool mode ) const {
   if ( m_algs.empty() && m_nodes.empty() ) { return; }
 
-  typedef std::pair<std::string, std::string> Pair;
-  std::map<std::string, Pair>                 _m;
+  using Pair = std::pair<std::string, std::string>;
+  std::map<std::string, Pair> _m;
   for ( auto& alg : m_algs ) {
     auto check = _m.find( alg.first );
     if ( _m.end() != check ) {

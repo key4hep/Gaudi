@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -18,8 +18,8 @@ namespace Gaudi {
   namespace Parsers {
     class Units final {
     public:
-      typedef std::map<std::string, std::pair<double, Position>, std::less<>> Container;
-      typedef Container::mapped_type                                          ValueWithPosition;
+      using Container         = std::map<std::string, std::pair<double, Position>, std::less<>>;
+      using ValueWithPosition = Container::mapped_type;
 
       bool Add( std::string name, double value );
       bool Add( std::string name, double value, const Position& pos );

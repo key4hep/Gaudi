@@ -54,9 +54,9 @@ class IDataStreamTool;
 */
 class EventSelector : public extends<Service, IEvtSelector> {
 public:
-  typedef std::vector<EventSelectorDataStream*>     Streams;
-  typedef std::vector<std::string>                  StreamSpecs;
-  typedef std::vector<Gaudi::Property<std::string>> Properties;
+  using Streams     = std::vector<EventSelectorDataStream*>;
+  using StreamSpecs = std::vector<std::string>;
+  using Properties  = std::vector<Gaudi::Property<std::string>>;
 
   long int m_streamID;
 
