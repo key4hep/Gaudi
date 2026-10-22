@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,12 +8,11 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifdef __ICC
-// disable icc remark #2259: non-pointer conversion from "X" to "Y" may lose significant bits
-//   TODO: To be removed, since it comes from ROOT TMathBase.h
-#  pragma warning( disable : 2259 )
-#endif
 
+// Local includes
+#include "GaudiPI.h"
+
+// Framework includes
 #include <Gaudi/MonitoringHub.h>
 #include <GaudiCommonSvc/Generic3D.h>
 #include <GaudiCommonSvc/H3D.h>
@@ -21,9 +20,10 @@
 #include <GaudiKernel/DataObject.h>
 #include <GaudiKernel/ObjectFactory.h>
 
-#include "GaudiPI.h"
+// Root includes
 #include <TH3D.h>
 
+// STL includes
 #include <cmath>
 
 namespace Gaudi {

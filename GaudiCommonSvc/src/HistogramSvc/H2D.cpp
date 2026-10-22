@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,23 +8,25 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifdef __ICC
-// disable icc remark #2259: non-pointer conversion from "X" to "Y" may lose significant bits
-//   TODO: To be removed, since it comes from ROOT TMathBase.h
-#  pragma warning( disable : 2259 )
-#endif
 
+// Local includes
 #include "GaudiPI.h"
+
+// Framework includes
 #include <Gaudi/MonitoringHub.h>
 #include <GaudiCommonSvc/H1D.h>
 #include <GaudiCommonSvc/H2D.h>
 #include <GaudiCommonSvc/HistogramUtility.h>
 #include <GaudiCommonSvc/P1D.h>
 #include <GaudiKernel/ObjectFactory.h>
-#include <TH2D.h>
-#include <TProfile.h>
+
+// STL includes
 #include <array>
 #include <cmath>
+
+// Root includes
+#include <TH2D.h>
+#include <TProfile.h>
 
 namespace {
   using AIDA::IHistogram1D;

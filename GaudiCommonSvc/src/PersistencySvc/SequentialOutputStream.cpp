@@ -22,11 +22,11 @@
 #include <GaudiKernel/MsgStream.h>
 
 // STL includes
+#include <filesystem>
 #include <limits>
+#include <sstream>
+#include <stdexcept>
 #include <string>
-
-// Boost includes
-#include <boost/filesystem.hpp>
 
 /** @class SequentialOutputStream SequentialOutputStream.h
  * Extension of OutputStream to write run records after last event
@@ -61,8 +61,6 @@ private:
 // Define the algorithm factory for the standard output data writer
 DECLARE_COMPONENT( SequentialOutputStream )
 
-namespace bf = boost::filesystem;
-
 //=============================================================================
 StatusCode SequentialOutputStream::writeObjects() {
   try {
@@ -92,14 +90,14 @@ StatusCode SequentialOutputStream::execute() {
 void SequentialOutputStream::makeFilename() {
   if ( m_events % m_eventsPerFile != 0 ) return;
 
-  bf::path    outputPath( m_outputName.value() );
-  std::string filename  = outputPath.filename().string();
-  bf::path    dir       = outputPath.parent_path();
-  std::string stem      = outputPath.stem().string();
-  std::string extension = outputPath.extension().string();
+  std::filesystem::path outputPath( m_outputName.value() );
+  std::string           filename  = outputPath.filename().string();
+  std::filesystem::path dir       = outputPath.parent_path();
+  std::string           stem      = outputPath.stem().string();
+  std::string           extension = outputPath.extension().string();
 
   if ( !dir.empty() ) {
-    if ( !bf::exists( dir ) ) {
+    if ( !std::filesystem::exists( dir ) ) {
       std::stringstream stream;
       stream << "Directory " << dir << " does not exist.";
       throw GaudiException( stream.str(), "error", StatusCode::FAILURE );

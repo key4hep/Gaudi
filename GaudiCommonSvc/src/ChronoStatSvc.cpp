@@ -647,9 +647,9 @@ void ChronoStatSvc::printStats() {
 
   {
     // prepare container for printing
-    typedef std::pair<const StatEntity*, const StatTag*> SPair;
-    typedef std::vector<SPair>                           SCont;
-    SCont                                                tmpCont;
+    using SPair = std::pair<const StatEntity*, const StatTag*>;
+    using SCont = std::vector<SPair>;
+    SCont tmpCont;
     std::transform( std::begin( m_statEntities ), std::end( m_statEntities ), std::back_inserter( tmpCont ),
                     []( StatMap::const_reference i ) { return std::make_pair( &i.second, &i.first ); } );
     // sort it

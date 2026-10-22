@@ -77,7 +77,7 @@ protected:
     SmartIF<IAddressCreator>& addrCreator() const { return m_addrCreator; }
     long                      svcType() const { return m_serviceType; }
   };
-  typedef std::map<long, ServiceEntry> Services;
+  using Services = std::map<long, ServiceEntry>;
 
 public:
   /**@name IPersistencySvc Interface implementation */

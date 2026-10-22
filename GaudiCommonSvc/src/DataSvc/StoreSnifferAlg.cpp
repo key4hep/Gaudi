@@ -15,6 +15,8 @@
 //  Author    : Markus Frank
 //
 //  ====================================================================
+
+// Framework includes
 #include <GaudiKernel/Algorithm.h>
 #include <GaudiKernel/DataObject.h>
 #include <GaudiKernel/IDataManagerSvc.h>
@@ -23,6 +25,8 @@
 #include <GaudiKernel/LinkManager.h>
 #include <GaudiKernel/SmartDataPtr.h>
 #include <GaudiKernel/SmartIF.h>
+
+// STL includes
 #include <iomanip>
 #include <map>
 #include <string>
@@ -48,8 +52,8 @@ public:
     int  id;
     CLID clid;
   };
-  typedef std::map<std::string, LeafInfo>           SniffInfo;
-  typedef std::map<std::string, std::map<int, int>> Correlations;
+  using SniffInfo    = std::map<std::string, LeafInfo>;
+  using Correlations = std::map<std::string, std::map<int, int>>;
 
   SniffInfo    m_info, m_curr;
   Correlations m_corr, m_links;

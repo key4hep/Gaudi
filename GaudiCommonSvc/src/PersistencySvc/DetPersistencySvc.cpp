@@ -13,7 +13,7 @@
 #include "PersistencySvc.h"
 
 // STL includes
-#include <iostream>
+#include <string>
 
 // Implementation specific definitions
 #include <GaudiKernel/ISvcLocator.h>

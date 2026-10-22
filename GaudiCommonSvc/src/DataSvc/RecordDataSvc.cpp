@@ -99,8 +99,8 @@ StatusCode RecordDataSvc::finalize() {
 /// Inform that a new incident has occured
 void RecordDataSvc::handle( const Incident& incident ) {
   if ( incident.type() == "FILE_OPEN_READ" ) {
-    typedef ContextIncident<IOpaqueAddress*> Ctxt;
-    auto                                     inc = dynamic_cast<const Ctxt*>( &incident );
+    using Ctxt = ContextIncident<IOpaqueAddress*>;
+    auto inc   = dynamic_cast<const Ctxt*>( &incident );
     if ( !inc ) {
       always() << "Received invalid incident of type:" << incident.type() << endmsg;
     } else {

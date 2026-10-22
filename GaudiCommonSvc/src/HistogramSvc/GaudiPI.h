@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -10,6 +10,7 @@
 \***********************************************************************************/
 #pragma once
 
+// Framework includes
 #include <AIDA/IHistogram1D.h>
 #include <AIDA/IHistogram2D.h>
 #include <AIDA/IHistogram3D.h>
@@ -17,6 +18,8 @@
 #include <AIDA/IProfile2D.h>
 #include <GaudiKernel/HistogramBase.h>
 #include <GaudiKernel/ISvcLocator.h>
+
+// STL includes
 #include <utility>
 #include <vector>
 
@@ -24,7 +27,7 @@ class DataObject;
 class TH2D;
 
 namespace Gaudi {
-  typedef std::vector<double> Edges;
+  using Edges = std::vector<double>;
 
   /// Copy constructor
   std::pair<DataObject*, AIDA::IHistogram1D*> createH1D( ISvcLocator* svcLocator, const std::string& path,
