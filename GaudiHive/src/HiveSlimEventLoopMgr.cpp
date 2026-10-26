@@ -478,6 +478,7 @@ StatusCode HiveSlimEventLoopMgr::nextEvent( int maxevt ) {
          ( createdEvts < maxevt || maxevt < 0 ) && // The events are not finished with a limited number of events
          m_schedulerSvc->freeSlots() > 0 &&        // There are still free slots in the scheduler
          m_whiteboard->freeSlots() > 0 &&          // There are still free slots in the whiteboard
+         finalSC.isSuccess() &&                    // Stop submitting events after a failure
          !m_scheduledStop                          // There is not a scheduled stop
     ) {
 
@@ -520,10 +521,10 @@ StatusCode HiveSlimEventLoopMgr::nextEvent( int maxevt ) {
       DEBUG_MSG << "Draining the scheduler" << endmsg;
 
       // Pull out of the scheduler the finished events
-      if ( drainScheduler( finishedEvts ).isFailure() ) {
-        loop_ended = true;
-        finalSC    = StatusCode::FAILURE;
-      }
+      if ( drainScheduler( finishedEvts ).isFailure() ) { finalSC = StatusCode::FAILURE; }
+      // Keep algorithms and event services alive until all submitted events have finished,
+      // including after an event failure has stopped submission of new events.
+      loop_ended    = finalSC.isFailure() && m_schedulerSvc->freeSlots() == m_whiteboard->getNumberOfStores();
       newEvtAllowed = true;
     }
   } // end main loop on finished events
