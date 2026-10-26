@@ -104,10 +104,7 @@ public:
 DECLARE_COMPONENT( EventLoopMgr )
 
 #define ON_DEBUG if ( outputLevel() <= MSG::DEBUG )
-#define ON_VERBOSE if ( outputLevel() <= MSG::VERBOSE )
-
 #define DEBMSG ON_DEBUG debug()
-#define VERMSG ON_VERBOSE verbose()
 
 EventLoopMgr::~EventLoopMgr() { delete m_evtContext; }
 

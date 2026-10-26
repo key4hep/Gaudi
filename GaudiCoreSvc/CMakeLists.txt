@@ -66,8 +66,6 @@ gaudi_add_module(GaudiCoreSvc
                    Boost::headers
                    Boost::filesystem
                    Boost::python
-                   Boost::regex
-                   Boost::thread
                    nlohmann_json::nlohmann_json
                    TBB::tbb
                    ${GAUDI_ATOMIC_LIBS})

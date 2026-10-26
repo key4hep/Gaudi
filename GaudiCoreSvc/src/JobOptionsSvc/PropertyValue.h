@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -47,7 +47,7 @@ namespace Gaudi {
       bool        IsSimple() const;
       bool        IsVector() const;
       bool        IsMap() const;
-      bool        IsReference() const { return is_reference_; };
+      bool        IsReference() const { return is_reference_; }
 
       PropertyValue&      operator+=( const PropertyValue& right );
       const PropertyValue operator+( const PropertyValue& right );
@@ -91,7 +91,7 @@ namespace Gaudi {
         return PositionalPropertyValueException( position, "Could not find unit '" + name + "'." );
       }
 
-      virtual ~PositionalPropertyValueException() throw() {}
+      virtual ~PositionalPropertyValueException() = default;
 
     private:
       Position position_;
