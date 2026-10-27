@@ -10,19 +10,19 @@
 \***********************************************************************************/
 #pragma once
 
+// Framework includes
 #include <GaudiKernel/ComponentManager.h>
 #include <GaudiKernel/IAlgManager.h>
 #include <GaudiKernel/IAlgorithm.h>
 #include <GaudiKernel/IStateful.h>
 #include <GaudiKernel/Kernel.h>
 #include <GaudiKernel/SmartIF.h>
+
+// STL includes
 #include <map>
 #include <string>
 #include <unordered_map>
 #include <vector>
-
-class ISvcLocator;
-class IMessageSvc;
 
 /** @class AlgorithmManager AlgorithmManager.h
 

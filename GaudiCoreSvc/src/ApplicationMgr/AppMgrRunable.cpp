@@ -16,8 +16,6 @@
 #include <GaudiKernel/Service.h>
 #include <GaudiKernel/SmartIF.h>
 
-class IAppMgrUI;
-
 /** Class definition of AppMgrRunable.
     This is the default runnable of the application manager.
     The runable handles the actual run() implementation of the

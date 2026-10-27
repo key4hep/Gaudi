@@ -28,12 +28,8 @@
 #include <climits>
 #include <vector>
 
-class IIncidentSvc;
-class IAddressCreator;
-class IToolSvc;
-class EventSelectorDataStream;
+// Forward declarations
 class EvtSelectorContext;
-class IDataStreamTool;
 
 /** Definition of class EventSelector
 

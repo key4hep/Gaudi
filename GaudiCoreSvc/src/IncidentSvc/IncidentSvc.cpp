@@ -42,8 +42,6 @@
  *    there is at most one incident handler being executed across all threads.
  */
 
-struct isSingleShot_t;
-
 class IncidentSvc : public extends<Service, IIncidentSvc> {
 private:
   // ListenerList should be a list rather than a vector because handing
@@ -179,12 +177,6 @@ void IncidentSvc::removeListener( IIncidentListener* lis, const std::string& typ
     if ( i != m_listenerMap.end() ) removeListenerFromList( i, lis, scheduleForRemoval );
   }
 }
-namespace {
-  /// Helper class to identify a singleShot Listener
-  constexpr struct isSingleShot_t {
-    bool operator()( const IncidentSvc::Listener& l ) const { return l.singleShot; }
-  } isSingleShot{};
-} // namespace
 void IncidentSvc::i_fireIncident( const Incident& incident, const std::string& listenerType ) {
 
   auto lock = std::scoped_lock{ m_listenerMapMutex };
@@ -251,8 +243,7 @@ void IncidentSvc::i_fireIncident( const Incident& incident, const std::string& l
   }
   if ( firedSingleShot ) {
     // remove all the singleshot listeners that got their shot...
-    listeners.erase( std::remove_if( std::begin( listeners ), std::end( listeners ), isSingleShot ),
-                     std::end( listeners ) );
+    std::erase_if( listeners, []( const Listener& i ) { return i.singleShot; } );
     if ( listeners.empty() ) m_listenerMap.erase( ilisteners );
   }
 

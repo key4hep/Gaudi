@@ -56,16 +56,6 @@
 #include <sstream>
 #include <vector>
 
-class ISvcLocator;
-class ServiceManager;
-class AlgorithmManager;
-class DLLClassManager;
-class IMessageSvc;
-class IIncidentSvc;
-class IRunable;
-class IDataManagerSvc;
-class IConversionSvc;
-
 /** @class ApplicationMgr
 
     The Application Manager class. The main purpose of the Application

@@ -28,13 +28,6 @@
 #include <memory>
 #include <optional>
 
-class INTuple;
-class INTupleSvc;
-class IAddressCreator;
-class EventSelectorDataStream;
-template <class TYPE>
-class EventIterator;
-
 /** Definition of class EventCollectionSelector
 
     Basic event selector service. The event selector service

@@ -44,13 +44,6 @@
 // ROOT includes
 #include <TClass.h>
 
-class IAlgTool;
-class IAlgorithm;
-class IAlgManager;
-class IIncidentSvc;
-class IDataProviderSvc;
-class IToolSvc;
-
 /** @class DataOnDemandSvc DataOnDemandSvc.h
  *
  * The DataOnDemandSvc listens to incidents typically

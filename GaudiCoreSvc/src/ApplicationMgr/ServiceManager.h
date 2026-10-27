@@ -10,6 +10,7 @@
 \***********************************************************************************/
 #pragma once
 
+// Framework includes
 #include <GaudiKernel/ComponentManager.h>
 #include <GaudiKernel/IStateful.h>
 #include <GaudiKernel/ISvcLocator.h>
@@ -17,13 +18,12 @@
 #include <GaudiKernel/Kernel.h>
 #include <GaudiKernel/Map.h>
 #include <GaudiKernel/SmartIF.h>
+
+// STL includes
 #include <algorithm>
 #include <list>
 #include <mutex>
 #include <string>
-
-class IService;
-class IMessageSvc;
 
 /** @class ServiceManager ServiceManager.h
 
