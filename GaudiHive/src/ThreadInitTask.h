@@ -10,12 +10,15 @@
 \***********************************************************************************/
 #pragma once
 
+// Framework includes
 #include <GaudiKernel/ISvcLocator.h>
 #include <GaudiKernel/IThreadInitTool.h>
 #include <GaudiKernel/SmartIF.h>
 #include <GaudiKernel/ToolHandle.h>
 
-#include <boost/thread.hpp>
+// STL includes
+#include <atomic>
+#include <barrier>
 #include <vector>
 
 /** @class ThreadInitTask
@@ -28,7 +31,7 @@
 class ThreadInitTask {
 
 public:
-  ThreadInitTask( ToolHandleArray<IThreadInitTool>& tools, boost::barrier* b, ISvcLocator* svcLocator,
+  ThreadInitTask( ToolHandleArray<IThreadInitTool>& tools, std::barrier<>* b, ISvcLocator* svcLocator,
                   bool terminate = false )
       : m_barrier( b ), m_serviceLocator( svcLocator ), m_terminate( terminate ) {
     m_tools.reserve( tools.size() );
@@ -46,7 +49,7 @@ public:
 private:
   std::vector<IThreadInitTool*> m_tools;
 
-  boost::barrier*      m_barrier = nullptr;
+  std::barrier<>*      m_barrier = nullptr;
   SmartIF<ISvcLocator> m_serviceLocator;
   bool                 m_terminate = false;
 

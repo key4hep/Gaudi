@@ -10,8 +10,6 @@
 \***********************************************************************************/
 #include "GraphDumper.h"
 
-#include <boost/algorithm/string/replace.hpp>
-
 namespace {
   std::string escapeSpecialCharactersForMl( std::string_view view ) {
     std::string result;

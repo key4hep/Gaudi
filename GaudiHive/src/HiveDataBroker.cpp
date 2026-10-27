@@ -8,17 +8,19 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
+// Local includes
 #include "GraphDumper.h"
 
+// Framework includes
 #include <Gaudi/Algorithm.h>
 #include <GaudiKernel/GaudiException.h>
 #include <GaudiKernel/IAlgManager.h>
 #include <GaudiKernel/IDataBroker.h>
 #include <GaudiKernel/Service.h>
 #include <GaudiKernel/System.h>
+
+// STL includes
 #include <algorithm>
-#include <boost/lexical_cast.hpp>
-#include <boost/tokenizer.hpp>
 #include <iomanip>
 #include <ranges>
 #include <stdexcept>
@@ -262,17 +264,11 @@ HiveDataBrokerSvc::instantiateAndInitializeAlgorithms( const std::vector<std::st
       myIAlg->addRef();
     }
 
-    if ( !myIAlg ) {
-      throw GaudiException{ "Failed to create " + boost::lexical_cast<std::string>( item ), __func__,
-                            StatusCode::FAILURE };
-    }
+    if ( !myIAlg ) { throw GaudiException{ "Failed to create " + item, __func__, StatusCode::FAILURE }; }
 
     // propagate the sub-algorithm into own state.
     StatusCode sc = myIAlg->sysInitialize();
-    if ( sc.isFailure() ) {
-      throw GaudiException{ "Failed to initialize " + boost::lexical_cast<std::string>( item ), __func__,
-                            StatusCode::FAILURE };
-    }
+    if ( sc.isFailure() ) { throw GaudiException{ "Failed to initialize " + item, __func__, StatusCode::FAILURE }; }
 
     algorithms.emplace( tn.name(), AlgEntry{ index++, std::move( myIAlg ) } );
   }

@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2019 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,7 +8,34 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#include "ContextEventCounter.h"
+
+// Framework includes
+#include <GaudiKernel/Algorithm.h>
+#include <GaudiKernel/ContextSpecificPtr.h>
+
+/** @class ContextEventCounter src/ContextEventCounter.h
+ *
+ *
+ * @author Marco Clemencic
+ * @date 27/10/2013
+ */
+class ContextEventCounterPtr final : public Algorithm {
+public:
+  using Algorithm::Algorithm;     /// Standard constructor
+  StatusCode execute() override;  ///< Algorithm execution
+  StatusCode finalize() override; ///< Algorithm finalization
+private:
+  Gaudi::Hive::ContextSpecificPtr<int> m_ctxtSpecCounter;
+};
+
+class ContextEventCounterData final : public Algorithm {
+public:
+  using Algorithm::Algorithm;     /// Standard constructor
+  StatusCode execute() override;  ///< Algorithm execution
+  StatusCode finalize() override; ///< Algorithm finalization
+private:
+  Gaudi::Hive::ContextSpecificData<int> m_ctxtSpecCounter;
+};
 
 // ----------------------------------------------------------------------------
 // Implementation file for class: ContextEventCounterPtr

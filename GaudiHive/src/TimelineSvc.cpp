@@ -8,14 +8,50 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#include "TimelineSvc.h"
+
+// Framework includes
+#include <GaudiKernel/ITimelineSvc.h>
 #include <GaudiKernel/MsgStream.h>
+#include <GaudiKernel/Service.h>
 #include <GaudiKernel/StatusCode.h>
 #include <GaudiKernel/TimelineEvent.h>
 
+// STL includes
 #include <algorithm>
 #include <fstream>
 #include <ranges>
+#include <string>
+
+// External libraries
+#include <boost/functional/hash.hpp>
+#include <tbb/concurrent_unordered_map.h>
+
+class TimelineSvc : public extends<Service, ITimelineSvc> {
+public:
+  using extends::extends;
+
+  StatusCode initialize() override;
+  StatusCode reinitialize() override;
+  StatusCode finalize() override;
+
+  TimelineRecorder getRecorder( std::string alg, const EventContext& ctx ) override;
+
+  bool getTimelineEvent( TimelineEvent& ) const override;
+  bool getFirstMatching( TimelineEvent& ) const override;
+  bool getLastMatching( TimelineEvent& ) const override;
+  bool isEnabled() const override { return m_isEnabled; }
+
+private:
+  void outputTimeline();
+
+  Gaudi::Property<std::string> m_timelineFile{ this, "TimelineFile", "timeline.csv", "" };
+  Gaudi::Property<bool>        m_isEnabled{ this, "RecordTimeline", false, "Enable recording of the timeline events" };
+  Gaudi::Property<bool>        m_dumpTimeline{ this, "DumpTimeline", false, "Enable dumping of the timeline events" };
+  Gaudi::Property<bool>        m_partial{ this, "Partial", false, "" };
+
+  using key_type = std::tuple<std::string, std::size_t>;
+  tbb::concurrent_unordered_multimap<key_type, TimelineEvent, boost::hash<key_type>> m_events;
+};
 
 StatusCode TimelineSvc::initialize() {
   StatusCode sc = Service::initialize();

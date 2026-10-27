@@ -8,12 +8,17 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#include "ThreadPoolSvc.h"
 
+// Local includes
+#include "ThreadPoolSvc.h"
 #include "ThreadInitTask.h"
+
+// Framework includes
 #include <GaudiKernel/ConcurrencyFlags.h>
 
+// STL includes
 #include <chrono>
+#include <ios>
 #include <thread>
 
 #define ON_DEBUG if ( msgLevel( MSG::DEBUG ) )
@@ -110,13 +115,12 @@ StatusCode ThreadPoolSvc::initPool( const int& poolSize, const int& maxParalleli
                                                      m_threadPoolSize + maxParallelismExtra + 1 );
 
     Gaudi::Concurrency::ConcurrencyManager::setNumThreads( m_threadPoolSize );
-
     // Create the task arena to run all algorithms
     m_arena.initialize( m_threadPoolSize + 1 );
 
     // Create the barrier for task synchronization at termination
     // (here we increase the number of threads by one to account for calling thread)
-    m_barrier = std::make_unique<boost::barrier>( m_threadPoolSize + 1 );
+    m_barrier = std::make_unique<std::barrier<>>( m_threadPoolSize + 1 );
 
   } else {
     // don't use a thread pool
@@ -181,7 +185,7 @@ StatusCode ThreadPoolSvc::launchTasks( bool terminate ) {
 
     // Now wait for all the workers to reach the barrier
     ON_DEBUG debug() << "waiting at barrier for all ThreadInitTool to finish executing" << endmsg;
-    m_barrier->wait();
+    m_barrier->arrive_and_wait();
 
     // Check to make sure all Tools were invoked.
     // I'm not sure this mechanism is worthwhile.
@@ -212,7 +216,7 @@ StatusCode ThreadPoolSvc::launchTasks( bool terminate ) {
   else {
     ON_DEBUG debug() << "launching ThreadInitTask " << taskType << "in this thread." << endmsg;
 
-    boost::barrier* noBarrier = nullptr;
+    std::barrier<>* noBarrier = nullptr;
     ThreadInitTask( m_threadInitTools, noBarrier, serviceLocator(), terminate )();
   }
 
@@ -240,6 +244,6 @@ void ThreadPoolSvc::initThisThread() {
   }
 
   m_threadInitCount++;
-  boost::barrier* noBarrier = nullptr;
+  std::barrier<>* noBarrier = nullptr;
   ThreadInitTask( m_threadInitTools, noBarrier, serviceLocator(), false )();
 }

@@ -8,13 +8,22 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
+
+// Local includes
 #include "ThreadInitTask.h"
+
+// Framework includes
 #include <GaudiKernel/IMessageSvc.h>
 #include <GaudiKernel/ISvcLocator.h>
 #include <GaudiKernel/IThreadInitTool.h>
 #include <GaudiKernel/MsgStream.h>
 #include <GaudiKernel/SmartIF.h>
 #include <GaudiKernel/ToolHandle.h>
+
+// STL includes
+#include <atomic>
+#include <ios>
+#include <pthread.h>
 #include <thread>
 
 namespace Gaudi {
@@ -84,6 +93,6 @@ void ThreadInitTask::operator()() const {
 
   if ( m_barrier ) {
     log << MSG::DEBUG << "waiting at barrier in thread 0x" << std::hex << pthread_self() << std::dec << endmsg;
-    m_barrier->wait();
+    m_barrier->arrive_and_wait();
   }
 }

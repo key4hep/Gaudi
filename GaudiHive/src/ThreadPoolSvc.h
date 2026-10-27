@@ -10,27 +10,31 @@
 \***********************************************************************************/
 #pragma once
 
+// Framework includes
 #include <GaudiKernel/ConcurrencyFlags.h>
 #include <GaudiKernel/IThreadInitTool.h>
 #include <GaudiKernel/IThreadPoolSvc.h>
 #include <GaudiKernel/Service.h>
 #include <GaudiKernel/ToolHandle.h>
 
-#include <boost/thread/barrier.hpp>
+// STL includes
+#include <atomic>
+#include <barrier>
+#include <memory>
+#include <string>
+#include <vector>
 
+// TBB includes
 #include <tbb/global_control.h>
 #include <tbb/spin_mutex.h>
 #include <tbb/task_arena.h>
-
-#include <memory>
-#include <vector>
 
 /** @class ThreadPoolSvc
  * @brief A service which initializes a TBB thread pool.
  *
  * This service can be configured with an array of IThreadInitTools which
  * will each be invoked concurrently on each worker thread. A ThreadInitTask
- * is created for each thread and given the list of tools. A boost::barrier
+ * is created for each thread and given the list of tools. A std::barrier
  * is used to synchronize the calling of each tool concurrently on all
  * threads at the same time.
  *
@@ -77,7 +81,7 @@ private:
   tbb::spin_mutex m_initMutex;
 
   /// Barrier used to synchronization thread init tasks
-  std::unique_ptr<boost::barrier> m_barrier;
+  std::unique_ptr<std::barrier<>> m_barrier;
 
   /// TBB global control parameter
   std::unique_ptr<tbb::global_control> m_tbbgc;
