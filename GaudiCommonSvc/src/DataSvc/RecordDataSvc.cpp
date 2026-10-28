@@ -25,8 +25,11 @@
 // +---------+----------------------------------------------+---------
 //
 //====================================================================
-#define DATASVC_RECORDDATASVC_CPP
 
+// Local includes
+#include "RecordDataSvc.h"
+
+// Framework includes
 #include <GaudiKernel/DataIncident.h>
 #include <GaudiKernel/DataObject.h>
 #include <GaudiKernel/IConversionSvc.h>
@@ -36,8 +39,6 @@
 #include <GaudiKernel/ISvcLocator.h>
 #include <GaudiKernel/RegistryEntry.h>
 #include <GaudiKernel/SmartIF.h>
-
-#include "RecordDataSvc.h"
 
 // Instantiation of a static factory class used by clients to create
 // instances of this service
@@ -98,8 +99,8 @@ StatusCode RecordDataSvc::finalize() {
 /// Inform that a new incident has occured
 void RecordDataSvc::handle( const Incident& incident ) {
   if ( incident.type() == "FILE_OPEN_READ" ) {
-    typedef ContextIncident<IOpaqueAddress*> Ctxt;
-    auto                                     inc = dynamic_cast<const Ctxt*>( &incident );
+    using Ctxt = ContextIncident<IOpaqueAddress*>;
+    auto inc   = dynamic_cast<const Ctxt*>( &incident );
     if ( !inc ) {
       always() << "Received invalid incident of type:" << incident.type() << endmsg;
     } else {

@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -76,7 +76,7 @@ public:
 public:
   // ==========================================================================
   /// for report: unconverted histograms
-  typedef std::set<std::string> Set; // unconverted histograms
+  using Set = std::set<std::string>; // unconverted histograms
   // ==========================================================================
 protected:
   Gaudi::Property<std::string> m_histPersName{ this, "HistogramPersistency", "", "name of the Hist Pers type" };

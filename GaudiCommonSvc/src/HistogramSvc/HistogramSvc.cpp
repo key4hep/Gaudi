@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,27 +8,22 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#ifdef __ICC
-// disable icc remark #2259: non-pointer conversion from "X" to "Y" may lose significant bits
-//   TODO: To be removed, since it comes from ROOT TMathBase.h
-#  pragma warning( disable : 2259 )
-#endif
 
-// STD & STL
-#include <cstdlib>
-#include <sstream>
-#include <stdexcept>
+// Local includes
+#include "GaudiPI.h"
 
-// GaudiKernel
+// Framework includes
 #include <Gaudi/Property.h>
+#include <GaudiCommonSvc/HistogramSvc.h>
 #include <GaudiKernel/AttribStringParser.h>
 #include <GaudiKernel/DataObject.h>
 #include <GaudiKernel/GenericAddress.h>
 #include <GaudiKernel/IConversionSvc.h>
 
-// Local
-#include "GaudiPI.h"
-#include <GaudiCommonSvc/HistogramSvc.h>
+// STL includes
+#include <cstdlib>
+#include <sstream>
+#include <stdexcept>
 
 namespace {
   using namespace AIDA;

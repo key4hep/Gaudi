@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,15 +8,76 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-// Include Files
-#include "AuditorSvc.h"
+
+// Framework includes
 #include <Gaudi/Auditor.h>
 #include <Gaudi/IAuditor.h>
 #include <GaudiKernel/GaudiException.h>
+#include <GaudiKernel/IAuditorSvc.h>
 #include <GaudiKernel/INamedInterface.h>
 #include <GaudiKernel/ISvcLocator.h>
 #include <GaudiKernel/MsgStream.h>
+#include <GaudiKernel/Service.h>
 #include <GaudiKernel/TypeNameString.h>
+
+// STL includes
+#include <memory>
+#include <vector>
+
+/**
+ * This service manages Auditors.
+ * Auditors can be inserted in the system to audit the Algorithms is in their functions.
+ */
+class AuditorSvc : public extends<Service, IAuditorSvc> {
+public:
+  StatusCode initialize() override {
+    // make sure we synchronize auditors at initialization
+    return Service::initialize().andThen( [&] { return syncAuditors(); } );
+  }
+  StatusCode finalize() override;
+
+  void before( std::string const&, std::string const&, EventContext const& ) override;
+  void after( std::string const&, std::string const&, EventContext const&, StatusCode const& ) override;
+
+  bool isEnabled() const override { return m_isEnabled; };
+
+  StatusCode sysInitialize() override { return Service::sysInitialize(); }
+  StatusCode sysFinalize() override { return Service::sysFinalize(); }
+
+  /// management functionality: retrieve an Auditor
+  Gaudi::IAuditor* getAuditor( std::string const& name ) const override;
+  /// management functionality: check if an Auditor exists
+  bool hasAuditor( std::string const& name ) const override { return getAuditor( name ) != nullptr; };
+  /// adds a new Auditor
+  StatusCode addAuditor( std::string const& name ) override;
+  /// removes an Auditor. Returns whether the Auditor was present (and thus removed)
+  std::optional<StatusCode> removesAuditor( std::string const& name ) override;
+
+  using extends::extends;
+
+private:
+  std::unique_ptr<Gaudi::IAuditor> newAuditor( MsgStream&, std::string_view );
+  /// internal mathod to update auditors when m_audNameList is changed
+  StatusCode syncAuditors();
+
+  Gaudi::Property<std::vector<std::string>> m_audNameList{
+      this,
+      "Auditors",
+      {},
+      [this]( auto& ) {
+        // Warn that any change of this property after initialize
+        // won't be taken into account
+        if ( FSMState() >= Gaudi::StateMachine::INITIALIZED ) {
+          error() << "Updating 'Auditors' after initialize is not supported. Use addAuditor instead." << endmsg;
+        }
+      },
+      "list of auditors names",
+      "OrderedSet<std::string>" };
+  Gaudi::Property<bool> m_isEnabled{ this, "Enable", true, "enable/disable alltogether the auditors" };
+
+  // Manager list of Auditors
+  std::vector<std::unique_ptr<Gaudi::IAuditor>> m_pAudList;
+};
 
 // Instantiation of a static factory class used by clients to create
 //  instances of this service

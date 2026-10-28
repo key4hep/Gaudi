@@ -23,8 +23,6 @@ if(GAUDI_USE_AIDA)
                     LINK
                       PUBLIC GaudiKernel
                              Boost::headers
-                             Boost::filesystem
-                             Rangev3::rangev3
                              ROOT::Hist
                              ROOT::RIO
                              AIDA::aida)
@@ -58,7 +56,6 @@ gaudi_add_module(GaudiCommonSvc
                  LINK GaudiKernel
                       Boost::headers
                       Boost::filesystem
-                      Rangev3::rangev3
                       ROOT::Hist
                       ROOT::RIO
                       ${GAUDI_ATOMIC_LIBS})

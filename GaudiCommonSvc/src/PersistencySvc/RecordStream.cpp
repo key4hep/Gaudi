@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,8 +8,10 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-// Framework include files
-#include "RecordStream.h"
+// Local includes
+#include "OutputStream.h"
+
+// Framework includes
 #include <GaudiKernel/DataObject.h>
 #include <GaudiKernel/DataStoreItem.h>
 #include <GaudiKernel/IDataManagerSvc.h>
@@ -17,6 +19,22 @@
 #include <GaudiKernel/IOpaqueAddress.h>
 #include <GaudiKernel/IRegistry.h>
 #include <GaudiKernel/MsgStream.h>
+
+/** @class RecordStream RecordStream.h
+ * Extension of OutputStream to write run records after last event
+ *
+ * @author  M.Frank
+ * @version 1.0
+ */
+class RecordStream : public OutputStream {
+public:
+  /// Standard algorithm Constructor
+  RecordStream( const std::string&, ISvcLocator* );
+  /// Runrecords do not get written for each event: Event processing hence dummy....
+  StatusCode execute() override { return StatusCode::SUCCESS; }
+  /// Algorithm overload: finalization
+  StatusCode finalize() override;
+};
 
 // Define the algorithm factory for the standard output data writer
 DECLARE_COMPONENT( RecordStream )

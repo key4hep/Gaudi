@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,13 +8,21 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#define PERSISTENCYSVC_DETPERSISTENCYSVC_CPP
 
-#include <iostream>
+// Local includes
+#include "PersistencySvc.h"
+
+// STL includes
+#include <string>
 
 // Implementation specific definitions
-#include "DetPersistencySvc.h"
 #include <GaudiKernel/ISvcLocator.h>
+
+class DetPersistencySvc : virtual public PersistencySvc {
+public:
+  // Standard Constructor
+  DetPersistencySvc( const std::string& name, ISvcLocator* svc );
+};
 
 // Instantiation of a static factory class used by clients to create
 // instances of this service

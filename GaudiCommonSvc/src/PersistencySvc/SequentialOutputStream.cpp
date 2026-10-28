@@ -8,14 +8,11 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-// standard headers
-#include <limits>
 
-// boost
-#include <boost/filesystem.hpp>
+// Local includes
+#include "OutputStream.h"
 
 // Framework include files
-#include "SequentialOutputStream.h"
 #include <GaudiKernel/DataObject.h>
 #include <GaudiKernel/DataStoreItem.h>
 #include <GaudiKernel/IDataManagerSvc.h>
@@ -24,10 +21,45 @@
 #include <GaudiKernel/IRegistry.h>
 #include <GaudiKernel/MsgStream.h>
 
+// STL includes
+#include <filesystem>
+#include <limits>
+#include <sstream>
+#include <stdexcept>
+#include <string>
+
+/** @class SequentialOutputStream SequentialOutputStream.h
+ * Extension of OutputStream to write run records after last event
+ *
+ * @author  M.Frank
+ * @version 1.0
+ */
+class SequentialOutputStream : public OutputStream {
+
+protected:
+  /// OutputStream override: Select the different objects and write them to file
+  StatusCode writeObjects() override;
+
+public:
+  using OutputStream::OutputStream;
+
+  StatusCode execute() override;
+
+private:
+  Gaudi::Property<unsigned int> m_eventsPerFile{ this, "EventsPerFile", std::numeric_limits<unsigned int>::max() };
+  Gaudi::Property<bool>         m_numericFilename{ this, "NumericFilename", false };
+  Gaudi::Property<unsigned int> m_nNumbersAdded{ this, "NumbersAdded", 6 };
+
+  // Data members
+  unsigned int m_events = 0;
+  unsigned int m_iFile  = 1;
+
+  // Helper Methods
+  void makeFilename();
+};
+
 // Define the algorithm factory for the standard output data writer
 DECLARE_COMPONENT( SequentialOutputStream )
-
-namespace bf = boost::filesystem;
 
 //=============================================================================
 StatusCode SequentialOutputStream::writeObjects() {
@@ -58,14 +90,14 @@ StatusCode SequentialOutputStream::execute() {
 void SequentialOutputStream::makeFilename() {
   if ( m_events % m_eventsPerFile != 0 ) return;
 
-  bf::path    outputPath( m_outputName.value() );
-  std::string filename  = outputPath.filename().string();
-  bf::path    dir       = outputPath.parent_path();
-  std::string stem      = outputPath.stem().string();
-  std::string extension = outputPath.extension().string();
+  std::filesystem::path outputPath( m_outputName.value() );
+  std::string           filename  = outputPath.filename().string();
+  std::filesystem::path dir       = outputPath.parent_path();
+  std::string           stem      = outputPath.stem().string();
+  std::string           extension = outputPath.extension().string();
 
   if ( !dir.empty() ) {
-    if ( !bf::exists( dir ) ) {
+    if ( !std::filesystem::exists( dir ) ) {
       std::stringstream stream;
       stream << "Directory " << dir << " does not exist.";
       throw GaudiException( stream.str(), "error", StatusCode::FAILURE );
