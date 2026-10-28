@@ -14,7 +14,6 @@
 if(GAUDI_USE_AIDA)
   gaudi_add_library(GaudiCommonSvcLib
                     SOURCES src/HistogramSvc/HistogramSvc.cpp
-                            src/HistogramSvc/AIDA_visibility_hack.cpp
                             src/HistogramSvc/H1D.cpp
                             src/HistogramSvc/H2D.cpp
                             src/HistogramSvc/H3D.cpp
