@@ -97,6 +97,19 @@ class BlockSkipper(FilePreprocessor):
         return line
 
 
+class RootObjectAutoRegistrationSkipper(FilePreprocessor):
+    """Ignore ROOT's environment-dependent registration message and its color reset."""
+
+    def __processFile__(self, lines):
+        return re.sub(
+            r"^TROOT[ \t]+INFO Object auto registration disabled using the environment variable ROOT_OBJECT_AUTO_REGISTRATION$"
+            r"(?:\n\x1b\[m$)?",
+            "",
+            "\n".join(lines),
+            flags=re.MULTILINE,
+        ).splitlines()
+
+
 class RegexpReplacer(FilePreprocessor):
     def __init__(self, orig, repl="", when=None):
         if when:
@@ -262,7 +275,8 @@ lineSkipper = LineSkipper(
 )
 
 normalizeTestSuite = (
-    lineSkipper
+    RootObjectAutoRegistrationSkipper()
+    + lineSkipper
     + normalizeTestSuite
     + skipEmptyLines
     + normalizeEOL
