@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 2024 CERN for the benefit of the LHCb and ATLAS collaborations      #
+# (c) Copyright 2024-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -10,6 +10,8 @@
 #####################################################################################
 import os
 import subprocess
+import sys
+import time
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
@@ -174,3 +176,33 @@ def test_skip_if_platform_matches():
     with patch.dict("os.environ", {"BINARY_TAG": "x86_64-centos7-gcc8-opt"}):
         assert platform_matches(["gcc8-opt"])
         assert not platform_matches(["i686", "arm"])
+
+
+def test_run_program_keeps_output_left_in_the_pipes(tmp_path):
+    """
+    A process that writes more than the pipe capacity and exits while a slow reader
+    has not read it all: the output left in the pipes at exit must not be lost.
+    """
+    size = 300_000
+
+    class TestSlowReader(SubprocessBaseTest):
+        popen_kwargs = {"cwd": str(tmp_path)}
+        command = [
+            sys.executable,
+            "-c",
+            f"import sys; sys.stdout.write('x' * {size}); sys.stderr.write('y' * {size})",
+        ]
+
+    read = os.read
+
+    def slow_read(fileno, length):
+        time.sleep(0.001)
+        return read(fileno, length)
+
+    with patch("GaudiTesting.SubprocessBaseTest.os.read", slow_read):
+        result = TestSlowReader.run_program(tmp_path=tmp_path)
+
+    process = result.completed_process
+    assert process.returncode == 0
+    assert len(process.stdout) == size
+    assert len(process.stderr) == size
