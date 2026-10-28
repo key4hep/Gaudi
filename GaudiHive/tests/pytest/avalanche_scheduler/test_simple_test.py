@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 2024-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 2024-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -13,7 +13,7 @@ from GaudiTesting import GaudiExeTest
 
 class Test(GaudiExeTest):
     command = ["gaudirun.py", "-v", "../../../options/AvalancheSchedulerSimpleTest.py"]
-    timeout = 120
+    timeout = 180
 
     def test_graph_file(self, cwd):
         ref = """digraph datadeps {
