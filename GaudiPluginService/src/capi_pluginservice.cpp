@@ -8,15 +8,33 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#include "capi_pluginservice.h"
+
+/* @author Sebastien Binet <binet@cern.ch> */
 
 #define GAUDI_PLUGIN_SERVICE_V2
 #include <Gaudi/PluginService.h>
 
 #include <sstream>
-#include <vector>
+#include <string>
 
 using namespace Gaudi::PluginService::v2::Details;
+
+extern "C" {
+
+typedef struct {
+  void* registry;
+} cgaudi_pluginsvc_t;
+
+typedef struct {
+  cgaudi_pluginsvc_t registry;
+  const char*        id;
+} cgaudi_factory_t;
+
+typedef struct {
+  cgaudi_pluginsvc_t registry;
+  const char*        id;
+  const char*        key;
+} cgaudi_property_t;
 
 cgaudi_pluginsvc_t cgaudi_pluginsvc_instance() {
   static Registry& cxxreg = Registry::instance();
@@ -95,3 +113,5 @@ const char* cgaudi_pluginsvc_plugin_search_path() {
   }();
   return cache.c_str();
 }
+
+} /* extern "C" */
