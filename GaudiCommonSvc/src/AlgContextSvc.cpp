@@ -198,15 +198,12 @@ void AlgContextSvc::handle( const Incident& inc ) {
 
 // From here on, we have unit tests.
 #if defined( BUILD_UNIT_TESTS )
-#  if __has_include( <catch2/catch.hpp>)
-// Catch2 v2
-#    include <catch2/catch.hpp>
-#  else
-// Catch2 v3
-#    include <catch2/catch_test_macros.hpp>
-#  endif
 
+// Framework includes
 #  include <Gaudi/Algorithm.h>
+
+// Catch2 includes
+#  include <catch2/catch_test_macros.hpp>
 
 namespace mock {
   struct ServiceLocator : implements<ISvcLocator> {

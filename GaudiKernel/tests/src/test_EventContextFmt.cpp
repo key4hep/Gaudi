@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 2024-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 2024-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -13,14 +13,9 @@
 #include <fmt/format.h>
 #include <format>
 
-#if __has_include( <catch2/catch.hpp>)
-// Catch2 v2
-#  include <catch2/catch.hpp>
-#else
 // Catch2 v3
-#  include <catch2/catch_template_test_macros.hpp>
-#  include <catch2/catch_test_macros.hpp>
-#endif
+#include <catch2/catch_template_test_macros.hpp>
+#include <catch2/catch_test_macros.hpp>
 
 TEST_CASE( "EventContext formatting" ) {
   // One basic check for fmt library (code is shared)

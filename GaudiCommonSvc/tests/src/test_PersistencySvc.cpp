@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 2024-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 2024-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,6 +8,8 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
+
+// Framework includes
 #include <GaudiKernel/ConversionSvc.h>
 #include <GaudiKernel/IMessageSvc.h>
 #include <GaudiKernel/IPersistencySvc.h>
@@ -15,22 +17,17 @@
 #include <GaudiKernel/ISvcLocator.h>
 #include <GaudiKernel/Message.h>
 #include <GaudiKernel/Service.h>
+
+// STL includes
 #include <chrono>
 #include <mutex>
 #include <thread>
 
-#if __has_include( <catch2/catch.hpp>)
-// Catch2 v2
-#  include <catch2/catch.hpp>
-using Catch::Matchers::Contains;
-#  define ContainsSubstring Contains
-#else
 // Catch2 v3
-#  include <catch2/catch_test_macros.hpp>
-#  include <catch2/generators/catch_generators_adapters.hpp>
-#  include <catch2/matchers/catch_matchers_string.hpp>
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/generators/catch_generators_adapters.hpp>
+#include <catch2/matchers/catch_matchers_string.hpp>
 using Catch::Matchers::ContainsSubstring;
-#endif
 
 namespace {
   /// Minimal stand-alone ISvcLocator implementation valid for this test

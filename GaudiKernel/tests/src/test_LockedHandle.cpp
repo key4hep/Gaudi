@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -21,13 +21,8 @@
 #include <mutex>
 #include <thread>
 
-#if __has_include( <catch2/catch.hpp>)
-// Catch2 v2
-#  include <catch2/catch.hpp>
-#else
 // Catch2 v3
-#  include <catch2/catch_test_macros.hpp>
-#endif
+#include <catch2/catch_test_macros.hpp>
 
 template <class M = std::mutex>
 class Hist {
