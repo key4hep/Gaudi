@@ -8,7 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-// Framework includes
+
 #include <GaudiKernel/AppReturnCode.h>
 #include <GaudiKernel/IIncidentSvc.h>
 #include <GaudiKernel/Incident.h>
@@ -18,9 +18,13 @@
 #include <GaudiUtils/IFileCatalog.h>
 #include <GaudiUtils/IIODataManager.h>
 
-// STL includes
+#include <iterator>
+#include <map>
+#include <memory>
 #include <set>
-#include <strings.h>
+#include <string>
+#include <utility>
+#include <vector>
 
 class IIncidentSvc;
 
@@ -43,8 +47,8 @@ namespace Gaudi {
    */
   class IODataManager : public extends<Service, IIODataManager> {
   protected:
-    typedef const std::string& CSTR;
-    struct Entry               final {
+    using CSTR = const std::string&;
+    struct Entry final {
       std::string      type;
       IoType           ioType;
       IDataConnection* connection;
@@ -52,8 +56,8 @@ namespace Gaudi {
       Entry( CSTR tech, bool k, IoType iot, IDataConnection* con )
           : type( tech ), ioType( iot ), connection( con ), keepOpen( k ) {}
     };
-    typedef std::map<std::string, Entry*>      ConnectionMap;
-    typedef std::map<std::string, std::string> FidMap;
+    using ConnectionMap = std::map<std::string, std::unique_ptr<Entry>>;
+    using FidMap        = std::map<std::string, std::string>;
 
     Gaudi::Property<std::string> m_catalogSvcName{ this, "CatalogType", "Gaudi::MultiFileCatalog/FileCatalog",
                                                    "name of the file catalog service" };
@@ -258,13 +262,11 @@ StatusCode IODataManager::reconnect( Entry* e ) {
     if ( sc.isSuccess() && e->ioType == Connection::READ ) {
       std::vector<Entry*> to_retire;
       e->connection->resetAge();
-      transform_copy_if(
-          std::begin( m_connectionMap ), std::end( m_connectionMap ), std::back_inserter( to_retire ),
-          []( ConnectionMap::const_reference i ) { return i.second.get(); },
-          [&]( Entry* i ) {
-            IDataConnection* c = i->connection;
-            return e->connection != c && c->isConnected() && !i->keepOpen && c->ageFile() > m_ageLimit;
-          } );
+      for ( const auto& [key, i] : m_connectionMap ) {
+        IDataConnection* c = i->connection;
+        if ( e->connection != c && c->isConnected() && !i->keepOpen && c->ageFile() > m_ageLimit )
+          to_retire.push_back( i.get() );
+      }
       if ( !to_retire.empty() ) {
         MsgStream log( msgSvc(), name() );
         std::for_each( std::begin( to_retire ), std::end( to_retire ), [&]( Entry* j ) {

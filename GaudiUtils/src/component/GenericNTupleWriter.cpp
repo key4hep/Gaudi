@@ -14,8 +14,6 @@
 #include <TFile.h>
 #include <TTree.h>
 #include <format>
-#include <functional>
-#include <gsl/pointers>
 #include <mutex>
 #include <string>
 #include <vector>

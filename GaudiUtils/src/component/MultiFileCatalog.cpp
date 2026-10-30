@@ -9,23 +9,19 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 
-// Local includes
 #include "createGuidAsString.h"
 
-// Framework includes
 #include <Gaudi/PluginService.h>
 #include <GaudiKernel/MsgStream.h>
 #include <GaudiKernel/Service.h>
 
-// GaudiUtils includes
 #include <GaudiUtils/IFileCatalog.h>
 #include <GaudiUtils/IFileCatalogMgr.h>
 
-// STL includes
 #include <algorithm>
 #include <functional>
 #include <stdexcept>
-#include <strings.h>
+#include <string>
 
 /*
  *   Gaudi namespace declaration
@@ -42,12 +38,12 @@ namespace Gaudi {
   class MultiFileCatalog : public extends<Service, IFileCatalog, IFileCatalogMgr> {
   public:
     // disambiguate between Service::Factory and IFileCatalog::Factory
-    typedef Service::Factory Factory;
+    using Factory = Service::Factory;
 
   protected:
-    typedef const std::string&         CSTR;
-    typedef std::vector<IFileCatalog*> Catalogs;
-    typedef std::vector<std::string>   CatalogNames;
+    using CSTR         = const std::string&;
+    using Catalogs     = std::vector<IFileCatalog*>;
+    using CatalogNames = std::vector<std::string>;
 
     template <class A1, class F>
     std::string _find( A1& arg1, F pmf ) const {
@@ -122,7 +118,9 @@ namespace Gaudi {
     }
 
     /// Dump all file Identifiers
-    void getFID( Strings& fids ) const override { _collect( fids, std::mem_fn( &IFileCatalog::getFID ) ); }
+    void getFID( std::vector<std::string>& fids ) const override {
+      _collect( fids, std::mem_fn( &IFileCatalog::getFID ) );
+    }
     /// Delete FileID from the catalog
     void deleteFID( CSTR fid ) const override { writeCatalog( fid )->deleteFID( fid ); }
     /// Create a FileID and DOM Node of the PFN with all the attributes
@@ -199,14 +197,6 @@ namespace Gaudi {
 } /* End namespace Gaudi                 */
 
 using namespace Gaudi;
-using namespace std;
-
-namespace {
-  template <typename C, typename F>
-  F for_each( C& c, F&& f ) {
-    return std::for_each( std::begin( c ), std::end( c ), std::forward<F>( f ) );
-  }
-} // namespace
 
 DECLARE_COMPONENT( MultiFileCatalog )
 
@@ -230,7 +220,7 @@ StatusCode MultiFileCatalog::initialize() {
 // ----------------------------------------------------------------------------
 StatusCode MultiFileCatalog::finalize() {
   commit();
-  for_each( m_catalogs, []( IFileCatalog* i ) { i->release(); } );
+  std::ranges::for_each( m_catalogs, []( IFileCatalog* i ) { i->release(); } );
   m_catalogs.clear();
   m_started = false;
   return Service::finalize();
@@ -240,7 +230,7 @@ StatusCode MultiFileCatalog::finalize() {
 std::string MultiFileCatalog::createFID() const { return createGuidAsString(); }
 // ----------------------------------------------------------------------------
 MultiFileCatalog::CSTR MultiFileCatalog::connectInfo() const {
-  static const string s( "MultiCatalog" );
+  static const std::string s( "MultiCatalog" );
   return s;
 }
 // ----------------------------------------------------------------------------
@@ -273,7 +263,7 @@ MultiFileCatalog::Catalogs::iterator MultiFileCatalog::i_findCatalog( CSTR conne
 void MultiFileCatalog::printError( CSTR msg, bool rethrow ) const {
   if ( rethrow ) {
     fatal() << msg << endmsg;
-    throw runtime_error( "Catalog> " + msg );
+    throw std::runtime_error( "Catalog> " + msg );
   }
   error() << msg << endmsg;
 }
@@ -281,11 +271,11 @@ void MultiFileCatalog::printError( CSTR msg, bool rethrow ) const {
 void MultiFileCatalog::addCatalog( CSTR con ) {
   if ( !con.empty() ) {
     if ( !findCatalog( con, false ) ) {
-      static const string xml_typ = "Gaudi::XMLFileCatalog";
-      auto                id0     = con.find( "_" );
-      string              typ     = con.substr( 0, id0 );
-      string              url     = con.substr( id0 + 1 );
-      IInterface*         cat     = nullptr;
+      static const std::string xml_typ = "Gaudi::XMLFileCatalog";
+      auto                     id0     = con.find( "_" );
+      std::string              typ     = con.substr( 0, id0 );
+      std::string              url     = con.substr( id0 + 1 );
+      IInterface*              cat     = nullptr;
       if ( strncasecmp( "xml", typ.c_str(), 3 ) == 0 ) {
         cat = IFileCatalog::Factory::create( xml_typ, url, msgSvc().get() ).release();
       } else {
@@ -323,7 +313,7 @@ void MultiFileCatalog::addCatalog( IFileCatalog* cat ) {
 // ----------------------------------------------------------------------------
 void MultiFileCatalog::removeCatalog( CSTR con ) {
   if ( con.empty() || con == "*" ) {
-    for_each( m_catalogs, []( IFileCatalog* i ) { i->release(); } );
+    std::ranges::for_each( m_catalogs, []( IFileCatalog* i ) { i->release(); } );
     m_catalogs.clear();
     return;
   }
@@ -369,7 +359,7 @@ void MultiFileCatalog::setWriteCatalog( CSTR connect ) {
   setWriteCatalog( *i );
 }
 // ----------------------------------------------------------------------------
-string MultiFileCatalog::getMetaDataItem( CSTR fid, CSTR attr ) const {
+std::string MultiFileCatalog::getMetaDataItem( CSTR fid, CSTR attr ) const {
   std::string result;
   for ( const auto& i : m_catalogs ) {
     result = i->getMetaDataItem( fid, attr );
@@ -401,16 +391,16 @@ bool MultiFileCatalog::dirty() const {
 }
 // ----------------------------------------------------------------------------
 void MultiFileCatalog::init() {
-  for_each( m_catalogs, []( IFileCatalog* i ) { i->init(); } );
+  std::ranges::for_each( m_catalogs, []( IFileCatalog* i ) { i->init(); } );
   m_started = true;
 }
 // ----------------------------------------------------------------------------
 void MultiFileCatalog::commit() {
-  for_each( m_catalogs, []( IFileCatalog* i ) { i->commit(); } );
+  std::ranges::for_each( m_catalogs, []( IFileCatalog* i ) { i->commit(); } );
 }
 // ----------------------------------------------------------------------------
 void MultiFileCatalog::rollback() {
-  for_each( m_catalogs, []( IFileCatalog* i ) { i->rollback(); } );
+  std::ranges::for_each( m_catalogs, []( IFileCatalog* i ) { i->rollback(); } );
 }
 // ----------------------------------------------------------------------------
 void MultiFileCatalog::propHandler() {

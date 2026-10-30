@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -11,10 +11,8 @@
 #pragma once
 
 // Include files
+#include <cstdint>
 #include <string>
-
-// boost
-#include <boost/integer/integer_mask.hpp>
 
 /// Create a hash with a large avalanche effect from 32 or 64 bit integers or a string.
 ///
@@ -32,21 +30,16 @@
 ///       black hole: whatever you dump in to it, you get something uniformly
 ///       distributed back ;-)
 ///
-namespace Gaudi {
-  namespace Utils {
-    namespace QuasiRandom {
+namespace Gaudi::Utils::QuasiRandom {
+  /// Create a hash with a large avalanche effect from a 32 bit integer
+  std::uint32_t mix( std::uint32_t state );
 
-      /// Create a hash with a large avalanche effect from a 32 bit integer
-      uint32_t mix( uint32_t state );
+  /// mix some 'extra' entropy into 'state' and return result
+  std::uint32_t mix32( std::uint32_t state, std::uint32_t extra );
 
-      /// mix some 'extra' entropy into 'state' and return result
-      uint32_t mix32( uint32_t state, uint32_t extra );
+  /// mix some 'extra' entropy into 'state' and return result
+  std::uint32_t mix64( std::uint32_t state, uint64_t extra );
 
-      /// mix some 'extra' entropy into 'state' and return result
-      uint32_t mix64( uint32_t state, uint64_t extra );
-
-      /// mix some 'extra' entropy into 'state' and return result
-      uint32_t mixString( uint32_t state, const std::string& extra );
-    } // namespace QuasiRandom
-  }   // namespace Utils
-} // namespace Gaudi
+  /// mix some 'extra' entropy into 'state' and return result
+  std::uint32_t mixString( std::uint32_t state, const std::string& extra );
+} // namespace Gaudi::Utils::QuasiRandom

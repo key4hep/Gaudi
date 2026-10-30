@@ -13,7 +13,6 @@
 // =============================================================================
 // STD & STL
 // =============================================================================
-#include <map>
 #include <memory>
 // =============================================================================
 // AIDA
@@ -44,9 +43,9 @@
 namespace {
   // ==========================================================================
   /// the actual type to represent the bin content
-  typedef std::pair<double, double> Bin;
+  using Bin = std::pair<double, double>;
   /// vector of bins
-  typedef std::vector<Bin> Bins;
+  using Bins = std::vector<Bin>;
   // ==========================================================================
   /** @struct Edges
    *  helper structure to represent the edges
@@ -272,7 +271,7 @@ namespace Gaudi {
       // ======================================================================
     public:
       // ======================================================================
-      typedef Edges ResultT;
+      using ResultT = Edges;
       // ======================================================================
     public:
       // ======================================================================
@@ -305,7 +304,7 @@ namespace Gaudi {
       // ======================================================================
     public:
       // ======================================================================
-      typedef H1 ResultT;
+      using ResultT = H1;
       // ======================================================================
     public:
       // ======================================================================
@@ -344,7 +343,7 @@ namespace Gaudi {
       // ======================================================================
     public:
       // ======================================================================
-      typedef H2 ResultT;
+      using ResultT = H2;
       // ======================================================================
     public:
       // ======================================================================
@@ -379,7 +378,7 @@ namespace Gaudi {
       // ======================================================================
     public:
       // ======================================================================
-      typedef H3 ResultT;
+      using ResultT = H3;
       // ======================================================================
     public:
       // ======================================================================
@@ -443,7 +442,7 @@ namespace {
   template <class HISTO1>
   std::unique_ptr<HISTO1> _parse_1D( std::string_view input, std::string& name ) {
     //
-    typedef std::unique_ptr<HISTO1> H1P;
+    using H1P = std::unique_ptr<HISTO1>;
     // ==========================================================================
     // 1) parse the custom format
     //
@@ -479,7 +478,7 @@ namespace {
   template <class HISTO2>
   std::unique_ptr<HISTO2> _parse_2D( std::string_view input, std::string& name ) {
     //
-    typedef std::unique_ptr<HISTO2> H2P;
+    using H2P = std::unique_ptr<HISTO2>;
     // 1) parse the custom format
     //
     H2         h2;
@@ -543,7 +542,7 @@ namespace {
   template <class HISTO3>
   std::unique_ptr<HISTO3> _parse_3D( std::string_view input, std::string& name ) {
     //
-    typedef std::unique_ptr<HISTO3> H3P;
+    using H3P = std::unique_ptr<HISTO3>;
     // 1) parse the custom format
     //
     H3         h3;

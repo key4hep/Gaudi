@@ -17,17 +17,13 @@
 #include <GaudiKernel/StdArrayAsProperty.h>
 
 #include <mutex>
-#include <numeric>
-#include <ranges>
 #include <tuple>
 #include <utility>
 
 #include <TFile.h>
 #include <TTree.h>
 
-#include <fmt/format.h>
 #include <gsl/pointers>
-#include <gsl/span>
 
 namespace Gaudi::NTuple {
 

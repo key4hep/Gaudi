@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -131,8 +131,8 @@ StatusCode RandomNumberAlg::execute() {
   Rndm::Numbers poisson( randSvc(), Rndm::Poisson( 0.3 ) );
 
   // Return integer in interval [0, size) from random integer in interval [0, MAX_INT]
-  auto scale = []( uint32_t x, uint32_t size ) {
-    const uint32_t denom = boost::integer_traits<uint32_t>::const_max / size;
+  auto scale = []( std::uint32_t x, std::uint32_t size ) {
+    const std::uint32_t denom = std::numeric_limits<std::uint32_t>::max() / size;
     return x / denom;
   };
 
