@@ -8,6 +8,7 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
+
 #include <xercesc/dom/DOM.hpp>
 #include <xercesc/framework/LocalFileFormatTarget.hpp>
 #include <xercesc/framework/MemBufInputSource.hpp>
@@ -28,27 +29,22 @@
 #include "XMLFileCatalog.h"
 #include "createGuidAsString.h"
 
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <stdexcept>
-#include <sys/stat.h>
-#include <sys/types.h>
+#include <string>
 
 using namespace xercesc;
 using namespace Gaudi;
 using namespace std;
 
-#if _XERCES_VERSION <= 30000
-// API change between XercesC 2 and 3
-#  define setIdAttribute( a, b ) setIdAttribute( a )
-#endif
-
 DECLARE_FACTORY( XMLFileCatalog, IFileCatalog::Factory )
 
 namespace {
 
-  typedef const string& CSTR;
-  inline string         _toString( const XMLCh* toTranscode ) {
+  using CSTR = const string&;
+  inline string _toString( const XMLCh* toTranscode ) {
     char*  buff = XMLString::transcode( toTranscode );
     string tmp( buff == 0 ? "" : buff );
     XMLString::release( &buff );
@@ -451,22 +447,15 @@ void XMLFileCatalog::commit() {
     if ( dirty() && !readOnly() ) {
       string             xmlfile = getfile( true );
       XMLStr             ii( "LS" );
-      DOMImplementation* imp = DOMImplementationRegistry::getDOMImplementation( ii );
-      auto               tar = std::make_unique<LocalFileFormatTarget>( xmlfile.c_str() );
-#if _XERCES_VERSION <= 30000
-      DOMWriter* wr = imp->createDOMWriter();
-      wr->setFeature( XMLUni::fgDOMWRTFormatPrettyPrint, true );
-      wr->writeNode( tar.get(), *m_doc );
-      wr->release();
-#else
-      DOMLSOutput* output = imp->createLSOutput();
+      DOMImplementation* imp    = DOMImplementationRegistry::getDOMImplementation( ii );
+      auto               tar    = std::make_unique<LocalFileFormatTarget>( xmlfile.c_str() );
+      DOMLSOutput*       output = imp->createLSOutput();
       output->setByteStream( tar.get() );
       DOMLSSerializer* wr = imp->createLSSerializer();
       wr->getDomConfig()->setParameter( XMLStr( "format-pretty-print" ), true );
       wr->write( m_doc, output );
       output->release();
       wr->release();
-#endif
     }
   } catch ( exception& e ) { printError( string( "Cannot open output file:" ) + e.what() ); } catch ( ... ) {
     printError( "Unknown IO rrror." );
@@ -487,8 +476,8 @@ string XMLFileCatalog::getfile( bool create ) {
     m_rdOnly = true;
   } else if ( protocol == "file" ) {
     m_rdOnly = false;
-    struct stat buff;
-    int         exist = ::stat( path.c_str(), &buff ) != -1;
+    std::error_code ec;
+    int             exist = std::filesystem::exists( path, ec );
     if ( create && !exist ) {
       MsgStream log( m_msgSvc, "XMLCatalog" );
       log << MSG::INFO << "File '" << path << "' does not exist. New file created." << endmsg;

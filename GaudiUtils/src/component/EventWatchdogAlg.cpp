@@ -8,12 +8,15 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
+
 #include <Gaudi/Functional/Transformer.h>
 #include <Gaudi/Utils/PeriodicAction.h>
 #include <GaudiKernel/EventContext.h>
 #include <GaudiKernel/IScheduler.h>
 #include <GaudiKernel/Memory.h>
+
 #include <TSystem.h>
+
 #include <algorithm>
 #include <chrono>
 #include <csignal>

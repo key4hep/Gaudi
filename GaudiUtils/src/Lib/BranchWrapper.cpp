@@ -131,7 +131,7 @@ namespace Gaudi::details {
       // Create a branch for fundamental types using the leaflist
       dummy_branch =
           dummy_tree->Branch( "DummyBranch", &m_dataBuffer,
-                              ( fmt::format( "{}/{}", m_className, leafListTag.value() ) ).c_str(), minBufferSize );
+                              ( std::format( "{}/{}", m_className, leafListTag.value() ) ).c_str(), minBufferSize );
     } else if ( TClass::GetClass( m_className.c_str() ) ) {
       // Create a branch for object types using the classname string
       dummy_branch = dummy_tree->Branch( "DummyBranch", m_className.c_str(), &m_dataBuffer, minBufferSize, splitLevel );
@@ -140,8 +140,8 @@ namespace Gaudi::details {
     if ( nWritten >= 0 ) {
       unsigned int newBasketSize = nWritten * approxEventsPerBasket;
       // Ensure that newBasketSize doesn't wrap around
-      if ( std::numeric_limits<Int_t>::max() / approxEventsPerBasket < (unsigned int)nWritten ) {
-        newBasketSize = std::numeric_limits<Int_t>::max();
+      if ( std::numeric_limits<int>::max() / approxEventsPerBasket < (unsigned int)nWritten ) {
+        newBasketSize = std::numeric_limits<int>::max();
       }
       return std::min( maxBufferSize, std::max( minBufferSize, newBasketSize ) );
     }

@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -28,12 +28,12 @@ namespace Gaudi {
     namespace Histos {
       // --------------------------------------------------------------------------
 
-      /// Typedef for a list of labels
-      typedef std::vector<std::string> Labels;
-      /// Typedef for a bin number and its associated label
-      typedef std::pair<unsigned, std::string> BinLabel;
-      /// Typedef for a list of bin numbers and their associated label
-      typedef std::vector<BinLabel> BinLabels;
+      /// Using for a list of labels
+      using Labels = std::vector<std::string>;
+      /// Using for a bin number and its associated label
+      using BinLabel = std::pair<unsigned, std::string>;
+      /// Using for a list of bin numbers and their associated label
+      using BinLabels = std::vector<BinLabel>;
 
       // --------------------------------------------------------------------------
 

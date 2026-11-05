@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -14,434 +14,424 @@
  *  Created on: Apr 14, 2010
  *      Author: Marco Clemencic
  */
-#include <GaudiKernel/Service.h>
-#include <GaudiUtils/ISignalMonitor.h>
-
-#include <csignal>
-#include <cstring>
-#include <iostream>
-
-namespace Gaudi {
-  namespace Utils {
-    /**
-     * Implementation of Gaudi::ISignalMonitor.
-     *
-     * If instantiated, intercepts the system signals and keep track of the
-     * recorded ones.
-     *
-     * The signal to be monitored have to be declared via the method monitorSignal().
-     * It can be interrogated to check if a signal has been received.
-     *
-     */
-    class SignalMonitorSvc : public extends<Service, Gaudi::ISignalMonitor> {
-    public:
-      typedef struct sigaction handler_t;
-
-      /// Declare a signal to be monitored.
-      /// It installs a signal handler for the requested signal.
-      void monitorSignal( int signum, bool propagate ) override {
-        if ( !m_monitored[signum] ) {
-          handler_t sa;
-          handler_t oldact;
-          sa.sa_handler = SignalMonitorSvc::dispatcher;
-          sigemptyset( &sa.sa_mask );
-          sa.sa_flags = 0;
-          sigaction( signum, &sa, &oldact );
-          m_oldActions[signum] = oldact;
-          m_monitored[signum]  = ( propagate ) ? SignalMonitorSvc::propagate : SignalMonitorSvc::trap;
-        }
-      }
-
-      /// Remove the specific signal handler for the requested signal, restoring
-      /// the previous signal handler.
-      void ignoreSignal( int signum ) override {
-        if ( m_monitored[signum] ) {
-          sigaction( signum, &m_oldActions[signum], nullptr );
-          m_oldActions[signum] = m_defaultAction;
-          m_monitored[signum]  = ignored;
-        }
-      }
-
-      /// Check if the given signal has been received.
-      bool gotSignal( int signum ) const override { return m_caught[signum] != 0; }
-
-      /// Set the flag for the given signal, as if the signal was received.
-      void setSignal( int signum ) override { m_caught[signum] = 1; }
-
-      /// Clear the flag for the given signal, so that a new occurrence can be identified.
-      void clearSignal( int signum ) override { m_caught[signum] = 0; }
-
-      /// Initialize internal variables of the service and set the instance pointer.
-      SignalMonitorSvc( const std::string& name, ISvcLocator* svcLoc ) : base_class( name, svcLoc ) {
-        m_defaultAction.sa_handler = SIG_DFL;
-        sigemptyset( &m_defaultAction.sa_mask );
-        m_defaultAction.sa_flags = 0;
-        for ( int i = 0; i < NSIG; ++i ) {
-          m_caught[i]     = 0;
-          m_monitored[i]  = ignored;
-          m_oldActions[i] = m_defaultAction;
-        }
-
-        setInstance( this );
-      }
-
-      /// Stop monitoring signals and clear the instance pointer.
-      ~SignalMonitorSvc() override {
-        for ( int i = 0; i < NSIG; ++i ) ignoreSignal( i );
-        setInstance( nullptr );
-      }
-
-    private:
-      /// Possible monitoring modes
-      enum MonitoringMode {
-        ignored,  //< the signal is not monitored
-        trap,     //< the signal is monitored and not propagated to previously registered handlers
-        propagate //< the signal is monitored and propagated to previously registered handlers
-      };
-      /// Array of flags to keep track of monitored signals.
-      MonitoringMode m_monitored[NSIG];
-      /// Array of flags for received signals.
-      sig_atomic_t m_caught[NSIG];
-      /// Helper variable for default signal action.
-      handler_t m_defaultAction;
-      /// List of replaced signal actions (for the recovery when disable the monitoring).
-      handler_t m_oldActions[NSIG];
-
-      void i_handle( int signum ) {
-        m_caught[signum] = 1;
-        if ( m_monitored[signum] == propagate && m_oldActions[signum].sa_handler != SIG_DFL ) {
-          m_oldActions[signum].sa_handler( signum );
-        }
-      }
-
-      /// Pointer to the current instance.
-      static SignalMonitorSvc* s_instance;
-
-      static inline void setInstance( SignalMonitorSvc* i ) { s_instance = i; }
-
-      /// Method to get the singleton instance.
-      /// Bypass the serviceLocator for efficiency.
-      static inline SignalMonitorSvc* instance() { return s_instance; }
-
-      /// Signal handler function.
-      static void dispatcher( int signum );
-    };
-
-    // Implementation of the signal handler function.
-    void SignalMonitorSvc::dispatcher( int signum ) {
-      if ( instance() ) instance()->i_handle( signum );
-    }
-
-  } // namespace Utils
-} // namespace Gaudi
-
-#include <cctype>
-#include <sstream>
-
-#include <map>
-
-#include <GaudiKernel/HashMap.h>
 
 #include <GaudiKernel/AppReturnCode.h>
+#include <GaudiKernel/HashMap.h>
 #include <GaudiKernel/IEventProcessor.h>
 #include <GaudiKernel/IIncidentListener.h>
 #include <GaudiKernel/IIncidentSvc.h>
+#include <GaudiKernel/Service.h>
 
-namespace {
-  const char* sig_desc( int signum ) {
-    if ( signum >= NSIG || signum < 0 ) return nullptr;
-    return strsignal( signum );
-  }
+#include <GaudiUtils/ISignalMonitor.h>
 
-  /// Helper class to map signal names and numbers.
-  class SigMap {
+#include <cctype>
+#include <csignal>
+#include <cstring>
+#include <iostream>
+#include <map>
+#include <sstream>
+
+namespace Gaudi::Utils {
+  /**
+   * Implementation of Gaudi::ISignalMonitor.
+   *
+   * If instantiated, intercepts the system signals and keep track of the
+   * recorded ones.
+   *
+   * The signal to be monitored have to be declared via the method monitorSignal().
+   * It can be interrogated to check if a signal has been received.
+   *
+   */
+  class SignalMonitorSvc : public extends<Service, Gaudi::ISignalMonitor> {
   public:
-    /// Accessor to the singleton
-    static const SigMap& instance() {
-      static SigMap _instance;
-      return _instance;
+    using handler_t = struct sigaction;
+
+    /// Declare a signal to be monitored.
+    /// It installs a signal handler for the requested signal.
+    void monitorSignal( int signum, bool propagate ) override {
+      if ( !m_monitored[signum] ) {
+        handler_t sa;
+        handler_t oldact;
+        sa.sa_handler = SignalMonitorSvc::dispatcher;
+        sigemptyset( &sa.sa_mask );
+        sa.sa_flags = 0;
+        sigaction( signum, &sa, &oldact );
+        m_oldActions[signum] = oldact;
+        m_monitored[signum]  = ( propagate ) ? SignalMonitorSvc::propagate : SignalMonitorSvc::trap;
+      }
     }
-    /// Return the signal name/id corresponding to a signal number (empty string if not known).
-    inline const std::string& name( int signum ) const { return m_num2id[signum]; }
-    /// Return the signal description corresponding to a signal number (empty string if not known).
-    inline const std::string& desc( int signum ) const { return m_num2desc[signum]; }
-    /// Return the signal number corresponding to a signal name or description (-1 if not known).
-    inline int signum( const std::string& str ) const {
-      auto it = m_name2num.find( str );
-      return it != m_name2num.end() ? it->second : -1;
+
+    /// Remove the specific signal handler for the requested signal, restoring
+    /// the previous signal handler.
+    void ignoreSignal( int signum ) override {
+      if ( m_monitored[signum] ) {
+        sigaction( signum, &m_oldActions[signum], nullptr );
+        m_oldActions[signum] = m_defaultAction;
+        m_monitored[signum]  = ignored;
+      }
+    }
+
+    /// Check if the given signal has been received.
+    bool gotSignal( int signum ) const override { return m_caught[signum] != 0; }
+
+    /// Set the flag for the given signal, as if the signal was received.
+    void setSignal( int signum ) override { m_caught[signum] = 1; }
+
+    /// Clear the flag for the given signal, so that a new occurrence can be identified.
+    void clearSignal( int signum ) override { m_caught[signum] = 0; }
+
+    /// Initialize internal variables of the service and set the instance pointer.
+    SignalMonitorSvc( const std::string& name, ISvcLocator* svcLoc ) : base_class( name, svcLoc ) {
+      m_defaultAction.sa_handler = SIG_DFL;
+      sigemptyset( &m_defaultAction.sa_mask );
+      m_defaultAction.sa_flags = 0;
+      for ( int i = 0; i < NSIG; ++i ) {
+        m_caught[i]     = 0;
+        m_monitored[i]  = ignored;
+        m_oldActions[i] = m_defaultAction;
+      }
+
+      setInstance( this );
+    }
+
+    /// Stop monitoring signals and clear the instance pointer.
+    ~SignalMonitorSvc() override {
+      for ( int i = 0; i < NSIG; ++i ) ignoreSignal( i );
+      setInstance( nullptr );
     }
 
   private:
-    /// Constructor.
-    /// Initializes internal maps.
-    SigMap() {
-#define addSignal( id ) i_addSignal( id, #id );
-// List of signals from http://en.wikipedia.org/wiki/POSIX_signal
-#ifdef SIGABRT
-      addSignal( SIGABRT ); // Process aborted
-#endif
-#ifdef SIGALRM
-      addSignal( SIGALRM ); // Signal raised by alarm
-#endif
-#ifdef SIGBUS
-      addSignal( SIGBUS ); // Bus error: "access to undefined portion of memory object"
-#endif
-#ifdef SIGCHLD
-      addSignal( SIGCHLD ); // Child process terminated, stopped (or continued*)
-#endif
-#ifdef SIGCONT
-      addSignal( SIGCONT ); // Continue if stopped
-#endif
-#ifdef SIGFPE
-      addSignal( SIGFPE ); // Floating point exception: "erroneous arithmetic operation"
-#endif
-#ifdef SIGHUP
-      addSignal( SIGHUP ); // Hangup
-#endif
-#ifdef SIGILL
-      addSignal( SIGILL ); // Illegal instruction
-#endif
-#ifdef SIGINT
-      addSignal( SIGINT ); // Interrupt
-#endif
-#ifdef SIGKILL
-      addSignal( SIGKILL ); // Kill (terminate immediately)
-#endif
-#ifdef SIGPIPE
-      addSignal( SIGPIPE ); // Write to pipe with no one reading
-#endif
-#ifdef SIGQUIT
-      addSignal( SIGQUIT ); // Quit and dump core
-#endif
-#ifdef SIGSEGV
-      addSignal( SIGSEGV ); // Segmentation violation
-#endif
-#ifdef SIGSTOP
-      addSignal( SIGSTOP ); // Stop executing temporarily
-#endif
-#ifdef SIGTERM
-      addSignal( SIGTERM ); // Termination (request to terminate)
-#endif
-#ifdef SIGTSTP
-      addSignal( SIGTSTP ); // Terminal stop signal
-#endif
-#ifdef SIGTTIN
-      addSignal( SIGTTIN ); // Background process attempting to read from tty ("in")
-#endif
-#ifdef SIGTTOU
-      addSignal( SIGTTOU ); // Background process attempting to write to tty ("out")
-#endif
-#ifdef SIGUSR1
-      addSignal( SIGUSR1 ); // User-defined 1
-#endif
-#ifdef SIGUSR2
-      addSignal( SIGUSR2 ); // User-defined 2
-#endif
-#ifdef SIGPOLL
-      addSignal( SIGPOLL ); // Pollable event
-#endif
-#ifdef SIGPROF
-      addSignal( SIGPROF ); // Profiling timer expired
-#endif
-#ifdef SIGSYS
-      addSignal( SIGSYS ); // Bad syscall
-#endif
-#ifdef SIGTRAP
-      addSignal( SIGTRAP ); // Trace/breakpoint trap
-#endif
-#ifdef SIGURG
-      addSignal( SIGURG ); // Urgent data available on socket
-#endif
-#ifdef SIGVTALRM
-      addSignal( SIGVTALRM ); // Signal raised by timer counting virtual time: "virtual timer expired"
-#endif
-#ifdef SIGXCPU
-      addSignal( SIGXCPU ); // CPU time limit exceeded
-#endif
-#ifdef SIGXFSZ
-      addSignal( SIGXFSZ ); // File size limit exceeded
-#endif
-#undef addSignal
-    }
-    /// Internal helper function used to fill the maps
-    inline void i_addSignal( int signum, const char* signame ) {
-      m_num2id[signum]    = signame;
-      m_name2num[signame] = signum;
-      const char* desc    = sig_desc( signum );
-      if ( desc ) {
-        m_num2desc[signum] = desc;
-        m_name2num[desc]   = signum;
+    /// Possible monitoring modes
+    enum MonitoringMode {
+      ignored,  //< the signal is not monitored
+      trap,     //< the signal is monitored and not propagated to previously registered handlers
+      propagate //< the signal is monitored and propagated to previously registered handlers
+    };
+    /// Array of flags to keep track of monitored signals.
+    MonitoringMode m_monitored[NSIG];
+    /// Array of flags for received signals.
+    sig_atomic_t m_caught[NSIG];
+    /// Helper variable for default signal action.
+    handler_t m_defaultAction;
+    /// List of replaced signal actions (for the recovery when disable the monitoring).
+    handler_t m_oldActions[NSIG];
+
+    void i_handle( int signum ) {
+      m_caught[signum] = 1;
+      if ( m_monitored[signum] == propagate && m_oldActions[signum].sa_handler != SIG_DFL ) {
+        m_oldActions[signum].sa_handler( signum );
       }
     }
-    GaudiUtils::HashMap<std::string, int> m_name2num; //< Map signal string id or description to number
-    GaudiUtils::HashMap<int, std::string> m_num2id;   //< Map signal number to string id
-    GaudiUtils::HashMap<int, std::string> m_num2desc; //< Map signal number to description
+
+    /// Pointer to the current instance.
+    static SignalMonitorSvc* s_instance;
+
+    static inline void setInstance( SignalMonitorSvc* i ) { s_instance = i; }
+
+    /// Method to get the singleton instance.
+    /// Bypass the serviceLocator for efficiency.
+    static inline SignalMonitorSvc* instance() { return s_instance; }
+
+    /// Signal handler function.
+    static void dispatcher( int signum );
   };
-} // namespace
 
-namespace Gaudi {
-  namespace Utils {
-    /**
-     * Service that stop the processing if a signal is received.
-     *
-     * The signals to be intercepted have to be declared in the property Signals
-     * as a list of strings (signal names or numbers). If '+' is appended to the
-     * signal name, then the signal is propagated to the signal handlers already
-     * registered when this service is initialized.
-     *
-     */
-    class StopSignalHandler : public extends<Service, IIncidentListener> {
+  // Implementation of the signal handler function.
+  void SignalMonitorSvc::dispatcher( int signum ) {
+    if ( instance() ) instance()->i_handle( signum );
+  }
+
+  namespace {
+    const char* sig_desc( int signum ) {
+      if ( signum >= NSIG || signum < 0 ) return nullptr;
+      return strsignal( signum );
+    }
+
+    /// Helper class to map signal names and numbers.
+    class SigMap {
     public:
-      using extends::extends;
-      StatusCode initialize() override {
-        StatusCode sc = Service::initialize();
-        if ( sc.isFailure() ) { return sc; }
-        std::string serviceName( "Gaudi::Utils::SignalMonitorSvc" );
-        m_signalMonitor = serviceLocator()->service( serviceName );
-        if ( !m_signalMonitor ) {
-          error() << "Cannot retrieve " << serviceName << endmsg;
-          return StatusCode::FAILURE;
-        }
-        serviceName   = "IncidentSvc";
-        m_incidentSvc = serviceLocator()->service( serviceName );
-        if ( !m_incidentSvc ) {
-          error() << "Cannot retrieve " << serviceName << endmsg;
-          return StatusCode::FAILURE;
-        }
-        // Get the IMainAppStatus interface of the ApplicationMgr
-        m_appProperty = serviceLocator();
-        if ( !m_appProperty ) {
-          warning() << "Cannot retrieve IProperty interface of ApplicationMgr, "
-                       "the return code will not be changed"
-                    << endmsg;
-        }
-        // Decode the signal names
-        for ( const auto& signame : m_usedSignals ) {
-          auto sigid = i_decodeSignal( signame );
-          if ( sigid.first >= 0 ) { m_signals[sigid.first] = sigid.second; }
-        }
-        debug() << "Stopping on the signals:" << endmsg;
-        const SigMap& sigmap( SigMap::instance() );
-        for ( const auto& s : m_signals ) {
-          debug() << "\t" << sigmap.name( s.first ) << ": " << sigmap.desc( s.first ) << " (" << s.first << ")";
-          if ( s.second ) debug() << " propagated";
-          debug() << endmsg;
-          // tell the signal monitor that we are interested in these signals
-          m_signalMonitor->monitorSignal( s.first, s.second );
-        }
-        m_stopRequested = false;
-        debug() << "Register to the IncidentSvc" << endmsg;
-        m_incidentSvc->addListener( this, IncidentType::BeginEvent );
-        return StatusCode::SUCCESS;
+      /// Accessor to the singleton
+      static const SigMap& instance() {
+        static SigMap _instance;
+        return _instance;
       }
-      StatusCode finalize() override {
-        m_incidentSvc->removeListener( this, IncidentType::BeginEvent );
-        m_incidentSvc.reset();
-        // disable the monitoring of the signals
-        std::for_each( std::begin( m_signals ), std::end( m_signals ), [&]( const std::pair<int, bool>& s ) {
-          // tell the signal monitor that we are interested in these signals
-          m_signalMonitor->ignoreSignal( s.first );
-        } );
-        m_signalMonitor.reset();
-        return Service::finalize();
-      }
-
-      void handle( const Incident& ) override {
-        if ( !m_stopRequested ) {
-          const SigMap& sigmap( SigMap::instance() );
-          for ( const auto& s : m_signals ) {
-            if ( !m_signalMonitor->gotSignal( s.first ) ) continue;
-            warning() << "Received signal '" << sigmap.name( s.first ) << "' (" << s.first;
-            const std::string& desc = sigmap.desc( s.first );
-            if ( !desc.empty() ) warning() << ", " << desc;
-            warning() << ")" << endmsg;
-            m_stopRequested = true;
-            // Report the termination by signal at the end of the application
-            using Gaudi::ReturnCode::SignalOffset;
-            if ( Gaudi::setAppReturnCode( m_appProperty, SignalOffset + s.first ).isFailure() ) {
-              error() << "Could not set return code of the application (" << SignalOffset + s.first << ")" << endmsg;
-            }
-          }
-          if ( m_stopRequested ) {
-            auto ep = serviceLocator()->as<IEventProcessor>();
-            if ( ep ) {
-              warning() << "Scheduling a stop" << endmsg;
-              ep->stopRun().ignore();
-            } else {
-              warning() << "Cannot stop the processing because the IEventProcessor interface cannot be retrieved."
-                        << endmsg;
-            }
-          }
-        }
+      /// Return the signal name/id corresponding to a signal number (empty string if not known).
+      inline const std::string& name( int signum ) const { return m_num2id[signum]; }
+      /// Return the signal description corresponding to a signal number (empty string if not known).
+      inline const std::string& desc( int signum ) const { return m_num2desc[signum]; }
+      /// Return the signal number corresponding to a signal name or description (-1 if not known).
+      inline int signum( const std::string& str ) const {
+        auto it = m_name2num.find( str );
+        return it != m_name2num.end() ? it->second : -1;
       }
 
     private:
-      /// List of signal names or numbers (encoded as strings) to use to schedule a stop.
-      Gaudi::Property<std::vector<std::string>> m_usedSignals{
-          this,
-          "Signals",
-          { "SIGINT", "SIGXCPU" },
-          "List of signal names or numbers to use to schedule a stop. "
-          "If the signal is followed by a '+' the signal is propagated the previously "
-          "registered handler (if any)." };
-      /// Map of monitored signal numbers to the flag telling if they have to be propagated or not.
-      std::map<int, bool> m_signals;
-      /// Flag to remember if the stop has been requested because of a signal.
-      bool m_stopRequested = false;
-      /// Pointer to the signal monitor service.
-      SmartIF<Gaudi::ISignalMonitor> m_signalMonitor;
-      /// Pointer to the incident service.
-      SmartIF<IIncidentSvc> m_incidentSvc;
-      /// Pointer to the interface to set the return code of the application.
-      SmartIF<IProperty> m_appProperty;
-      /// Function to translate the signal name to the signal number.
-      std::pair<int, bool> i_decodeSignal( const std::string& sig ) {
-        debug() << "Decoding signal declaration '" << sig << "'" << endmsg;
-        if ( sig.empty() || sig == "+" ) {
-          debug() << "Empty signal, ignored" << endmsg;
-          return { -1, false }; // silently ignore empty strings
-        }
-        const SigMap& sigmap( SigMap::instance() );
-        std::string   signal    = sig;
-        bool          propagate = false;
-        // Check if the signal must be propagated
-        if ( signal[signal.size() - 1] == '+' ) {
-          debug() << "Must be propagated to previously registered signal handlers" << endmsg;
-          propagate = true;
-          signal.erase( signal.size() - 1, 1 ); // remove the '+' at the end of the string
-        }
-        int signum = -1;
-        // check if the signal is a number
-        if ( std::isdigit( signal[0] ) ) {
-          std::istringstream ss( signal );
-          ss >> signum;
-        } else {
-          // try to find the signal name in the list of known signals
-          signum = sigmap.signum( signal );
-        }
-        if ( signum < 0 ) {
-          warning() << "Cannot understand signal identifier '" << sig << "', ignored" << endmsg;
-        } else {
-          verbose() << "Matched signal '" << sigmap.name( signum ) << "' (" << signum;
-          const std::string& desc = sigmap.desc( signum );
-          if ( !desc.empty() ) { verbose() << ", " << desc; }
-          verbose() << ")" << endmsg;
-        }
-        return { signum, propagate };
+      /// Constructor.
+      /// Initializes internal maps.
+      SigMap() {
+#define addSignal( id ) i_addSignal( id, #id );
+// List of signals from http://en.wikipedia.org/wiki/POSIX_signal
+#ifdef SIGABRT
+        addSignal( SIGABRT ); // Process aborted
+#endif
+#ifdef SIGALRM
+        addSignal( SIGALRM ); // Signal raised by alarm
+#endif
+#ifdef SIGBUS
+        addSignal( SIGBUS ); // Bus error: "access to undefined portion of memory object"
+#endif
+#ifdef SIGCHLD
+        addSignal( SIGCHLD ); // Child process terminated, stopped (or continued*)
+#endif
+#ifdef SIGCONT
+        addSignal( SIGCONT ); // Continue if stopped
+#endif
+#ifdef SIGFPE
+        addSignal( SIGFPE ); // Floating point exception: "erroneous arithmetic operation"
+#endif
+#ifdef SIGHUP
+        addSignal( SIGHUP ); // Hangup
+#endif
+#ifdef SIGILL
+        addSignal( SIGILL ); // Illegal instruction
+#endif
+#ifdef SIGINT
+        addSignal( SIGINT ); // Interrupt
+#endif
+#ifdef SIGKILL
+        addSignal( SIGKILL ); // Kill (terminate immediately)
+#endif
+#ifdef SIGPIPE
+        addSignal( SIGPIPE ); // Write to pipe with no one reading
+#endif
+#ifdef SIGQUIT
+        addSignal( SIGQUIT ); // Quit and dump core
+#endif
+#ifdef SIGSEGV
+        addSignal( SIGSEGV ); // Segmentation violation
+#endif
+#ifdef SIGSTOP
+        addSignal( SIGSTOP ); // Stop executing temporarily
+#endif
+#ifdef SIGTERM
+        addSignal( SIGTERM ); // Termination (request to terminate)
+#endif
+#ifdef SIGTSTP
+        addSignal( SIGTSTP ); // Terminal stop signal
+#endif
+#ifdef SIGTTIN
+        addSignal( SIGTTIN ); // Background process attempting to read from tty ("in")
+#endif
+#ifdef SIGTTOU
+        addSignal( SIGTTOU ); // Background process attempting to write to tty ("out")
+#endif
+#ifdef SIGUSR1
+        addSignal( SIGUSR1 ); // User-defined 1
+#endif
+#ifdef SIGUSR2
+        addSignal( SIGUSR2 ); // User-defined 2
+#endif
+#ifdef SIGPOLL
+        addSignal( SIGPOLL ); // Pollable event
+#endif
+#ifdef SIGPROF
+        addSignal( SIGPROF ); // Profiling timer expired
+#endif
+#ifdef SIGSYS
+        addSignal( SIGSYS ); // Bad syscall
+#endif
+#ifdef SIGTRAP
+        addSignal( SIGTRAP ); // Trace/breakpoint trap
+#endif
+#ifdef SIGURG
+        addSignal( SIGURG ); // Urgent data available on socket
+#endif
+#ifdef SIGVTALRM
+        addSignal( SIGVTALRM ); // Signal raised by timer counting virtual time: "virtual timer expired"
+#endif
+#ifdef SIGXCPU
+        addSignal( SIGXCPU ); // CPU time limit exceeded
+#endif
+#ifdef SIGXFSZ
+        addSignal( SIGXFSZ ); // File size limit exceeded
+#endif
+#undef addSignal
       }
+      /// Internal helper function used to fill the maps
+      inline void i_addSignal( int signum, const char* signame ) {
+        m_num2id[signum]    = signame;
+        m_name2num[signame] = signum;
+        const char* desc    = sig_desc( signum );
+        if ( desc ) {
+          m_num2desc[signum] = desc;
+          m_name2num[desc]   = signum;
+        }
+      }
+      GaudiUtils::HashMap<std::string, int> m_name2num; //< Map signal string id or description to number
+      GaudiUtils::HashMap<int, std::string> m_num2id;   //< Map signal number to string id
+      GaudiUtils::HashMap<int, std::string> m_num2desc; //< Map signal number to description
     };
+  } // namespace
 
-  } // namespace Utils
-} // namespace Gaudi
+  /**
+   * Service that stop the processing if a signal is received.
+   *
+   * The signals to be intercepted have to be declared in the property Signals
+   * as a list of strings (signal names or numbers). If '+' is appended to the
+   * signal name, then the signal is propagated to the signal handlers already
+   * registered when this service is initialized.
+   *
+   */
+  class StopSignalHandler : public extends<Service, IIncidentListener> {
+  public:
+    using extends::extends;
+    StatusCode initialize() override {
+      StatusCode sc = Service::initialize();
+      if ( sc.isFailure() ) { return sc; }
+      std::string serviceName( "Gaudi::Utils::SignalMonitorSvc" );
+      m_signalMonitor = serviceLocator()->service( serviceName );
+      if ( !m_signalMonitor ) {
+        error() << "Cannot retrieve " << serviceName << endmsg;
+        return StatusCode::FAILURE;
+      }
+      serviceName   = "IncidentSvc";
+      m_incidentSvc = serviceLocator()->service( serviceName );
+      if ( !m_incidentSvc ) {
+        error() << "Cannot retrieve " << serviceName << endmsg;
+        return StatusCode::FAILURE;
+      }
+      // Get the IMainAppStatus interface of the ApplicationMgr
+      m_appProperty = serviceLocator();
+      if ( !m_appProperty ) {
+        warning() << "Cannot retrieve IProperty interface of ApplicationMgr, "
+                     "the return code will not be changed"
+                  << endmsg;
+      }
+      // Decode the signal names
+      for ( const auto& signame : m_usedSignals ) {
+        auto sigid = i_decodeSignal( signame );
+        if ( sigid.first >= 0 ) { m_signals[sigid.first] = sigid.second; }
+      }
+      debug() << "Stopping on the signals:" << endmsg;
+      const SigMap& sigmap( SigMap::instance() );
+      for ( const auto& s : m_signals ) {
+        debug() << "\t" << sigmap.name( s.first ) << ": " << sigmap.desc( s.first ) << " (" << s.first << ")";
+        if ( s.second ) debug() << " propagated";
+        debug() << endmsg;
+        // tell the signal monitor that we are interested in these signals
+        m_signalMonitor->monitorSignal( s.first, s.second );
+      }
+      m_stopRequested = false;
+      debug() << "Register to the IncidentSvc" << endmsg;
+      m_incidentSvc->addListener( this, IncidentType::BeginEvent );
+      return StatusCode::SUCCESS;
+    }
+    StatusCode finalize() override {
+      m_incidentSvc->removeListener( this, IncidentType::BeginEvent );
+      m_incidentSvc.reset();
+      // disable the monitoring of the signals
+      std::for_each( std::begin( m_signals ), std::end( m_signals ), [&]( const std::pair<int, bool>& s ) {
+        // tell the signal monitor that we are interested in these signals
+        m_signalMonitor->ignoreSignal( s.first );
+      } );
+      m_signalMonitor.reset();
+      return Service::finalize();
+    }
+
+    void handle( const Incident& ) override {
+      if ( !m_stopRequested ) {
+        const SigMap& sigmap( SigMap::instance() );
+        for ( const auto& s : m_signals ) {
+          if ( !m_signalMonitor->gotSignal( s.first ) ) continue;
+          warning() << "Received signal '" << sigmap.name( s.first ) << "' (" << s.first;
+          const std::string& desc = sigmap.desc( s.first );
+          if ( !desc.empty() ) warning() << ", " << desc;
+          warning() << ")" << endmsg;
+          m_stopRequested = true;
+          // Report the termination by signal at the end of the application
+          using Gaudi::ReturnCode::SignalOffset;
+          if ( Gaudi::setAppReturnCode( m_appProperty, SignalOffset + s.first ).isFailure() ) {
+            error() << "Could not set return code of the application (" << SignalOffset + s.first << ")" << endmsg;
+          }
+        }
+        if ( m_stopRequested ) {
+          auto ep = serviceLocator()->as<IEventProcessor>();
+          if ( ep ) {
+            warning() << "Scheduling a stop" << endmsg;
+            ep->stopRun().ignore();
+          } else {
+            warning() << "Cannot stop the processing because the IEventProcessor interface cannot be retrieved."
+                      << endmsg;
+          }
+        }
+      }
+    }
+
+  private:
+    /// List of signal names or numbers (encoded as strings) to use to schedule a stop.
+    Gaudi::Property<std::vector<std::string>> m_usedSignals{
+        this,
+        "Signals",
+        { "SIGINT", "SIGXCPU" },
+        "List of signal names or numbers to use to schedule a stop. "
+        "If the signal is followed by a '+' the signal is propagated the previously "
+        "registered handler (if any)." };
+    /// Map of monitored signal numbers to the flag telling if they have to be propagated or not.
+    std::map<int, bool> m_signals;
+    /// Flag to remember if the stop has been requested because of a signal.
+    bool m_stopRequested = false;
+    /// Pointer to the signal monitor service.
+    SmartIF<Gaudi::ISignalMonitor> m_signalMonitor;
+    /// Pointer to the incident service.
+    SmartIF<IIncidentSvc> m_incidentSvc;
+    /// Pointer to the interface to set the return code of the application.
+    SmartIF<IProperty> m_appProperty;
+    /// Function to translate the signal name to the signal number.
+    std::pair<int, bool> i_decodeSignal( const std::string& sig ) {
+      debug() << "Decoding signal declaration '" << sig << "'" << endmsg;
+      if ( sig.empty() || sig == "+" ) {
+        debug() << "Empty signal, ignored" << endmsg;
+        return { -1, false }; // silently ignore empty strings
+      }
+      const SigMap& sigmap( SigMap::instance() );
+      std::string   signal    = sig;
+      bool          propagate = false;
+      // Check if the signal must be propagated
+      if ( signal[signal.size() - 1] == '+' ) {
+        debug() << "Must be propagated to previously registered signal handlers" << endmsg;
+        propagate = true;
+        signal.erase( signal.size() - 1, 1 ); // remove the '+' at the end of the string
+      }
+      int signum = -1;
+      // check if the signal is a number
+      if ( std::isdigit( signal[0] ) ) {
+        std::istringstream ss( signal );
+        ss >> signum;
+      } else {
+        // try to find the signal name in the list of known signals
+        signum = sigmap.signum( signal );
+      }
+      if ( signum < 0 ) {
+        warning() << "Cannot understand signal identifier '" << sig << "', ignored" << endmsg;
+      } else {
+        verbose() << "Matched signal '" << sigmap.name( signum ) << "' (" << signum;
+        const std::string& desc = sigmap.desc( signum );
+        if ( !desc.empty() ) { verbose() << ", " << desc; }
+        verbose() << ")" << endmsg;
+      }
+      return { signum, propagate };
+    }
+  };
+} // namespace Gaudi::Utils
 
 // Initialization of static data member
 Gaudi::Utils::SignalMonitorSvc* Gaudi::Utils::SignalMonitorSvc::s_instance = nullptr;
 
 // ========================================================================
 // Instantiation of a static factory class used by clients to create instances of this service
-typedef Gaudi::Utils::SignalMonitorSvc g_u_sms;
+using g_u_sms = Gaudi::Utils::SignalMonitorSvc;
 DECLARE_COMPONENT( g_u_sms )
 
 // Instantiation of a static factory class used by clients to create instances of this service
-typedef Gaudi::Utils::StopSignalHandler g_u_ssh;
+using g_u_ssh = Gaudi::Utils::StopSignalHandler;
 DECLARE_COMPONENT( g_u_ssh )
