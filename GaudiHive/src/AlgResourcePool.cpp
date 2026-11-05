@@ -352,7 +352,11 @@ StatusCode AlgResourcePool::decodeTopAlgs() {
   // Fill the top algorithm list ----
   for ( const std::string& typeName : m_topAlgNames ) {
     IAlgorithm* algo = algMan->algorithm( typeName, /*createIf*/ true ).get();
-    sc               = algo->sysInitialize();
+    if ( !algo ) {
+      error() << "Unable to create or initialize Algorithm: " << typeName << endmsg;
+      return StatusCode::FAILURE;
+    }
+    sc = algo->sysInitialize();
     if ( sc.isFailure() ) {
       error() << "Unable to initialize Algorithm: " << algo->name() << endmsg;
       return sc;
