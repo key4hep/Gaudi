@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -9,7 +9,10 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 
+// Local includes
 #include "ServiceManager.h"
+
+// Framework includes
 #include <GaudiKernel/IIncidentListener.h>
 #include <GaudiKernel/IIncidentSvc.h>
 #include <GaudiKernel/IService.h>
@@ -21,15 +24,14 @@
 #include <GaudiKernel/System.h>
 #include <GaudiKernel/TypeNameString.h>
 #include <GaudiKernel/reverse.h>
+
+// STL includes
 #include <algorithm>
 #include <cassert>
 #include <iostream>
 
 #define ON_DEBUG if ( msgLevel( MSG::DEBUG ) )
-#define ON_VERBOSE if ( msgLevel( MSG::VERBOSE ) )
-
 #define DEBMSG ON_DEBUG debug()
-#define VERMSG ON_VERBOSE verbose()
 
 /// needed when no service is found or could be returned
 static SmartIF<IService> no_service;

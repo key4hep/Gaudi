@@ -35,10 +35,10 @@ class ISvcLocator;
 //
 class MessageSvc : public extends<Service, IMessageSvc, IInactiveMessageCounter> {
 public:
-  typedef std::pair<std::string, std::ostream*>   NamedStream;
-  typedef std::multimap<int, NamedStream>         StreamMap;
-  typedef std::multimap<StatusCode, Message>      MessageMap;
-  typedef std::map<std::string, int, std::less<>> ThresholdMap;
+  using NamedStream  = std::pair<std::string, std::ostream*>;
+  using StreamMap    = std::multimap<int, NamedStream>;
+  using MessageMap   = std::multimap<StatusCode, Message>;
+  using ThresholdMap = std::map<std::string, int, std::less<>>;
 
   // Default constructor.
   MessageSvc( const std::string& name, ISvcLocator* svcloc );

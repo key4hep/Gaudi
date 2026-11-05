@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -10,19 +10,19 @@
 \***********************************************************************************/
 #pragma once
 
+// Framework includes
 #include <GaudiKernel/ComponentManager.h>
 #include <GaudiKernel/IAlgManager.h>
 #include <GaudiKernel/IAlgorithm.h>
 #include <GaudiKernel/IStateful.h>
 #include <GaudiKernel/Kernel.h>
 #include <GaudiKernel/SmartIF.h>
+
+// STL includes
 #include <map>
 #include <string>
 #include <unordered_map>
 #include <vector>
-
-class ISvcLocator;
-class IMessageSvc;
 
 /** @class AlgorithmManager AlgorithmManager.h
 
@@ -45,8 +45,8 @@ public:
     bool        operator==( const IAlgorithm* ptr ) const { return algorithm == ptr; }
   };
 
-  /// typedefs and classes
-  typedef std::map<std::string, std::string, std::less<>> AlgTypeAliasesMap;
+  /// Classes and usings for the algorithm type aliases
+  using AlgTypeAliasesMap = std::map<std::string, std::string, std::less<>>;
 
   /// default creator
   AlgorithmManager( IInterface* iface );

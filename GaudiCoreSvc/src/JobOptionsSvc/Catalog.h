@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -21,12 +21,12 @@ namespace Gaudi {
   namespace Parsers {
     class Catalog final {
     public:
-      typedef boost::ptr_set<Property, Property::LessThen>    PropertySet;
-      typedef std::map<std::string, PropertySet, std::less<>> CatalogSet;
+      using PropertySet = boost::ptr_set<Property, Property::LessThen>;
+      using CatalogSet  = std::map<std::string, PropertySet, std::less<>>;
 
-      typedef CatalogSet::value_type     value_type;
-      typedef CatalogSet::iterator       iterator;
-      typedef CatalogSet::const_iterator const_iterator;
+      using value_type     = CatalogSet::value_type;
+      using iterator       = CatalogSet::iterator;
+      using const_iterator = CatalogSet::const_iterator;
 
       iterator       begin() { return catalog_.begin(); }
       const_iterator begin() const { return catalog_.begin(); }

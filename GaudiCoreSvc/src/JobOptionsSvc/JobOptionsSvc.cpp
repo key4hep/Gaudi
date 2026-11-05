@@ -44,7 +44,7 @@ namespace Gaudi {
 
 class JobOptionsSvc : public extends<Service, Gaudi::Interfaces::IOptionsSvc> {
 public:
-  typedef std::vector<const Gaudi::Details::PropertyBase*> PropertiesT;
+  using PropertiesT = std::vector<const Gaudi::Details::PropertyBase*>;
 
 private:
   using PropertyId  = Gaudi::Details::PropertyId;

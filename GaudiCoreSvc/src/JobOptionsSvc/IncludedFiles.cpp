@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -21,9 +21,9 @@ bool gp::IncludedFiles::AddFile( std::string filename, Position from ) {
   return container_.emplace( std::move( filename ), std::move( from ) ).second;
 }
 bool gp::IncludedFiles::GetPosition( std::string_view filename, const Position** pos ) const {
+  assert( pos );
   auto iter = container_.find( filename );
   if ( iter == container_.end() ) return false;
   *pos = &iter->second;
-  assert( pos );
   return true;
 }

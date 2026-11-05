@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -8,11 +8,12 @@
 * granted to it by virtue of its status as an Intergovernmental Organization        *
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
-#include "EventSelector.h"
-#include "EventIterator.h"
+
+// Framework includes
 #include <GaudiKernel/EventSelectorDataStream.h>
 #include <GaudiKernel/IAddressCreator.h>
 #include <GaudiKernel/IDataStreamTool.h>
+#include <GaudiKernel/IEvtSelector.h>
 #include <GaudiKernel/IIncidentSvc.h>
 #include <GaudiKernel/ISvcLocator.h>
 #include <GaudiKernel/ISvcManager.h>
@@ -20,8 +21,241 @@
 #include <GaudiKernel/Incident.h>
 #include <GaudiKernel/MsgStream.h>
 #include <GaudiKernel/PropertyHolder.h>
+#include <GaudiKernel/Service.h>
 #include <GaudiKernel/SmartIF.h>
+
+// STL includes
 #include <climits>
+#include <vector>
+
+// Forward declarations
+class EvtSelectorContext;
+
+/** Definition of class EventSelector
+
+    Basic event selector service. The event selector service
+    itself is able to connect other services to attached streams.
+
+    History:
+    +---------+----------------------------------------------+------------+
+    |    Date |                 Comment                      |    Who     |
+    +---------+----------------------------------------------+------------+
+    | 3/10/00 | Initial version                              | M.Frank    |
+    +---------+----------------------------------------------+------------+
+    | 4/09/09 | Added firing incident on opening/ending file | R. Lambert |
+    +---------+----------------------------------------------+------------+
+   @author Markus Frank
+   @author R. Lambert
+   @version 1.0
+*/
+class EventSelector : public extends<Service, IEvtSelector> {
+public:
+  using Streams     = std::vector<EventSelectorDataStream*>;
+  using StreamSpecs = std::vector<std::string>;
+  using Properties  = std::vector<Gaudi::Property<std::string>>;
+
+  long int m_streamID;
+
+protected:
+  /// Reference to the indicent service
+  SmartIF<IIncidentSvc> m_incidentSvc = nullptr;
+
+  SmartIF<IToolSvc> m_toolSvc = nullptr;
+
+  IDataStreamTool* m_streamtool = nullptr;
+
+  /// Reconfigure occurred
+  bool m_reconfigure = false;
+  /// Input stream specifiers (last used)
+  StreamSpecs m_streamSpecsLast;
+  /// Input streams
+  Streams m_streams;
+  /// Input stream counter (0..oo, monotonely increasing)
+  int m_streamCount = 0;
+
+  // Properties
+  Gaudi::Property<StreamSpecs> m_streamSpecs{ this, "Input", {}, "input stream specifiers (for job options)" };
+  Gaudi::Property<int>         m_firstEvent{ this, "FirstEvent", 0, "first event to be processed" };
+  Gaudi::Property<int>         m_evtMax{ this, "EvtMax", INT_MAX, "maximum number of events to be processed" };
+  Gaudi::Property<int>         m_evtPrintFrequency{ this, "PrintFreq", 10, "printout frequency" };
+  Gaudi::Property<std::string> m_streamManager{ this, "StreamManager", "DataStreamTool", "" };
+
+  /// Progress report
+  virtual void printEvtInfo( const EvtSelectorContext* iter ) const;
+
+public:
+  /// IService implementation: Db event selector override
+  StatusCode initialize() override;
+
+  /// IService implementation: Service finalization
+  StatusCode finalize() override;
+
+  /// Service override: Reinitialize service
+  StatusCode reinitialize() override;
+
+  /// Create a new event loop context
+  /** @param refpCtxt   [IN/OUT]  Reference to pointer to store the context
+   *
+   * @return StatusCode indicating success or failure
+   */
+  StatusCode createContext( Context*& refpCtxt ) const override;
+
+  /// Get next iteration item from the event loop context
+  /** @param refCtxt   [IN/OUT]  Reference to the context
+   *
+   * @return StatusCode indicating success or failure
+   */
+  StatusCode next( Context& refCtxt ) const override;
+
+  /// Get next iteration item from the event loop context, but skip jump elements
+  /** @param refCtxt   [IN/OUT]  Reference to the context
+   *
+   * @return StatusCode indicating success or failure
+   */
+  StatusCode next( Context& refCtxt, int jump ) const override;
+
+  /// Get previous iteration item from the event loop context
+  /** @param refCtxt   [IN/OUT]  Reference to the context
+   * @param jump      [IN]      Number of events to be skipped
+   *
+   * @return StatusCode indicating success or failure
+   */
+  StatusCode previous( Context& refCtxt ) const override;
+
+  /// Get previous iteration item from the event loop context, but skip jump elements
+  /** @param refCtxt   [IN/OUT]  Reference to the context
+   * @param jump      [IN]      Number of events to be skipped
+   *
+   * @return StatusCode indicating success or failure
+   */
+  StatusCode previous( Context& refCtxt, int jump ) const override;
+
+  /// Rewind the dataset
+  /** @param refCtxt   [IN/OUT]  Reference to the context
+   *
+   * @return StatusCode indicating success or failure
+   */
+  StatusCode rewind( Context& refCtxt ) const override;
+
+  /// Create new Opaque address corresponding to the current record
+  /** @param refCtxt   [IN/OUT]  Reference to the context
+   * @param refpAddr  [OUT]     Reference to address pointer
+   *
+   * @return StatusCode indicating success or failure
+   */
+  StatusCode createAddress( const Context& refCtxt, IOpaqueAddress*& refpAddr ) const override;
+
+  /// Release existing event iteration context
+  /** @param refCtxt   [IN/OUT]  Reference to the context
+   *
+   * @return StatusCode indicating success or failure
+   */
+  StatusCode releaseContext( Context*& refCtxt ) const override;
+
+  /** Will set a new criteria for the selection of the next list of events and will change
+   * the state of the context in a way to point to the new list.
+   *
+   * @param cr The new criteria string.
+   * @param c Reference pointer to the Context object.
+   *
+   * @return StatusCode indicating success or failure
+   */
+  StatusCode resetCriteria( const std::string& cr, Context& c ) const override;
+
+  /** Access last item in the iteration
+   * @param c Reference to the Context object.
+   *
+   * @return StatusCode indicating success or failure
+   */
+  StatusCode last( Context& c ) const override;
+
+  /// Retrieve first entry of the next data stream
+  StatusCode firstOfNextStream( bool shutDown, EvtSelectorContext& it ) const;
+  /// Retrieve last entry of the previous data stream
+  StatusCode lastOfPreviousStream( bool shutDown, EvtSelectorContext& it ) const;
+
+  /// inherit constructor
+  using extends::extends;
+};
+
+/** Definition of class EventIterator
+
+    Generic iterator to access event on the persistent store.
+    The iterator interacts with the event selection service.
+
+    <B>History:</B>
+    +---------+----------------------------------------------+---------+
+    |    Date |                 Comment                      | Who     |
+    +---------+----------------------------------------------+---------+
+    | 3/10/00 | Initial version                              | M.Frank |
+    +---------+----------------------------------------------+---------+
+   @author Markus Frank
+   @version 1.0
+*/
+class EvtSelectorContext : public IEvtSelector::Context {
+  // Friend declaration
+  friend class EventSelector;
+  friend class EventCollectionSelector;
+
+private:
+  /// Copy constructor
+  EvtSelectorContext( const EvtSelectorContext& ) = default;
+
+protected:
+  /// Stream identifier
+  IDataStreamTool::size_type m_streamID = -1;
+  /// Event counter
+  long m_count = -1;
+  /// Event counter within stream
+  long m_strCount = -1;
+  /// Pointer to event selector
+  const IEvtSelector* m_pSelector = nullptr;
+  /// Pointer to "real" iterator
+  IEvtSelector::Context* m_context = nullptr;
+  /// Pointer to opaque address
+  IOpaqueAddress* m_pAddress = nullptr;
+  /// Set the address of the iterator
+  void set( const IEvtSelector* sel, IDataStreamTool::size_type id, IEvtSelector::Context* it, IOpaqueAddress* pA ) {
+    m_pSelector = sel;
+    m_context   = it;
+    m_streamID  = id;
+    m_pAddress  = pA;
+    m_strCount  = -1;
+  }
+  /// Set the address of the iterator
+  void set( IEvtSelector::Context* it, IOpaqueAddress* pA ) {
+    m_context  = it;
+    m_pAddress = pA;
+  }
+  /// Set the address of the iterator
+  void set( IOpaqueAddress* pA ) { m_pAddress = pA; }
+  /// Access "real" iterator
+  IEvtSelector::Context* context() const { return m_context; }
+  /// Increase counters
+  IDataStreamTool::size_type increaseCounters( bool reset = false ) {
+    m_count++;
+    m_strCount = ( reset ) ? 0 : m_strCount + 1;
+    return m_count;
+  }
+  /// Decrease counters
+  IDataStreamTool::size_type decreaseCounters( bool reset = false ) {
+    m_count++;
+    m_strCount = ( reset ) ? 0 : m_strCount - 1;
+    return m_count;
+  }
+
+public:
+  /// Standard constructor
+  EvtSelectorContext( const IEvtSelector* selector ) : m_pSelector( selector ) {}
+
+  /// Stream identifier
+  virtual IDataStreamTool::size_type ID() const { return m_streamID; }
+  /// Access counter
+  long numEvent() const { return m_count; }
+  /// Access counter within stream
+  long  numStreamEvent() const { return m_strCount; }
+  void* identifier() const override { return (void*)m_pSelector; }
+};
 
 DECLARE_COMPONENT( EventSelector )
 
