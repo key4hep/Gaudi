@@ -25,11 +25,6 @@ namespace Gaudi::PluginService::Details {
   using std::source_location;
 }
 
-#elif !defined( __clang__ ) && __GNUC__ >= 8
-#  include <experimental/source_location>
-namespace Gaudi::PluginService::Details {
-  using std::experimental::source_location;
-}
 #else
 namespace Gaudi::PluginService::Details {
 
