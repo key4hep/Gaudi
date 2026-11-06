@@ -17,26 +17,6 @@ option(GAUDI_REFLEX_COMPONENT_ALIASES
        "allow use of old style (Reflex) component names"
        ON)
 
-# Decide whether to use std::filesystem or boost::filesystem.
-set( GAUDI_USE_STD_FILESYSTEM_DEFAULT FALSE )
-if((("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" AND
-     "${CMAKE_CXX_COMPILER_VERSION}" VERSION_GREATER_EQUAL 8) OR
-    ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" AND
-     "${CMAKE_CXX_COMPILER_VERSION}" VERSION_GREATER_EQUAL 7 AND
-     NOT APPLE AND NOT "${CMAKE_CXX_COMPILER_VERSION}" STREQUAL "10.0.0")) AND
-   "${GAUDI_CXX_STANDARD}" STRGREATER_EQUAL "17")
-  set( GAUDI_USE_STD_FILESYSTEM_DEFAULT TRUE )
-endif()
-option( GAUDI_USE_STD_FILESYSTEM "Use std::filesystem in GaudiPluginService code"
-  ${GAUDI_USE_STD_FILESYSTEM_DEFAULT} )
-
-# Based on that figure out how to build GaudiPluginService.
-if(GAUDI_USE_STD_FILESYSTEM)
-  set(filesystem_implementation stdc++fs)
-else()
-  set(filesystem_implementation Boost::filesystem)
-endif()
-
 # Build library
 # PluginServiceV1 and V2 have conflicting symbols in anonymous namespaces,
 # so they cannot be combined in a unity build
@@ -48,15 +28,10 @@ gaudi_add_library(GaudiPluginService
                           src/capi_pluginservice.cpp
                   LINK
                     PRIVATE ${CMAKE_DL_LIBS}
-                            ${filesystem_implementation}
                     PUBLIC Threads::Threads)
 if(GAUDI_REFLEX_COMPONENT_ALIASES)
   target_compile_definitions(GaudiPluginService PRIVATE
     GAUDI_REFLEX_COMPONENT_ALIASES)
-endif()
-if(NOT GAUDI_USE_STD_FILESYSTEM)
-  target_compile_definitions(GaudiPluginService PRIVATE
-    USE_BOOST_FILESYSTEM)
 endif()
 
 # compute the relative path between CMAKE_INSTALL_LIBDIR and GAUDI_INSTALL_PLUGINDIR
