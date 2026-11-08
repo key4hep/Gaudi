@@ -16,10 +16,13 @@ import pytest
 sys.path.append(os.path.dirname(__file__))
 
 from NTupleWriterTestBase import (
-    ALG_NAME,
     EXPECTED_ENTRIES,
     EXPECTED_STRING_VALUE,
     OUTPUT_FILE_NAME,
+    RNTUPLE_ELEMENT_NAME,
+    RNTUPLE_NAME,
+    TTREE_ELEMENT_NAME,
+    TTREE_NAME,
     NTupleWriterTestBase,
 )
 
@@ -37,12 +40,17 @@ def config_st():
     from Configurables import (
         ApplicationMgr,
         FileSvc,
+        Gaudi__NTuple__GenericRNTupleElementWriter,
+        Gaudi__NTuple__GenericRNTupleWriter,
+        Gaudi__NTuple__GenericTTreeElementWriter,
         Gaudi__NTuple__GenericWriter,
         Gaudi__TestSuite__NTuple__CounterDataProducer,
         Gaudi__TestSuite__NTuple__FloatDataProducer,
+        Gaudi__TestSuite__NTuple__FloatVectorProducer,
         Gaudi__TestSuite__NTuple__IntVectorDataProducer,
         Gaudi__TestSuite__NTuple__StrDataProducer,
         Gaudi__TestSuite__NTuple__StructDataProducer,
+        Gaudi__TestSuite__NTuple__StructVectorProducer,
         IncidentSvc,
         MessageSvc,
     )
@@ -65,22 +73,39 @@ def config_st():
         Gaudi__TestSuite__NTuple__StructDataProducer("STProducer", OutputLevel=DEBUG),
         Gaudi__TestSuite__NTuple__CounterDataProducer("CounterDataProducer"),
     ]
-
-    # Configure the NTupleWriter
-    NTupleWriter = Gaudi__NTuple__GenericWriter(
-        ALG_NAME, OutputLevel=DEBUG, OutputFile="NTuple"
-    )
-    NTupleWriter.ExtraInputs = [
-        ("float", "MyFloat"),
-        ("std::vector<int>", "MyVector"),
-        ("std::string", "MyString"),
-        ("Gaudi::TestSuite::NTuple::MyStruct", "MyStruct"),
-        ("Gaudi::TestSuite::Counter", "MyCounter"),
+    # Vectors of the same length for the element writers
+    vectorProducers = [
+        Gaudi__TestSuite__NTuple__FloatVectorProducer("FVProducer", OutputLevel=DEBUG),
+        Gaudi__TestSuite__NTuple__StructVectorProducer(
+            "STVProducer", OutputLevel=DEBUG
+        ),
     ]
-    # NTupleWriter.ExtraInputs = [
-    #     (alg.Output.Type, str(alg.Output))
-    #     for alg in producers
-    # ]
+
+    # Configure the NTuple writers, one entry per event
+    eventInputs = dict(
+        OutputLevel=DEBUG,
+        OutputFile="NTuple",
+        Inputs=[str(p.OutputLocation) for p in producers],
+        FieldTypes=[p.OutputLocation.Type for p in producers],
+    )
+    # or one entry per vector element, with MyFloat repeated in every entry
+    elementProducers = producers[:1] + vectorProducers
+    elementInputs = dict(
+        OutputLevel=DEBUG,
+        OutputFile="NTuple",
+        Inputs=[str(p.OutputLocation) for p in elementProducers],
+        FieldTypes=[p.OutputLocation.Type for p in elementProducers],
+        EventFields=["MyFloat"],
+    )
+    writers = [
+        # GenericWriter is the former name of GenericTTreeWriter
+        Gaudi__NTuple__GenericWriter(TTREE_NAME, **eventInputs),
+        Gaudi__NTuple__GenericRNTupleWriter(RNTUPLE_NAME, **eventInputs),
+        Gaudi__NTuple__GenericTTreeElementWriter(TTREE_ELEMENT_NAME, **elementInputs),
+        Gaudi__NTuple__GenericRNTupleElementWriter(
+            RNTUPLE_ELEMENT_NAME, **elementInputs
+        ),
+    ]
 
     fileSvc = FileSvc(
         Config={
@@ -90,7 +115,7 @@ def config_st():
 
     # Application setup
     ApplicationMgr(
-        TopAlg=producers + [NTupleWriter],
+        TopAlg=producers + vectorProducers + writers,
         EvtMax=EXPECTED_ENTRIES,
         EvtSel="NONE",
         HistogramPersistency="NONE",

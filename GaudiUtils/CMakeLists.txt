@@ -17,6 +17,7 @@ gaudi_add_library(GaudiUtilsLib
                       src/Lib/BranchWrapper.cpp
                       src/Lib/BranchReadHelper.cpp
                       src/Lib/NTupleDiskBuffer.cpp
+                      src/Lib/NTupleTypes.cpp
                       src/Lib/PeriodicAction.cpp
                   LINK
                     PUBLIC GaudiKernel
@@ -63,6 +64,7 @@ gaudi_add_module(GaudiUtils
                   LINK
                     GaudiUtilsLib
                     ROOT::Tree
+                    ROOT::ROOTNTuple
                     UUID::uuid
                     Gaudi::Functional)
 
@@ -114,6 +116,7 @@ if(BUILD_TESTING)
             Boost::unit_test_framework
             Gaudi::GaudiKernel
             ROOT::Tree
+            ROOT::ROOTNTuple
         TEST
     )
     target_compile_definitions(test_GenericNTupleWriter PRIVATE UNIT_TESTS)

@@ -10,8 +10,10 @@
 \***********************************************************************************/
 #include <Gaudi/Algorithm.h>
 #include <Gaudi/Functional/Producer.h>
+#include <Gaudi/Functional/Transformer.h>
 #include <Gaudi/TestSuite/NTuple/MyStruct.h>
 #include <GaudiTestSuite/Counter.h>
+#include <cstdint>
 #include <string>
 #include <vector>
 
@@ -73,4 +75,50 @@ namespace Gaudi::TestSuite::NTuple {
   };
   DECLARE_COMPONENT( CounterDataProducer )
 
+  // evt % (Size + 1) elements, or always Size without VariableSize
+  struct FloatVectorProducer final
+      : Gaudi::Functional::Transformer<std::vector<float>( const EventContext& ),
+                                       Gaudi::Functional::Traits::BaseClass_t<Gaudi::Algorithm>> {
+    FloatVectorProducer( const std::string& name, ISvcLocator* svcLoc )
+        : Transformer( name, svcLoc, { "OutputLocation", "MyFloatVector" } ) {}
+
+    std::vector<float> operator()( const EventContext& ctx ) const override {
+      const auto         evt  = ctx.evt();
+      const auto         size = m_variableSize ? evt % ( m_size + 1 ) : m_size.value();
+      std::vector<float> values;
+      for ( std::size_t i = 0; i < size; ++i ) values.push_back( evt + 0.5f * i );
+      return values;
+    }
+
+    Gaudi::Property<std::size_t> m_size{ this, "Size", 8 };
+    Gaudi::Property<bool>        m_variableSize{ this, "VariableSize", true };
+  };
+  DECLARE_COMPONENT( FloatVectorProducer )
+
+  struct EventNumberProducer final
+      : Gaudi::Functional::Transformer<std::uint64_t( const EventContext& ),
+                                       Gaudi::Functional::Traits::BaseClass_t<Gaudi::Algorithm>> {
+    EventNumberProducer( const std::string& name, ISvcLocator* svcLoc )
+        : Transformer( name, svcLoc, { "OutputLocation", "EventNumber" } ) {}
+
+    std::uint64_t operator()( const EventContext& ctx ) const override { return ctx.evt(); }
+  };
+  DECLARE_COMPONENT( EventNumberProducer )
+
+  // The element writers need this to have as many entries as FloatVectorProducer gives with its
+  // defaults (Size 8), hence the % 9.
+  struct StructVectorProducer final
+      : Gaudi::Functional::Transformer<std::vector<MyStruct>( const EventContext& ),
+                                       Gaudi::Functional::Traits::BaseClass_t<Gaudi::Algorithm>> {
+    StructVectorProducer( const std::string& name, ISvcLocator* svcLoc )
+        : Transformer( name, svcLoc, { "OutputLocation", "MyStructVector" } ) {}
+
+    std::vector<MyStruct> operator()( const EventContext& ctx ) const override {
+      const std::size_t     n = ctx.evt() % 9;
+      std::vector<MyStruct> structs;
+      for ( std::size_t i = 0; i < n; ++i ) structs.push_back( { int( i ), "s" + std::to_string( i ) } );
+      return structs;
+    }
+  };
+  DECLARE_COMPONENT( StructVectorProducer )
 } // namespace Gaudi::TestSuite::NTuple

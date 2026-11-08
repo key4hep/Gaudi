@@ -45,7 +45,7 @@ What is searched?
 
 * Boost>=1.70
 * Python>=3.12
-* ROOT>=6.18
+* ROOT>=6.36 (with RNTuple)
 * UUID
 * TBB>=2019.0.11007.2
 * Threads
@@ -102,8 +102,8 @@ endforeach()
 
 find_package(Python 3.12 ${__quiet} REQUIRED Interpreter Development)
 
-find_package(ROOT 6.18 ${__quiet} CONFIG REQUIRED Core RIO Hist Thread Matrix
-  MathCore Net XMLIO Tree TreePlayer Graf3d Graf Gpad)
+find_package(ROOT 6.36 ${__quiet} CONFIG REQUIRED Core RIO Hist Thread Matrix
+  MathCore Net XMLIO Tree TreePlayer Graf3d Graf Gpad ROOTNTuple)
 mark_as_advanced(ROOT_DIR ROOT_genmap_CMD ROOT_rootdraw_CMD)
 # FIXME: the day ROOTConfig.cmake displays at least that it was found remove these lines
 if(NOT GAUDI_DEPENDENCIES_FIND_QUIETLY)
