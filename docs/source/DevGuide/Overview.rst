@@ -17,8 +17,8 @@ between them, how to use records such as histograms, counters and
 ntuples, and how to exploit the services and tools provided by the
 framework.
 
-It is complemented by the auto-generated API reference documentation
-available in the `Gaudi Doxygen pages <https://cern.ch/gaudi/doxygen>`_.
+It is complemented by the auto-generated :doc:`API documentation
+<../doxygen>`.
 
 A previous version of this guide, covering the legacy interfaces that
 are kept for backward compatibility, is still available in
