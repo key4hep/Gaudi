@@ -398,12 +398,31 @@ doxygen:110:x86_64-el9-gcc15-opt:
     - rm -rf public
     - mkdir -p public/doxygen
     - cp -r GaudiRelease/web_helpers/. public/doxygen/.
-    - mv build/doxygen/html ${CI_COMMIT_REF_SLUG}
-    - zip -r -q public/doxygen/${CI_COMMIT_REF_SLUG}.zip ${CI_COMMIT_REF_SLUG}
+    # the documentation itself is published as a SquashFS image (see deploy-doxygen)
+    - ci-utils/doxygen-eos pack build/doxygen/html ${CI_COMMIT_REF_SLUG}.sqsh
   artifacts:
     paths:
       - public
+      - ${CI_COMMIT_REF_SLUG}.sqsh
     expire_in: 1 day
+
+# The Doxygen documentation is published as a SquashFS image served by EOSWEB
+# (see ci-utils/doxygen-eos), using the same credentials as deploy-website.
+deploy-doxygen:
+  needs:
+    - job: "doxygen:110:x86_64-el9-gcc15-opt"
+      artifacts: true
+  rules:
+    - if: $CI_COMMIT_BRANCH == "master"
+    - if: $CI_COMMIT_TAG
+  # the image provides the EOS client and the SquashFS tools
+  image: gitlab-registry.cern.ch/lhcb-docker/os-base/alma9-devel:latest
+  script:
+    - test -z "$EOS_ACCOUNT_USERNAME" -o -z "$EOS_ACCOUNT_PASSWORD" -o -z "$EOS_PATH" && exit 0 || true
+    - ci-utils/doxygen-eos deploy ${CI_COMMIT_REF_SLUG} ${CI_COMMIT_REF_SLUG}.sqsh
+  # do not run any globally defined before_script or after_script for this step
+  before_script: []
+  after_script: []
 
 # see https://gitlab.cern.ch/gitlabci-examples/deploy_eos for the details
 # of the configuration

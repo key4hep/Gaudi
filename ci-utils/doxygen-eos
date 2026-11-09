@@ -1,0 +1,188 @@
+#!/bin/bash
+#####################################################################################
+# (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
+#                                                                                   #
+# This software is distributed under the terms of the Apache version 2 licence,     #
+# copied verbatim in the file "LICENSE".                                            #
+#                                                                                   #
+# In applying this licence, CERN does not waive the privileges and immunities       #
+# granted to it by virtue of its status as an Intergovernmental Organization        #
+# or submit itself to any jurisdiction.                                             #
+#####################################################################################
+#
+# Publish the Doxygen documentation of Gaudi on EOSWEB as SquashFS images.
+#
+# For each documentation version NAME (a tag, or "master"), the HTML files are
+# packed in a SquashFS image stored (hidden) in EOS as
+#
+#   $EOS_PATH/doxygen/.squashfs/.NAME.sqsh
+#
+# and EOSWEB serves it thanks to a symlink
+#
+#   $EOS_PATH/doxygen/NAME -> /eos/squashfs/<EOS instance>@<path of the image>
+#
+# (see https://eos-docs.web.cern.ch/using/squashfs.html). This replaces the
+# former approach of storing a NAME.zip file and extracting the requested files
+# with a PHP script (GaudiRelease/web_helpers/extract.php), which does not scale.
+#
+# Usage:
+#
+#   doxygen-eos pack HTML_DIR IMAGE
+#       create the SquashFS IMAGE from the content of HTML_DIR
+#
+#   doxygen-eos deploy NAME IMAGE
+#       publish IMAGE as the documentation NAME, replacing any previous version
+#       (including a legacy NAME.zip)
+#
+#   doxygen-eos migrate [--force] [--remove-zips] [NAME...]
+#       convert the legacy NAME.zip documentation files already in EOS to
+#       SquashFS images and publish them (all the .zip files if no NAME is
+#       given). Names already published as SquashFS are skipped unless --force
+#       is specified. The .zip files are kept unless --remove-zips is specified.
+#
+# The commands that access EOS (deploy and migrate) need:
+#  - EOS_PATH: the EOS directory of the website (the Doxygen documentation is
+#    in its "doxygen" subdirectory),
+#  - a Kerberos ticket, or EOS_ACCOUNT_USERNAME and EOS_ACCOUNT_PASSWORD (the
+#    same variables used by the GitLab-CI "deploy-eos" tool) to get one,
+#  - optionally EOS_MGM_URL, if it cannot be deduced from EOS_PATH.
+
+set -euo pipefail
+
+die() {
+    echo "error: $*" >&2
+    exit 1
+}
+
+usage() {
+    sed -n '/^# Usage:/,/^# The commands/p' "$0" | sed -e '$d' -e 's/^# \{0,1\}//' >&2
+    exit 2
+}
+
+# Set up everything needed to talk to EOS.
+eos_setup() {
+    [ -n "${EOS_PATH:-}" ] || die "EOS_PATH must be set"
+    DOXYGEN_DIR=${EOS_PATH%/}/doxygen
+    IMAGES_DIR=$DOXYGEN_DIR/.squashfs
+
+    if [ -z "${EOS_MGM_URL:-}" ]; then
+        if [[ $EOS_PATH =~ ^/eos/project/([a-z])/ ]]; then
+            EOS_MGM_URL=root://eosproject-${BASH_REMATCH[1]}.cern.ch/
+        else
+            die "cannot deduce EOS_MGM_URL from EOS_PATH=$EOS_PATH, please set it"
+        fi
+    fi
+    export EOS_MGM_URL
+    # host name of the EOS instance, as used in the /eos/squashfs symlinks
+    MGM_HOST=${EOS_MGM_URL#*://}
+    MGM_HOST=${MGM_HOST%%[:/]*}
+
+    if ! klist -s 2>/dev/null; then
+        [ -n "${EOS_ACCOUNT_USERNAME:-}" ] && [ -n "${EOS_ACCOUNT_PASSWORD:-}" ] ||
+            die "a Kerberos ticket or EOS_ACCOUNT_USERNAME and EOS_ACCOUNT_PASSWORD are needed"
+        local user=$EOS_ACCOUNT_USERNAME
+        [[ $user == *@* ]] || user=$user@CERN.CH
+        kinit "$user" <<<"$EOS_ACCOUNT_PASSWORD" >/dev/null
+    fi
+}
+
+cmd_pack() {
+    [ $# -eq 2 ] || usage
+    local html_dir=$1 image=$2
+    if [ ! -e "$html_dir/index.html" ]; then
+        echo "error: $html_dir does not look like Doxygen HTML output" >&2
+        return 1
+    fi
+    # the image is read by a different user, so we must not rely on our umask
+    chmod -R a+rX "$html_dir" || return 1
+    PATH=$PATH:/usr/sbin:/sbin mksquashfs "$html_dir" "$image" -noappend -all-root -quiet -no-progress
+}
+
+remove_legacy_zip() {
+    eos rm "$DOXYGEN_DIR/$1.zip" 2>/dev/null || true
+}
+
+# publish_image NAME IMAGE: upload IMAGE and make it visible as DOXYGEN_DIR/NAME
+# (called in contexts where errexit is ignored, so the steps are checked explicitly)
+publish_image() {
+    local name=$1 image=$2
+    local remote_image=$IMAGES_DIR/.$name.sqsh
+    echo "publishing $name ($image)"
+    eos mkdir -p "$IMAGES_DIR" || return 1
+    eos cp "$(realpath "$image")" "$remote_image" || return 1
+    # the link must be (re)created, in case it was a plain directory
+    eos rm -r "$DOXYGEN_DIR/$name" 2>/dev/null || true
+    eos file symlink "$DOXYGEN_DIR/$name" "/eos/squashfs/$MGM_HOST@${remote_image//\//---}"
+}
+
+cmd_deploy() {
+    [ $# -eq 2 ] || usage
+    eos_setup
+    publish_image "$1" "$2"
+    remove_legacy_zip "$1"
+}
+
+# migrate_one NAME TMP_DIR: convert DOXYGEN_DIR/NAME.zip to a published image
+# (errexit does not work reliably when the caller tests the result, so each step
+# is checked explicitly)
+migrate_one() {
+    local name=$1 tmp=$2
+    eos cp "$DOXYGEN_DIR/$name.zip" "$tmp/$name.zip" || return 1
+    # the content of the zip files is in a directory named like the zip
+    unzip -q "$tmp/$name.zip" -d "$tmp/unzipped" || return 1
+    rm "$tmp/$name.zip"
+    cmd_pack "$tmp/unzipped/$name" "$tmp/$name.sqsh" || return 1
+    rm -r "$tmp/unzipped"
+    publish_image "$name" "$tmp/$name.sqsh" || return 1
+}
+
+cmd_migrate() {
+    local force=false remove_zips=false
+    while [[ ${1:-} == --* ]]; do
+        case $1 in
+            --force) force=true ;;
+            --remove-zips) remove_zips=true ;;
+            *) usage ;;
+        esac
+        shift
+    done
+    eos_setup
+
+    local names=("$@")
+    if [ ${#names[@]} -eq 0 ]; then
+        mapfile -t names < <(eos ls "$DOXYGEN_DIR" | sed -n 's/\.zip$//p')
+    fi
+    echo "documentation to migrate: ${names[*]}"
+
+    tmp=$(mktemp -d)  # global, for the EXIT trap
+    trap 'rm -rf "$tmp"' EXIT
+
+    local name failed=()
+    for name in "${names[@]}"; do
+        if ! $force && eos ls "$IMAGES_DIR/.$name.sqsh" &>/dev/null; then
+            echo "skipping $name: already published as SquashFS"
+            continue
+        fi
+        if migrate_one "$name" "$tmp"; then
+            if $remove_zips; then remove_legacy_zip "$name"; fi
+        else
+            echo "FAILED to migrate $name" >&2
+            failed+=("$name")
+        fi
+        # free the space used by this documentation, whatever the outcome
+        rm -rf "$tmp"/*
+    done
+
+    if [ ${#failed[@]} -ne 0 ]; then
+        die "migration failed for: ${failed[*]}"
+    fi
+}
+
+cmd=${1:-}
+shift || true
+case $cmd in
+    pack) cmd_pack "$@" ;;
+    deploy) cmd_deploy "$@" ;;
+    migrate) cmd_migrate "$@" ;;
+    *) usage ;;
+esac
