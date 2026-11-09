@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 2013-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 2013-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -53,8 +53,8 @@ namespace Gaudi {
       template <typename R, typename... Args>
       class Factory {
       public:
-        typedef R ReturnType;
-        typedef R ( *FuncType )( Args&&... );
+        using ReturnType = R;
+        using FuncType   = R ( * )( Args&&... );
 
         static ReturnType create( const std::string& id, Args... args ) {
           const FuncType c = Details::getCreator<FuncType>( id );
@@ -69,7 +69,7 @@ namespace Gaudi {
         }
       };
 
-      class GAUDIPS_EXPORT Exception : public std::exception {
+      class Exception : public std::exception {
       public:
         Exception( std::string msg );
         ~Exception() throw() override;
