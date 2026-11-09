@@ -1,0 +1,267 @@
+/*
+ * Dark colour scheme for the sphinx_rtd_theme, which does not provide one.
+ *
+ * It is only used when the browser asks for a dark scheme (it is linked with a
+ * media="(prefers-color-scheme: dark)" attribute, see html_css_files in
+ * conf.py), and it only overrides the colours of the theme. The colour of
+ * the links, the sidebar and the blue header are the ones of the light scheme.
+ */
+
+:root {
+  color-scheme: dark;
+}
+
+body {
+  color: #d4d4d4;
+  background: #15171a;
+}
+
+.wy-body-for-nav,
+.wy-nav-content {
+  background: #1e2125;
+}
+
+.wy-nav-content-wrap {
+  background: #15171a;
+}
+
+h1, h2, h3, h4, h5, h6, legend,
+.rst-content .toctree-wrapper > p.caption {
+  color: #ececec;
+}
+
+hr {
+  border-top-color: #3a3f44;
+}
+
+footer {
+  color: #8a9096;
+}
+
+/* links */
+a {
+  color: #4fa3dc;
+}
+a:hover {
+  color: #7bbdea;
+}
+a:visited {
+  color: #b58bd0;
+}
+.rst-content a code,
+.rst-content a tt {
+  color: #4fa3dc;
+}
+.rst-content code.xref,
+.rst-content tt.xref,
+a .rst-content code,
+a .rst-content tt {
+  color: #d4d4d4;
+}
+.rst-content .toc-backref {
+  color: #d4d4d4;
+}
+
+/* sidebar: the menu of the current section is light in the light scheme */
+.wy-menu-vertical li.current {
+  background: #2b2a2a;
+}
+.wy-menu-vertical li.current a {
+  color: #a0a0a0;
+  border-right-color: #3d3b3b;
+}
+.wy-menu-vertical li.current a:hover {
+  background: #3a3838;
+}
+.wy-menu-vertical li.current > a,
+.wy-menu-vertical li.on a {
+  color: #e6e6e6;
+  background: #1e2125;
+}
+.wy-menu-vertical li.current > a:hover,
+.wy-menu-vertical li.on a:hover {
+  background: #1e2125;
+}
+.wy-menu-vertical li.toctree-l1.current > a {
+  border-top-color: #3d3b3b;
+  border-bottom-color: #3d3b3b;
+}
+.wy-menu-vertical li.toctree-l2 a,
+.wy-menu-vertical li.toctree-l3 a,
+.wy-menu-vertical li.toctree-l4 a,
+.wy-menu-vertical li.toctree-l5 a,
+.wy-menu-vertical li.toctree-l6 a {
+  color: #a0a0a0;
+}
+.wy-menu-vertical li.toctree-l2.current > a,
+.wy-menu-vertical li.toctree-l2.current li.toctree-l3 > a {
+  background: #3a3838;
+}
+.wy-menu-vertical li.toctree-l3.current > a,
+.wy-menu-vertical li.toctree-l3.current li.toctree-l4 > a {
+  background: #454242;
+}
+.wy-menu-vertical li.current > a button.toctree-expand,
+.wy-menu-vertical li.on a button.toctree-expand {
+  color: #cfcfcf;
+}
+.wy-menu-vertical li button.toctree-expand,
+.wy-menu-vertical li.toctree-l2 button.toctree-expand,
+.wy-menu-vertical li.toctree-l3 button.toctree-expand {
+  color: #8c8c8c;
+}
+
+/* code */
+.rst-content code,
+.rst-content tt,
+code {
+  background: #272b30;
+  border-color: #3a3f44;
+  color: #d4d4d4;
+}
+.rst-content code.literal,
+.rst-content tt.literal {
+  color: #f08a7e;
+}
+.rst-content div[class^="highlight"],
+.rst-content pre.literal-block {
+  border-color: #3a3f44;
+}
+.rst-content .linenodiv pre,
+.rst-content div.highlight span.linenos {
+  border-right-color: #3a3f44;
+}
+.rst-content :not(dl.option-list) > :not(dt):not(kbd):not(.kbd) > .kbd,
+.rst-content :not(dl.option-list) > :not(dt):not(kbd):not(.kbd) > kbd {
+  background-color: #272b30;
+  border-color: #5a5f64;
+  box-shadow: 0 2px #5a5f64;
+}
+
+/* tables */
+.rst-content table.docutils,
+.wy-table-bordered-all,
+.rst-content table.docutils td,
+.wy-table-bordered-all td,
+.rst-content table.docutils th,
+html.writer-html5 .rst-content table.docutils th,
+.rst-content table.docutils thead th,
+.rst-content table.field-list thead th,
+.wy-table thead th {
+  border-color: #3a3f44;
+}
+.rst-content table.docutils caption,
+.rst-content table.field-list caption,
+.wy-table caption,
+.rst-content table.docutils thead,
+.rst-content table.field-list thead,
+.wy-table thead {
+  color: #ececec;
+}
+.rst-content table.docutils:not(.field-list) tr:nth-child(2n-1) td,
+.wy-table-backed,
+.wy-table-odd td,
+.wy-table-striped tr:nth-child(2n-1) td {
+  background-color: #25292d;
+}
+.rst-content table.docutils td,
+.wy-table-bordered-all td {
+  background-color: transparent;
+}
+
+/* admonitions */
+.rst-content .admonition,
+.rst-content .note,
+.rst-content .seealso,
+.rst-content .wy-alert-info.admonition {
+  background: #1d2c3a;
+}
+.rst-content .admonition-todo,
+.rst-content .attention,
+.rst-content .caution,
+.rst-content .warning,
+.rst-content .wy-alert-warning.admonition {
+  background: #3a2f1c;
+}
+.rst-content .danger,
+.rst-content .error,
+.rst-content .wy-alert-danger.admonition {
+  background: #3a2321;
+}
+.rst-content .hint,
+.rst-content .important,
+.rst-content .tip,
+.rst-content .wy-alert-success.admonition {
+  background: #1b3530;
+}
+.rst-content .wy-alert-neutral.admonition {
+  background: #272b30;
+}
+.rst-content .wy-alert-neutral.admonition-todo .admonition-title,
+.rst-content .wy-alert-neutral.admonition .admonition-title {
+  color: #ececec;
+  background: #3a3f44;
+}
+.rst-content .admonition-title,
+.wy-alert-title {
+  color: #fff;
+}
+.rst-content .sidebar {
+  background: #25292d;
+  border-color: #3a3f44;
+}
+.rst-content .sidebar .sidebar-title {
+  background: #3a3f44;
+}
+
+/* API documentation (functions, classes...) */
+html.writer-html4 .rst-content dl:not(.docutils) > dt,
+html.writer-html5 .rst-content dl[class]:not(.option-list):not(.field-list):not(.footnote):not(.citation):not(.glossary):not(.simple) > dt {
+  background: #1d2c3a;
+  color: #7bbdea;
+  border-top-color: #2f6f9f;
+}
+html.writer-html4 .rst-content dl:not(.docutils) > dt .headerlink,
+html.writer-html5 .rst-content dl[class]:not(.option-list):not(.field-list):not(.footnote):not(.citation):not(.glossary):not(.simple) > dt .headerlink {
+  color: #d4d4d4;
+}
+.rst-content .guilabel,
+.rst-content .menuselection {
+  background: #1d2c3a;
+  border-color: #2f6f9f;
+}
+
+/* search box and other form elements */
+input[type="text"],
+input[type="search"],
+input[type="email"],
+input[type="password"],
+textarea,
+select {
+  background: #272b30;
+  color: #d4d4d4;
+  border-color: #3a3f44;
+}
+.wy-side-nav-search input[type="text"] {
+  border-color: #2472a4;
+}
+.btn-neutral {
+  background-color: #272b30 !important;
+  color: #d4d4d4 !important;
+}
+.btn-neutral:hover {
+  background-color: #32373c !important;
+  color: #d4d4d4 !important;
+}
+.btn-neutral:visited {
+  color: #d4d4d4 !important;
+}
+
+/* many figures have a transparent background and dark lines */
+.rst-content img {
+  background-color: #f4f5f6;
+}
+.wy-side-nav-search img,
+.wy-nav-top img {
+  background-color: #2980b9;
+}

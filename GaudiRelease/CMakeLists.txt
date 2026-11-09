@@ -1,5 +1,5 @@
 #####################################################################################
-# (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations #
+# (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations #
 #                                                                                   #
 # This software is distributed under the terms of the Apache version 2 licence,     #
 # copied verbatim in the file "LICENSE".                                            #
@@ -41,7 +41,7 @@ endforeach()
 
 # add extra files for the HTML pages
 file(GLOB project_rel_notes ${CMAKE_CURRENT_SOURCE_DIR}/doc/release.notes*.html)
-set(DOXYGEN_HTML_EXTRA_FILES "${CMAKE_CURRENT_SOURCE_DIR}/doc/doxygen/issue_tracker_links.js;${project_rel_notes}")
+set(DOXYGEN_HTML_EXTRA_FILES "${project_rel_notes}")
 string(REPLACE ";" " " DOXYGEN_HTML_EXTRA_FILES "${DOXYGEN_HTML_EXTRA_FILES}")
 
 # run Doxygen to generate the documentation
