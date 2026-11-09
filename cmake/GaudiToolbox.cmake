@@ -1106,6 +1106,7 @@ function(gaudi_add_dictionary dictionary)
                     "-I$<JOIN:$<TARGET_PROPERTY:${dictionary},INCLUDE_DIRECTORIES>,;-I>"
                     "-D$<JOIN:$<TARGET_PROPERTY:${dictionary},COMPILE_DEFINITIONS>,;-D>"
                     ${ARG_OPTIONS}
+                    "-Wno-everything"
             COMMAND run $<TARGET_FILE:Python::Interpreter>
                 ${scan_dict_deps_command}
                     "-I$<JOIN:$<TARGET_PROPERTY:${dictionary},INCLUDE_DIRECTORIES>,;-I>"
