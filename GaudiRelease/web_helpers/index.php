@@ -5,28 +5,16 @@
 <h1>Gaudi Doxygen documentation available for the following versions:</h1>
 <ul>
 <?php
-$versions = array();
-$has_master = false;
+require 'versions.inc.php';
 
-$dh = opendir(".");
-while (($file = readdir($dh)) !== false) {
-  if (preg_match("/(v[0-9]+r.*)\.zip/", $file, $matches))
-    $versions[] = $matches[1];
-  elseif ($file == "master.zip") {
-    $has_master = true;
+foreach (list_versions() as $name => $has_zip) {
+  echo '<li><a href="' . $name . '/index.html">' . $name . '</a>';
+  if ($has_zip) {
+    echo ' (<a href="' . $name . '.zip">zip</a>)';
   }
-}
-closedir($dh);
-
-natsort($versions);
-if ($has_master) $versions[] = "master";
-
-$versions = array_reverse($versions);
-
-foreach ($versions as $value) {
-  echo '<li><a href="' . $value . '/index.html">' . $value . '</a> (<a href="' . $value . '.zip">zip</a>)</li>';
+  echo '</li>';
 }
 ?>
 </ul>
-<body>
+</body>
 </html>
