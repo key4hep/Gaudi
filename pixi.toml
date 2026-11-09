@@ -30,6 +30,7 @@ xerces-c = ">=3.2.4"
 clhep = ">=2.4.7.1"
 heppdt = ">=2.6.1"
 doxygen = ">=1.8"
+graphviz = "*"
 git = "*"
 gdb = "*"
 aida = ">=3.2.1"
@@ -51,7 +52,24 @@ prune = "rm -rf build"
 clean = "cmake --build build --target clean"
 build = { cmd = "cmake --build build", depends-on = ["configure"] }
 test = { cmd = "ctest --test-dir build -T test --output-junit ../results.xml -j", depends-on = "build" }
+# the Doxygen documentation is created in build/doxygen/html
+doxygen = { cmd = "cmake --build build --target doc", depends-on = ["configure"] }
 gitlab-ci-test = { cmd = "ctest --test-dir build -T test --output-junit ../results.xml -j $(nproc) --test-load $(nproc) --repeat until-pass:3 --no-compress-output", depends-on = "build" }
+
+[feature.docs.dependencies]
+# only what is needed for the Sphinx website (the Doxygen documentation needs the
+# full environment, because CMake has to be configured)
+make = "*"
+sphinx = "*"
+sphinx_rtd_theme = "*"
+recommonmark = "*"
+
+[feature.docs.tasks]
+# the website is created in docs/build/html
+docs = { cmd = "make html", cwd = "docs" }
+
+[environments]
+docs = { features = ["docs"], no-default-feature = true }
 
 [package]
 name = "Gaudi"

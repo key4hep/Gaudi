@@ -15,6 +15,17 @@ your contribution will be copyrighted to CERN and covered by the Apache 2
 licence, as per the LICENSE.
 
 
+Building the documentation
+--------------------------
+The documentation can be built locally with `Pixi <https://pixi.sh>`_:
+
+- ``pixi run docs`` builds the Sphinx website (this documentation) in
+  ``docs/build/html``, using a small dedicated environment;
+- ``pixi run doxygen`` builds the Doxygen documentation (class reference) in
+  ``build/doxygen/html``, using the full development environment, as CMake has
+  to be configured.
+
+
 AI coding assistants
 --------------------
 The use of AI tools is permitted under the following conditions:
