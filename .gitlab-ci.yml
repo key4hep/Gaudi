@@ -395,14 +395,10 @@ doxygen:110:x86_64-el9-gcc15-opt:
     - . /cvmfs/sft.cern.ch/lcg/views/LCG_${LCG_VERSION}/${platform}/setup.sh
     - cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
     - cmake --build build --target doc
-    - rm -rf public
-    - mkdir -p public/doxygen
-    - cp -r GaudiRelease/web_helpers/. public/doxygen/.
     # the documentation itself is published as a SquashFS image (see deploy-doxygen)
     - ci-utils/doxygen-eos pack build/doxygen/html ${CI_COMMIT_REF_SLUG}.sqsh
   artifacts:
     paths:
-      - public
       - ${CI_COMMIT_REF_SLUG}.sqsh
     expire_in: 1 day
 
@@ -429,8 +425,6 @@ deploy-doxygen:
 deploy-website:
   needs:
     - job: "website"
-      artifacts: true
-    - job: "doxygen:110:x86_64-el9-gcc15-opt"
       artifacts: true
   rules:
     - if: $CI_COMMIT_BRANCH == "master"

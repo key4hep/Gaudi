@@ -40,6 +40,7 @@ Gaudi is fully open-source and licenced under the `Apache Licence 2.0 <https://g
    :caption: Reference
 
    DevGuide/DevGuide
+   doxygen
    old/GDG
    publications
 
@@ -58,7 +59,6 @@ Gaudi is fully open-source and licenced under the `Apache Licence 2.0 <https://g
 
    Gaudi Source Code (on Gitlab) <https://gitlab.cern.ch/gaudi/Gaudi/>
    Gaudi Changelog (on Gitlab) <https://gitlab.cern.ch/gaudi/Gaudi/blob/master/CHANGELOG.md>
-   Gaudi Doxygen documentation <https://cern.ch/gaudi/doxygen>
 
 
 ==================
