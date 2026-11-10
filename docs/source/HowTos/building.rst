@@ -93,7 +93,6 @@ HepPDT                      no
 CLHEP                       no
 OpenCL                      no
 Rangev3                     no, needed with option GAUDI_USE_SYSTEM_RANGES_V3
-Doxygen                     no, needed to generate documentation
 cppgsl                      no, needed with option GAUDI_USE_SYSTEM_CPP_GSL
 zlib                        no, needed for the profiling tools
 ==============  ==========  ===================================================

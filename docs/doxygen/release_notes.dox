@@ -1,0 +1,132 @@
+/**
+@page release_notes_main Release Notes
+
+Release notes of the packages:
+
+- @subpage GaudiPluginService-notes
+- @subpage GaudiPolicy-notes
+- @subpage GaudiKernel-notes
+- @subpage GaudiCoreSvc-notes
+- @subpage GaudiUtils-notes
+- @subpage Gaudi-notes
+- @subpage GaudiAud-notes
+- @subpage GaudiCommonSvc-notes
+- @subpage GaudiHive-notes
+- @subpage GaudiMonitor-notes
+- @subpage GaudiMP-notes
+- @subpage GaudiPartProp-notes
+- @subpage GaudiPython-notes
+- @subpage GaudiRelease-notes
+- @subpage GaudiSvc-notes
+- @subpage PartPropSvc-notes
+- @subpage RootCnv-notes
+- @subpage RootHistCnv-notes
+*/
+
+/**
+@page GaudiPluginService-notes GaudiPluginService
+
+@verbinclude GaudiPluginService/doc/release.notes
+*/
+
+/**
+@page GaudiPolicy-notes GaudiPolicy
+
+@verbinclude GaudiPolicy/doc/release.notes
+*/
+
+/**
+@page GaudiKernel-notes GaudiKernel
+
+@verbinclude GaudiKernel/doc/release.notes
+*/
+
+/**
+@page GaudiCoreSvc-notes GaudiCoreSvc
+
+@verbinclude GaudiCoreSvc/doc/release.notes
+*/
+
+/**
+@page GaudiUtils-notes GaudiUtils
+
+@verbinclude GaudiUtils/doc/release.notes
+*/
+
+/**
+@page Gaudi-notes Gaudi
+
+@verbinclude Gaudi/doc/release.notes
+*/
+
+/**
+@page GaudiAud-notes GaudiAud
+
+@verbinclude GaudiAud/doc/release.notes
+*/
+
+/**
+@page GaudiCommonSvc-notes GaudiCommonSvc
+
+@verbinclude GaudiCommonSvc/doc/release.notes
+*/
+
+/**
+@page GaudiHive-notes GaudiHive
+
+@verbinclude GaudiHive/doc/release.notes
+*/
+
+/**
+@page GaudiMonitor-notes GaudiMonitor
+
+@verbinclude GaudiMonitor/doc/release.notes
+*/
+
+/**
+@page GaudiMP-notes GaudiMP
+
+@verbinclude GaudiMP/doc/release.notes
+*/
+
+/**
+@page GaudiPartProp-notes GaudiPartProp
+
+@verbinclude GaudiPartProp/doc/release.notes
+*/
+
+/**
+@page GaudiPython-notes GaudiPython
+
+@verbinclude GaudiPython/doc/release.notes
+*/
+
+/**
+@page GaudiRelease-notes GaudiRelease
+
+@verbinclude GaudiRelease/doc/release.notes
+*/
+
+/**
+@page GaudiSvc-notes GaudiSvc
+
+@verbinclude GaudiSvc/doc/release.notes
+*/
+
+/**
+@page PartPropSvc-notes PartPropSvc
+
+@verbinclude PartPropSvc/doc/release.notes
+*/
+
+/**
+@page RootCnv-notes RootCnv
+
+@verbinclude RootCnv/doc/release.notes
+*/
+
+/**
+@page RootHistCnv-notes RootHistCnv
+
+@verbinclude RootHistCnv/doc/release.notes
+*/

@@ -29,7 +29,6 @@ nlohmann_json = ">=3.10"
 xerces-c = ">=3.2.4"
 clhep = ">=2.4.7.1"
 heppdt = ">=2.6.1"
-doxygen = ">=1.8"
 git = "*"
 gdb = "*"
 aida = ">=3.2.1"
@@ -52,6 +51,27 @@ clean = "cmake --build build --target clean"
 build = { cmd = "cmake --build build", depends-on = ["configure"] }
 test = { cmd = "ctest --test-dir build -T test --output-junit ../results.xml -j", depends-on = "build" }
 gitlab-ci-test = { cmd = "ctest --test-dir build -T test --output-junit ../results.xml -j $(nproc) --test-load $(nproc) --repeat until-pass:3 --no-compress-output", depends-on = "build" }
+
+[feature.docs.dependencies]
+# the documentation does not need the full development environment
+git = "*"
+sphinx = "*"
+sphinx_rtd_theme = "*"
+recommonmark = "*"
+doxygen = ">=1.13"
+graphviz = "*"
+squashfs-tools = "*"
+
+[feature.docs.tasks]
+# The documentation (Sphinx website and Doxygen documentation) is created in
+# build/site, the same way it is published.
+docs-sphinx = "sphinx-build -q -b html docs/source build/site"
+docs-doxygen = "python docs/doxygen/build.py"
+docs = { depends-on = ["docs-sphinx", "docs-doxygen"] }
+docs-serve = { cmd = "python -m http.server --directory build/site 8000", depends-on = ["docs"] }
+
+[environments]
+docs = { features = ["docs"], no-default-feature = true }
 
 [package]
 name = "Gaudi"
@@ -86,7 +106,6 @@ nlohmann_json = ">=3.10"
 xerces-c = ">=3.2.4"
 clhep = ">=2.4.7.1"
 heppdt = ">=2.6.1"
-doxygen = ">=1.8"
 git = "*"
 gdb = "*"
 aida = ">=3.2.1"

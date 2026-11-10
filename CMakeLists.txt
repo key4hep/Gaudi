@@ -37,7 +37,6 @@ after the configuration or use ccmake or cmake-gui.
   * GAUDI_USE_XERCESC
   * GAUDI_USE_CLHEP
   * GAUDI_USE_HEPPDT
-  * GAUDI_USE_DOXYGEN
   * GAUDI_USE_CUDA
 * Install options
   * GAUDI_INSTALL_OPTIONAL
@@ -54,9 +53,6 @@ after the configuration or use ccmake or cmake-gui.
   * GAUDI_BUILD_EXAMPLES
   * GAUDI_ENABLE_GAUDIPARTPROP
   * GAUDI_REFLEX_COMPONENT_ALIASES
-* Doxygen
-  * DOXYGEN_WITH_LOCAL_MATHJAX
-  * DOXYGEN_WITH_CPPREFERENCE_LINKS
 
 To disable the build of tests, set the option ``BUILD_TESTING`` to FALSE.
 
@@ -66,7 +62,6 @@ When to re-configure the project manually?
 * When a new .qmt file is added.
 * When a new python package is added in a python/ folder that already
   had one installed python package.
-* When a new release.notes*.html is added to GaudiRelease/doc/.
 
 TWiki documentation
 ^^^^^^^^^^^^^^^^^^^
@@ -192,7 +187,6 @@ add_subdirectory(GaudiMonitor)
 add_subdirectory(GaudiMP)
 add_subdirectory(GaudiPartProp)
 add_subdirectory(GaudiPython)
-add_subdirectory(GaudiRelease)
 add_subdirectory(GaudiSvc)
 add_subdirectory(PartPropSvc)
 add_subdirectory(RootCnv)

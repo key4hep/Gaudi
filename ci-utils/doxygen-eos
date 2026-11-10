@@ -37,6 +37,11 @@
 #   doxygen-eos listing
 #       only update the list of versions
 #
+#   doxygen-eos index DIR
+#       write the list of versions (index.html and list.txt) for the
+#       documentations found in the local directory DIR, e.g. to test the
+#       website locally (no access to EOS needed)
+#
 # The commands that access EOS (deploy and listing) need:
 #  - EOS_PATH: the EOS directory of the website (the Doxygen documentation is
 #    in its "doxygen" subdirectory),
@@ -107,16 +112,16 @@ publish_image() {
     eos file symlink "$DOXYGEN_DIR/$name" "/eos/squashfs/$MGM_HOST@${remote_image//\//---}"
 }
 
-# Regenerate the static list of versions (index.html and list.txt), most recent
-# first, with "master" on top.
-update_listing() {
-    local tmp names
-    tmp=$(mktemp -d)
-    names=$(eos ls "$DOXYGEN_DIR")
+# write_listing DIR: write the static list of versions (index.html and list.txt)
+# in DIR, from the names of the versions (one per line) read from the standard
+# input: most recent first, with "master" on top.
+write_listing() {
+    local dir=$1 names
+    names=$(grep -v -x -e index.html -e list.txt || true)
     {
         grep -x master <<<"$names" || true
-        grep -E '^v[0-9]+r' <<<"$names" | sort -rV || true
-    } >"$tmp/list.txt"
+        grep -v -x master <<<"$names" | sort -rV || true
+    } >"$dir/list.txt"
     {
         echo '<!DOCTYPE html>'
         echo '<html>'
@@ -126,11 +131,18 @@ update_listing() {
         echo '<ul>'
         while read -r name; do
             echo "<li><a href=\"$name/index.html\">$name</a></li>"
-        done <"$tmp/list.txt"
+        done <"$dir/list.txt"
         echo '</ul>'
         echo '</body>'
         echo '</html>'
-    } >"$tmp/index.html"
+    } >"$dir/index.html"
+}
+
+# Regenerate the list of versions published in EOS.
+update_listing() {
+    local tmp
+    tmp=$(mktemp -d)
+    eos ls "$DOXYGEN_DIR" | write_listing "$tmp"
     eos cp "$tmp/list.txt" "$DOXYGEN_DIR/list.txt"
     eos cp "$tmp/index.html" "$DOXYGEN_DIR/index.html"
     rm -rf "$tmp"
@@ -149,11 +161,17 @@ cmd_listing() {
     update_listing
 }
 
+cmd_index() {
+    [ $# -eq 1 ] || usage
+    ls "$1" | write_listing "$1"
+}
+
 cmd=${1:-}
 shift || true
 case $cmd in
     pack) cmd_pack "$@" ;;
     deploy) cmd_deploy "$@" ;;
     listing) cmd_listing "$@" ;;
+    index) cmd_index "$@" ;;
     *) usage ;;
 esac

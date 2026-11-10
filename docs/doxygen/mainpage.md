@@ -11,11 +11,8 @@ the [list of classes](annotated.html) or via the [class hierarchy](hierarchy.htm
 
 
 <table>
-<tr><th>Version</th><td>@DOC_PROJECT_VERSION@</td></tr>
 <tr><th>Description</th><td>Details of the constituent package versions are
-    available in the [detailed release notes](@ref release_notes_main)<br/>
-    The [project release notes](release.notes.html) contain a summary of changes
-    since the previous release.</td></tr>
+    available in the [detailed release notes](@ref release_notes_main)</td></tr>
 <tr><th>Supported Platforms</th><td>Scientific Linux CERN 6 and CentOS 7 with
     gcc 4.9, 6 and 7 (released with debug and non debug
     versions, 64 bits only, with C++14 enabled)</td></tr>
@@ -25,12 +22,8 @@ the [list of classes](annotated.html) or via the [class hierarchy](hierarchy.htm
 </table>
 
 
-See also: \ref externaldocs (from [LCG version @LCG_VERSION@][lcg-details])
-
 [sources]: https://gitlab.cern.ch/gaudi/Gaudi/tags
 
 [gug-html]: http://cern.ch/lhcb-comp/Frameworks/Gaudi/Gaudi_v9/GUG/Output/GUG.htm
 [gug-pdf]: http://cern.ch/lhcb-comp/Frameworks/Gaudi/Gaudi_v9/GUG/GUG.pdf
 [gug-2up-pdf]: http://cern.ch/lhcb-comp/Frameworks/Gaudi/Gaudi_v9/GUG/GUG-2up.pdf
-
-[lcg-details]: http://lcginfo.cern.ch/release/@LCG_VERSION@/
