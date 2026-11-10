@@ -1,0 +1,68 @@
+# Configuration of Doxygen for Gaudi.
+#
+# This file only contains the settings that differ from the Doxygen defaults
+# (see "doxygen -x Doxyfile"). It is meant to be used by docs/doxygen/build.py,
+# which runs Doxygen from the root directory of the sources and adds the
+# settings that depend on the environment (project version, output directory,
+# tag files, ...).
+
+PROJECT_NAME           = "The Gaudi Framework"
+CREATE_SUBDIRS         = YES
+ABBREVIATE_BRIEF       =
+JAVADOC_AUTOBRIEF      = YES
+QT_AUTOBRIEF           = YES
+ALIASES                = "FIXME=\xrefitem fixmes \"Fix-Me\" \"Fix-Me's\""
+EXTENSION_MAPPING      = h=C++ icpp=C++ icc=C++ inl=C++
+BUILTIN_STL_SUPPORT    = YES
+TIMESTAMP              = YES
+
+EXTRACT_ALL            = YES
+EXTRACT_PRIVATE        = YES
+CASE_SENSE_NAMES       = NO
+
+INPUT                  = .
+RECURSIVE              = YES
+FILE_PATTERNS          = *.c *.cc *.cxx *.cpp *.c++
+FILE_PATTERNS         += *.inl *.icpp *.icc
+FILE_PATTERNS         += *.h *.hh *.hxx *.hpp *.h++
+FILE_PATTERNS         += *.py
+FILE_PATTERNS         += *.f90 *.f *.for
+FILE_PATTERNS         += *.dox *.md
+EXCLUDE                = GaudiRelease/doc/GaudiHive-release-notes.md
+EXCLUDE               += ReleaseNotes
+EXCLUDE               += InstallArea
+EXCLUDE               += build
+EXCLUDE               += .pixi
+EXCLUDE               += .git
+EXCLUDE               += docs/doxygen/build.py
+EXCLUDE_PATTERNS       = */tests/* */dict/* */cmake/* */build.*/*
+EXAMPLE_PATH           = .
+EXAMPLE_PATTERNS       =
+
+SOURCE_BROWSER         = YES
+INLINE_SOURCES         = YES
+
+# Static pages of the release notes of the old versions
+HTML_EXTRA_FILES       = GaudiRelease/doc/release.notes.v20.html
+HTML_EXTRA_FILES      += GaudiRelease/doc/release.notes.v21.html
+HTML_EXTRA_FILES      += GaudiRelease/doc/release.notes.v22.html
+HTML_EXTRA_FILES      += GaudiRelease/doc/release.notes.v23.html
+HTML_EXTRA_FILES      += GaudiRelease/doc/release.notes.v24.html
+HTML_EXTRA_FILES      += GaudiRelease/doc/release.notes.v25.html
+HTML_EXTRA_FILES      += GaudiRelease/doc/release.notes.v26.html
+HTML_EXTRA_FILES      += GaudiRelease/doc/release.notes.v27.html
+HTML_EXTRA_FILES      += GaudiRelease/doc/release.notes.v28.html
+
+# Colours matching the Read the Docs theme of the Sphinx website; the dark
+# scheme is used if the browser asks for it.
+HTML_COLORSTYLE        = AUTO_LIGHT
+HTML_COLORSTYLE_HUE    = 204
+HTML_COLORSTYLE_SAT    = 160
+
+GENERATE_LATEX         = NO
+
+MACRO_EXPANSION        = YES
+EXPAND_ONLY_PREDEF     = YES
+PREDEFINED             = DECLARE_COMPONENT(x)= NOT_IMPLEMENTED=;
+
+HAVE_DOT               = YES

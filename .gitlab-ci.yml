@@ -388,25 +388,31 @@ website:
       - public
     expire_in: 1 day
 
-doxygen:110:x86_64-el9-gcc15-opt:
-  <<: *template_build
-  image: gitlab-registry.cern.ch/lhcb-docker/os-base/alma9-devel:latest
+# The Doxygen documentation is built with Pixi (see "pixi run docs-doxygen" to
+# build it locally) and packed as a SquashFS image, published by deploy-doxygen.
+doxygen:
+  image: registry.cern.ch/ghcr.io/prefix-dev/pixi:latest
+  variables:
+    XDG_CACHE_HOME: $CI_PROJECT_DIR/.cache
   script:
-    - . /cvmfs/sft.cern.ch/lcg/views/LCG_${LCG_VERSION}/${platform}/setup.sh
-    - cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
-    - cmake --build build --target doc
-    # the documentation itself is published as a SquashFS image (see deploy-doxygen)
-    - ci-utils/doxygen-eos pack build/doxygen/html ${CI_COMMIT_REF_SLUG}.sqsh
+    - pixi run -e docs python docs/doxygen/build.py --name ${CI_COMMIT_REF_SLUG} --output build/doxygen
+    - pixi run -e docs ci-utils/doxygen-eos pack build/doxygen/${CI_COMMIT_REF_SLUG} ${CI_COMMIT_REF_SLUG}.sqsh
   artifacts:
     paths:
       - ${CI_COMMIT_REF_SLUG}.sqsh
+      - build/doxygen-work/warnings.log
     expire_in: 1 day
+  cache:
+    key: "$CI_JOB_NAME"
+    paths:
+      - .cache
+  interruptible: true
 
 # The Doxygen documentation is published as a SquashFS image served by EOSWEB
 # (see ci-utils/doxygen-eos), using the same credentials as deploy-website.
 deploy-doxygen:
   needs:
-    - job: "doxygen:110:x86_64-el9-gcc15-opt"
+    - job: "doxygen"
       artifacts: true
   rules:
     - if: $CI_COMMIT_BRANCH == "master"

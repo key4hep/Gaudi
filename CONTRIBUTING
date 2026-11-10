@@ -17,13 +17,19 @@ licence, as per the LICENSE.
 
 Building the documentation
 --------------------------
-The documentation can be built locally with `Pixi <https://pixi.sh>`_:
+The documentation can be built locally with `Pixi <https://pixi.sh>`_, in a
+small dedicated environment (no need to configure and build Gaudi):
 
-- ``pixi run docs`` builds the Sphinx website (this documentation) in
-  ``docs/build/html``, using a small dedicated environment;
-- ``pixi run doxygen`` builds the Doxygen documentation (class reference) in
-  ``build/doxygen/html``, using the full development environment, as CMake has
-  to be configured.
+- ``pixi run docs`` builds the Sphinx website (this documentation) and the
+  Doxygen documentation (class reference) in ``build/site``, with the same
+  layout as the published one (the Doxygen documentation is in the ``doxygen``
+  subdirectory, and it is called ``local``);
+- ``pixi run docs-serve`` does the same and serves the result on
+  http://localhost:8000 (the list of the available versions of the Doxygen
+  documentation is not shown if the pages are opened as local files);
+- ``pixi run docs-sphinx`` and ``pixi run docs-doxygen`` build only one of the two.
+
+The configuration of Doxygen is in ``docs/doxygen``.
 
 
 AI coding assistants

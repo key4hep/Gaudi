@@ -29,8 +29,6 @@ nlohmann_json = ">=3.10"
 xerces-c = ">=3.2.4"
 clhep = ">=2.4.7.1"
 heppdt = ">=2.6.1"
-doxygen = ">=1.8"
-graphviz = "*"
 git = "*"
 gdb = "*"
 aida = ">=3.2.1"
@@ -52,21 +50,26 @@ prune = "rm -rf build"
 clean = "cmake --build build --target clean"
 build = { cmd = "cmake --build build", depends-on = ["configure"] }
 test = { cmd = "ctest --test-dir build -T test --output-junit ../results.xml -j", depends-on = "build" }
-# the Doxygen documentation is created in build/doxygen/html
-doxygen = { cmd = "cmake --build build --target doc", depends-on = ["configure"] }
 gitlab-ci-test = { cmd = "ctest --test-dir build -T test --output-junit ../results.xml -j $(nproc) --test-load $(nproc) --repeat until-pass:3 --no-compress-output", depends-on = "build" }
 
 [feature.docs.dependencies]
-# only what is needed for the Sphinx website (the Doxygen documentation needs the
-# full environment, because CMake has to be configured)
+# the documentation does not need the full development environment
 make = "*"
+git = "*"
 sphinx = "*"
 sphinx_rtd_theme = "*"
 recommonmark = "*"
+doxygen = ">=1.13"
+graphviz = "*"
+squashfs-tools = "*"
 
 [feature.docs.tasks]
-# the website is created in docs/build/html
-docs = { cmd = "make html", cwd = "docs" }
+# The documentation (Sphinx website and Doxygen documentation) is created in
+# build/site, the same way it is published.
+docs-sphinx = "sphinx-build -q -b html docs/source build/site"
+docs-doxygen = "python docs/doxygen/build.py"
+docs = { depends-on = ["docs-sphinx", "docs-doxygen"] }
+docs-serve = { cmd = "python -m http.server --directory build/site 8000", depends-on = ["docs"] }
 
 [environments]
 docs = { features = ["docs"], no-default-feature = true }
@@ -104,7 +107,6 @@ nlohmann_json = ">=3.10"
 xerces-c = ">=3.2.4"
 clhep = ">=2.4.7.1"
 heppdt = ">=2.6.1"
-doxygen = ">=1.8"
 git = "*"
 gdb = "*"
 aida = ">=3.2.1"
