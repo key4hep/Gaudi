@@ -13,8 +13,38 @@ variables:
   TARGET_BRANCH: master
   TARGET_REPOSITORY: https://gitlab.cern.ch/gaudi/Gaudi.git
 
+# The build and test jobs are not needed when the changes only concern the
+# documentation (docs, release notes, ...). They run for the default branch, for
+# tags, for pipelines that were not triggered by a push (manual, scheduled...),
+# and when something that can affect the build changes.
+# NB: merge request pipelines are not needed (the jobs run in the pipeline of the
+#     branch), so no rule applies to them.
+# NB: GitLab cannot exclude paths, so the build-related ones have to be listed
+#     (a new top-level directory of sources must be added here).
+.rules_code_changes: &rules_code_changes
+  - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  - if: $CI_COMMIT_TAG
+  - if: $CI_PIPELINE_SOURCE != "push" && $CI_PIPELINE_SOURCE != "merge_request_event"
+  - if: $CI_PIPELINE_SOURCE == "push"
+    changes:
+      compare_to: refs/heads/master
+      paths:
+        - Gaudi*/**/*
+        - PartPropSvc/**/*
+        - RootCnv/**/*
+        - RootHistCnv/**/*
+        - cmake/**/*
+        - ci-utils/**/*
+        - utils/**/*
+        - CMakeLists.txt
+        - lhcbproject.yml
+        - pixi.toml
+        - pixi.lock
+        - .gitlab-ci.yml
+
 # Job templates
 .build: &template_build
+  rules: *rules_code_changes
   tags:
     - cvmfs
   before_script:
@@ -167,6 +197,7 @@ variables:
     expire_in: 1 week
 
 .warnings-check: &template_warnings_check
+  rules: *rules_code_changes
   image: gitlab-registry.cern.ch/linuxsupport/alma9-base:latest
   variables:
     LOG: build.log
@@ -295,6 +326,7 @@ lcg-view:devkey-head:x86_64-el9-gcc15-opt:
 #       artifacts: true
 
 pixi:
+  rules: *rules_code_changes
   image: registry.cern.ch/ghcr.io/prefix-dev/pixi:latest
   variables:
     XDG_CACHE_HOME: $CI_PROJECT_DIR/.cache
@@ -322,6 +354,7 @@ pixi:
 
 ### Misc checks
 check-unused:
+  rules: *rules_code_changes
   image: gitlab-registry.cern.ch/lhcb-docker/os-base/alma9-devel:latest
   needs:
     - job: "lcg:108c:x86_64-el9-gcc15-opt"
