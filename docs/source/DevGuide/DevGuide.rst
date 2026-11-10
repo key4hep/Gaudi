@@ -25,12 +25,6 @@ Gaudi Developers Guide
    Scripting
    Visualization
 
-API reference
-=============
-
-The auto-generated API reference documentation is available in the
-`Gaudi Doxygen pages <https://cern.ch/gaudi/doxygen>`_.
-
 Legacy guide
 ============
 
