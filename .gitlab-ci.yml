@@ -15,15 +15,18 @@ variables:
 
 # The build and test jobs are not needed when the changes only concern the
 # documentation (docs, release notes, ...). They run for the default branch, for
-# tags, for pipelines that were not triggered by a push, and when something that
-# can affect the build changes.
+# tags, for pipelines that were not triggered by a push (manual, scheduled...),
+# and when something that can affect the build changes.
+# NB: merge request pipelines are not needed (the jobs run in the pipeline of the
+#     branch), so no rule applies to them.
 # NB: GitLab cannot exclude paths, so the build-related ones have to be listed
 #     (a new top-level directory of sources must be added here).
 .rules_code_changes: &rules_code_changes
   - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
   - if: $CI_COMMIT_TAG
-  - if: $CI_PIPELINE_SOURCE != "push"
-  - changes:
+  - if: $CI_PIPELINE_SOURCE != "push" && $CI_PIPELINE_SOURCE != "merge_request_event"
+  - if: $CI_PIPELINE_SOURCE == "push"
+    changes:
       compare_to: refs/heads/master
       paths:
         - Gaudi*/**/*
