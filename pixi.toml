@@ -54,7 +54,6 @@ gitlab-ci-test = { cmd = "ctest --test-dir build -T test --output-junit ../resul
 
 [feature.docs.dependencies]
 # the documentation does not need the full development environment
-make = "*"
 git = "*"
 sphinx = "*"
 sphinx_rtd_theme = "*"
