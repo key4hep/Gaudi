@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -9,25 +9,173 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 ///////////////////////// -*- C++ -*- /////////////////////////////
-// IoComponentMgr.cxx
-// Implementation file for class IoComponentMgr
+// IoComponentMgr.cpp
+// Header and implementation of class IoComponentMgr
 // Author: S.Binet<binet@cern.ch>
 ///////////////////////////////////////////////////////////////////
 
-// GaudiMP includes
-#include "IoComponentMgr.h"
 // FrameWork includes
 #include <Gaudi/Property.h>
 #include <GaudiKernel/FileIncident.h>
 #include <GaudiKernel/IFileMgr.h>
+#include <GaudiKernel/IIncidentListener.h>
 #include <GaudiKernel/IIncidentSvc.h>
+#include <GaudiKernel/IIoComponent.h>
+#include <GaudiKernel/IIoComponentMgr.h>
+#include <GaudiKernel/Service.h>
 #include <GaudiKernel/ServiceHandle.h>
-// BOOST includes
-#include <boost/algorithm/string/predicate.hpp>
-#include <boost/filesystem.hpp>
+
 // STL includes
 #include <algorithm>
-#include <array>
+#include <filesystem>
+#include <iterator>
+#include <string>
+#include <tuple>
+
+// Forward declaration
+class ISvcLocator;
+
+class IoComponentMgr : public extends<Service, IIoComponentMgr, IIncidentListener> {
+  ///////////////////////////////////////////////////////////////////
+  // Public methods:
+  ///////////////////////////////////////////////////////////////////
+public:
+  /// Inherited constructor:
+  using extends::extends;
+
+  /// Gaudi Service Implementation
+  //@{
+  StatusCode initialize() override;
+  StatusCode finalize() override;
+  //@}
+
+  void handle( const Incident& ) override;
+
+  ///////////////////////////////////////////////////////////////////
+  // Const methods:
+  ///////////////////////////////////////////////////////////////////
+
+  /** @brief: check if the registry contains a given @c IIoComponent
+   */
+  bool io_hasitem( IIoComponent* iocomponent ) const override;
+
+  /** @brief: check if the registry contains a given @c IIoComponent and
+   *          that component had @param `fname` as a filename
+   */
+  bool io_contains( IIoComponent* iocomponent, const std::string& fname ) const override;
+
+  ///////////////////////////////////////////////////////////////////
+  // Non-const methods:
+  ///////////////////////////////////////////////////////////////////
+
+  /** @brief: allow a @c IIoComponent to register itself with this
+   *          manager so appropriate actions can be taken when e.g.
+   *          a @c fork(2) has been issued (this is usually handled
+   *          by calling @c IIoComponent::io_reinit on every registered
+   *          component)
+   */
+  StatusCode io_register( IIoComponent* iocomponent ) override;
+
+  /** @brief: allow a @c IIoComponent to register itself with this
+   *          manager so appropriate actions can be taken when e.g.
+   *          a @c fork(2) has been issued (this is usually handled
+   *          by calling @c IIoComponent::io_reinit on every registered
+   *          component)
+   */
+  StatusCode io_register( IIoComponent* iocomponent, IIoComponentMgr::IoMode::Type iomode, const std::string& fname,
+                          const std::string& pfn ) override;
+
+  /** @brief: allow a @c IIoComponent to update the contents of the
+   *          registry with a new file name
+   */
+  StatusCode io_update( IIoComponent* iocomponent, const std::string& old_fname,
+                        const std::string& new_fname ) override;
+
+  /** @brief: allow a @c IIoComponent to update the contents of the
+   *          registry with a new work directory
+   */
+  StatusCode io_update( IIoComponent* iocomponent, const std::string& work_dir ) override;
+
+  /** @brief: Update all @c IIoComponents with a new work directory
+   */
+  StatusCode io_update_all( const std::string& work_dir ) override;
+
+  /** @brief: retrieve all registered filenames for a given @c IIoComponent
+   */
+  std::vector<std::string> io_retrieve( IIoComponent* iocomponent ) override;
+
+  /** @brief: retrieve the new filename for a given @c IIoComponent and
+   *          @param `fname` filename
+   */
+  StatusCode io_retrieve( IIoComponent* iocomponent, std::string& fname ) override;
+
+  /** @brief: reinitialize the I/O subsystem.
+   *  This effectively calls @c IIoComponent::io_reinit on all the registered
+   *  @c IIoComponent.
+   */
+  StatusCode io_reinitialize() override;
+
+  /** @brief: finalize the I/O subsystem.
+   *  Hook to allow to e.g. give a chance to I/O subsystems to merge output
+   *  files. Not sure how to do this correctly though...
+   */
+  StatusCode io_finalize() override;
+
+  ///////////////////////////////////////////////////////////////////
+  // Private data:
+  ///////////////////////////////////////////////////////////////////
+private:
+  struct IoComponentEntry final {
+    std::string                   m_oldfname;
+    std::string                   m_oldabspath;
+    std::string                   m_newfname;
+    IIoComponentMgr::IoMode::Type m_iomode{ IIoComponentMgr::IoMode::INVALID };
+
+    IoComponentEntry() = default;
+    IoComponentEntry( const std::string& f, const std::string& p, const IIoComponentMgr::IoMode::Type& t )
+        : m_oldfname( f ), m_oldabspath( p ), m_iomode( t ) {}
+
+    friend bool operator<( const IoComponentEntry& lhs, const IoComponentEntry& rhs ) {
+      return std::tie( lhs.m_oldfname, lhs.m_iomode ) < std::tie( rhs.m_oldfname, rhs.m_iomode );
+    }
+
+    friend std::ostream& operator<<( std::ostream& os, const IoComponentEntry& c ) {
+      return os << "old: \"" << c.m_oldfname << "\"  absolute path: \"" << c.m_oldabspath << "\"  new: \""
+                << c.m_newfname << "\"  m: " << ( ( c.m_iomode == IIoComponentMgr::IoMode::READ ) ? "R" : "W" );
+    }
+  };
+
+  /// Default constructor:
+  IoComponentMgr() = delete;
+
+  typedef std::map<std::string, IIoComponent*> IoRegistry_t;
+  /// Registry of @c IIoComponents
+  IoRegistry_t m_ioregistry;
+
+  typedef std::list<IIoComponent*> IoStack_t;
+  /// Stack of @c IIoComponents to properly handle order of registration
+  IoStack_t m_iostack;
+
+  // This is the registry
+  typedef std::multimap<IIoComponent*, IoComponentEntry> IoDict_t;
+  typedef IoDict_t::const_iterator                       iodITR;
+
+  IoDict_t m_cdict;
+
+  /// search patterns for special file names (direct I/O protocols)
+  Gaudi::Property<std::vector<std::string>> m_directio_patterns{ this,
+                                                                 "DirectIOPatterns",
+                                                                 {
+                                                                     "://",
+                                                                 },
+                                                                 "Search patterns for direct I/O input names" };
+
+  bool findComp( IIoComponent*, const std::string&, iodITR& ) const;
+  bool findComp( IIoComponent*, std::pair<iodITR, iodITR>& ) const;
+  bool findComp( const std::string&, std::pair<iodITR, iodITR>& ) const;
+
+  std::string list() const;
+};
 
 #define ON_DEBUG if ( outputLevel() <= MSG::DEBUG )
 #define ON_VERBOSE if ( outputLevel() <= MSG::VERBOSE )
@@ -115,7 +263,7 @@ bool IoComponentMgr::io_contains( IIoComponent* iocomponent, const std::string& 
 
   DEBMSG << "io_contains:  c: " << ioname << " f: " << fname << endmsg;
 
-  pair<iodITR, iodITR> fit = m_cdict.equal_range( iocomponent );
+  std::pair<iodITR, iodITR> fit = m_cdict.equal_range( iocomponent );
   if ( fit.first == fit.second ) {
     return false;
   } else {
@@ -186,7 +334,7 @@ StatusCode IoComponentMgr::io_register( IIoComponent* iocomponent, IIoComponentM
     }
   }
 
-  pair<iodITR, iodITR> fit = m_cdict.equal_range( iocomponent );
+  std::pair<iodITR, iodITR> fit = m_cdict.equal_range( iocomponent );
   if ( fit.first != fit.second ) {
     for ( iodITR it = fit.first; it != fit.second; ++it ) {
       IoComponentEntry ioe = it->second;
@@ -204,11 +352,10 @@ StatusCode IoComponentMgr::io_register( IIoComponent* iocomponent, IIoComponentM
   }
 
   // We need to take into account that boost::filesystem::absolute() does not work with direct I/O inputs
-  const std::string& tmp_name = ( pfn.empty() ? fname : pfn );
-  bool               special_case =
-      std::any_of( begin( m_directio_patterns.value() ), end( m_directio_patterns.value() ),
-                   [&]( const std::string& pf ) { return boost::algorithm::contains( tmp_name, pf ); } );
-  IoComponentEntry ioc( fname, ( special_case ? tmp_name : boost::filesystem::absolute( tmp_name ).string() ), iomode );
+  const std::string& tmp_name   = ( pfn.empty() ? fname : pfn );
+  bool             special_case = std::any_of( begin( m_directio_patterns.value() ), end( m_directio_patterns.value() ),
+                                               [&]( const std::string& pf ) { return tmp_name.contains( pf ); } );
+  IoComponentEntry ioc( fname, ( special_case ? tmp_name : std::filesystem::absolute( tmp_name ).string() ), iomode );
   m_cdict.insert( pair<IIoComponent*, IoComponentEntry>( iocomponent, ioc ) );
 
   return StatusCode::SUCCESS;
@@ -324,7 +471,7 @@ StatusCode IoComponentMgr::io_update( IIoComponent* ioc, const std::string& work
       break;
     }
     case IIoComponentMgr::IoMode::WRITE: {
-      boost::filesystem::path oldPath( it->second.m_oldfname );
+      std::filesystem::path oldPath( it->second.m_oldfname );
       if ( oldPath.is_relative() && oldPath.filename() == oldPath.relative_path() ) {
 
         // Only file name was provided for writing. This is the usual mode of operation
@@ -334,7 +481,7 @@ StatusCode IoComponentMgr::io_update( IIoComponent* ioc, const std::string& work
         //     Thus we set newfname=workdir/oldfname
         // ***
 
-        boost::filesystem::path newfname( work_dir );
+        std::filesystem::path newfname( work_dir );
         newfname /= oldPath;
         it->second.m_newfname = newfname.string();
       } else {
@@ -401,7 +548,7 @@ StatusCode IoComponentMgr::io_finalize() {
 
 bool IoComponentMgr::findComp( IIoComponent* c, const std::string& f, iodITR& itr ) const {
 
-  pair<iodITR, iodITR> pit;
+  std::pair<iodITR, iodITR> pit;
   if ( !findComp( c, pit ) ) {
     itr = pit.first;
     return false;
@@ -444,7 +591,7 @@ std::string IoComponentMgr::list() const {
 
 void IoComponentMgr::handle( const Incident& i ) {
 
-  pair<iodITR, iodITR> pit;
+  std::pair<iodITR, iodITR> pit;
 
   if ( i.type() == IncidentType::BeginInputFile ) {
 
