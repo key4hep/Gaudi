@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -69,7 +69,14 @@ StatusCode RndmGenSvc::initialize() {
           m_serialize = serial;
           info() << "Using Random engine:" << m_engineName.value() << endmsg;
         }
+      } else {
+        error() << "Random engine: " << m_engineName.value() << " does not implement the required interfaces!"
+                << endmsg;
+        status = StatusCode::FAILURE;
       }
+    } else {
+      error() << "Cannot create random engine of type:" << m_engineName.value() << endmsg;
+      status = StatusCode::FAILURE;
     }
   }
   return status;
