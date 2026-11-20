@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -108,7 +108,7 @@ void CPUCrunchSvc::calibrate() {
       }
     }
   }
-  if ( essentiallyEqual( m_corrFact, 1. ) ) {
+  if ( !essentiallyEqual( m_corrFact, 1. ) ) {
     debug() << "Adjusting times with correction factor " << m_corrFact.value() << endmsg;
     for ( auto& t : m_times_vect ) { t = t * m_corrFact; }
   }
@@ -138,19 +138,19 @@ unsigned int CPUCrunchSvc::getNCaliIters( std::chrono::microseconds runtime ) co
 
   // Case 2: we maeke a linear interpolation
   // y=mx+q
-  const auto   x0 = m_times_vect.at( smaller_i );
-  const auto   x1 = m_times_vect.at( smaller_i + 1 );
-  const auto   y0 = m_niters_vect.value().at( smaller_i );
-  const auto   y1 = m_niters_vect.value().at( smaller_i + 1 );
-  const double m  = (double)( y1 - y0 ) / (double)( x1 - x0 );
+  const double x0 = m_times_vect.at( smaller_i );
+  const double x1 = m_times_vect.at( smaller_i + 1 );
+  const double y0 = m_niters_vect.value().at( smaller_i );
+  const double y1 = m_niters_vect.value().at( smaller_i + 1 );
+  const double m  = ( y1 - y0 ) / ( x1 - x0 );
   const double q  = y0 - m * x0;
 
-  const unsigned int nCaliIters = m * corrRuntime + q;
+  const double nCaliIters = m * corrRuntime + q;
 
   VERBOSE_MSG << "x0: " << x0 << " x1: " << x1 << " y0: " << y0 << " y1: " << y1 << "  m: " << m << " q: " << q
-              << "  itr: " << nCaliIters << endmsg;
+              << "  itr: " << static_cast<unsigned int>( nCaliIters ) << endmsg;
 
-  return nCaliIters;
+  return nCaliIters > 0 ? static_cast<unsigned int>( nCaliIters ) : 0u;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
