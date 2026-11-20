@@ -300,16 +300,12 @@ StatusCode THistSvc::finalize() {
   m_uids.clear();  // vhid* is deleted in m_tobjs
   m_ids.clear();   // vhid* is deleted in m_tobjs
 
-  for ( auto& obj : m_tobjs ) {
-    // Delete temporary TObjects (not owned by any TFile)
-    // Non-temporary objects are owned by their TFile and already
-    // deleted when the file was closed above
-    THistID& hid = obj.second.first->at( obj.second.second );
-    if ( hid.temp ) { delete obj.first; }
-    // only delete vector if this object is index 0
-    if ( obj.second.second == 0 ) {
-      delete obj.second.first; // delete vhid*
-    }
+  for ( const auto& [obj, entry] : m_tobjs ) {
+    if ( entry.first->at( entry.second ).temp ) delete obj; // delete TObject*
+  }
+  // only delete vector if this object is index 0
+  for ( const auto& [obj, entry] : m_tobjs ) {
+    if ( entry.second == 0 ) delete entry.first; // delete vhid_t*
   }
   m_tobjs.clear();
 
