@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 2013-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 2013-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -43,7 +43,6 @@ namespace Gaudi {
 
         /// Function used to load a specific factory function.
         /// @return the pointer to the factory function.
-        GAUDIPS_API
         void* getCreator( const std::string& id, const std::string& type );
 
         /// Convoluted implementation of getCreator with an embedded
@@ -70,7 +69,6 @@ namespace Gaudi {
 
         /// Return a canonical name for type_info object (implementation borrowed
         ///  from GaudiKernel/System).
-        GAUDIPS_API
         std::string demangle( const std::type_info& id );
 
         /// Return a canonical name for the template argument.
@@ -80,7 +78,7 @@ namespace Gaudi {
         }
 
         /// In-memory database of the loaded factories.
-        class GAUDIPS_API Registry {
+        class Registry {
         public:
           typedef std::string KeyType;
 
@@ -183,7 +181,7 @@ namespace Gaudi {
         };
 
         /// Simple logging class, just to provide a default implementation.
-        class GAUDIPS_API Logger {
+        class Logger {
         public:
           enum Level { Debug = 0, Info = 1, Warning = 2, Error = 3 };
           Logger( Level level = Warning ) : m_level( level ) {}
@@ -201,16 +199,16 @@ namespace Gaudi {
         };
 
         /// Return the current logger instance.
-        GAUDIPS_API Logger& logger();
+        Logger& logger();
         /// Set the logger instance to use.
         /// It must be a new instance and the ownership is passed to the function.
-        GAUDIPS_API void setLogger( Logger* logger );
+        void setLogger( Logger* logger );
       } // namespace Details
 
       /// Backward compatibility with Reflex.
-      GAUDIPS_API void SetDebug( int debugLevel );
+      void SetDebug( int debugLevel );
       /// Backward compatibility with Reflex.
-      GAUDIPS_API int Debug();
+      int Debug();
     }
   } // namespace PluginService
 } // namespace Gaudi

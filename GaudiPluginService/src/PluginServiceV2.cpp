@@ -14,35 +14,24 @@
 #define GAUDI_PLUGIN_SERVICE_V2
 #include <Gaudi/PluginService.h>
 
-#include <dirent.h>
 #include <dlfcn.h>
 
+#include <algorithm>
+#include <array>
 #include <cstdlib>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <memory>
+#include <mutex>
 #include <regex>
 #include <string_view>
 
 #include <cxxabi.h>
-#include <sys/stat.h>
 
-#ifdef _GNU_SOURCE
-#  include <cstring>
-#  include <dlfcn.h>
-#endif
-
-#include <filesystem>
 namespace fs = std::filesystem;
-
 namespace {
   std::mutex registrySingletonMutex;
-}
-
-#include <algorithm>
-#include <array>
-
-namespace {
   struct OldStyleCnv {
     std::string name;
     void        operator()( const char c ) {
@@ -85,8 +74,8 @@ namespace Gaudi {
       namespace Details {
         std::string demangle( const std::string& id ) {
           int  status;
-          auto realname = std::unique_ptr<char, decltype( free )*>(
-              abi::__cxa_demangle( id.c_str(), nullptr, nullptr, &status ), free );
+          auto realname = std::unique_ptr<char, decltype( &std::free )>(
+              abi::__cxa_demangle( id.c_str(), nullptr, nullptr, &status ), &std::free );
           if ( !realname ) return id;
           std::string result = realname.get();
           // Normalize libstdc++ (Linux) std::string representation
@@ -149,12 +138,15 @@ namespace Gaudi {
               const auto& fullPath = p.path().string();
               logger().debug( "  reading " + p.path().filename().string() );
               std::ifstream factories{ fullPath };
-              std::string   line;
-              int           factoriesCount = 0;
-              int           lineCount      = 0;
-              while ( !factories.eof() ) {
+              if ( !factories ) {
+                logger().warning( "cannot read " + fullPath );
+                continue;
+              }
+              std::string line;
+              int         factoriesCount = 0;
+              int         lineCount      = 0;
+              while ( std::getline( factories, line ) ) {
                 ++lineCount;
-                std::getline( factories, line );
                 if ( regex_match( line, m, line_format ) ) {
                   if ( m[1] != "v2" ) { continue; } // ignore non "v2" and "empty" lines
                   const std::string lib{ m[2] };
@@ -247,9 +239,15 @@ namespace Gaudi {
           return *this;
         }
 
-        void Registry::setError( const KeyType& warning ) { m_werror.insert( warning ); }
+        void Registry::setError( const KeyType& warning ) {
+          auto _guard = std::scoped_lock{ m_mutex };
+          m_werror.insert( warning );
+        }
 
-        void Registry::unsetError( const KeyType& warning ) { m_werror.erase( warning ); }
+        void Registry::unsetError( const KeyType& warning ) {
+          auto _guard = std::scoped_lock{ m_mutex };
+          m_werror.erase( warning );
+        }
 
         std::set<Registry::KeyType> Registry::loadedFactoryNames() const {
           auto              _guard = std::scoped_lock{ m_mutex };
@@ -292,19 +290,9 @@ namespace Gaudi {
 
         // This chunk of code was taken from GaudiKernel (genconf) DsoUtils.h
         std::string getDSONameFor( void* fptr ) {
-#if defined _GNU_SOURCE || defined __APPLE__
           Dl_info info;
           if ( dladdr( fptr, &info ) == 0 ) return "";
-
-          auto pos = std::strrchr( info.dli_fname, '/' );
-          if ( pos )
-            ++pos;
-          else
-            return info.dli_fname;
-          return pos;
-#else
-          return "";
-#endif
+          return fs::path( info.dli_fname ).filename().string();
         }
 
         std::string implicitPluginDir() {

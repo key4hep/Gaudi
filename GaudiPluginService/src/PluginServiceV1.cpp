@@ -14,17 +14,17 @@
 #define GAUDI_PLUGIN_SERVICE_V1
 #include <Gaudi/PluginService.h>
 
+#include <cxxabi.h>
 #include <dirent.h>
 #include <dlfcn.h>
 
 #include <cstdlib>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <memory>
 #include <regex>
-
-#include <cxxabi.h>
-#include <sys/stat.h>
+#include <system_error>
 
 #include <Gaudi/Details/PluginServiceDetailsV2.h>
 
@@ -144,7 +144,7 @@ namespace Gaudi {
           for ( const auto& dirName : v2::Details::getPluginSearchPath() ) {
             logger().debug( std::string( " looking into " ) + dirName );
             // look for files called "*.components" in the directory
-            DIR* dir = opendir( dirName.c_str() );
+            auto* dir = opendir( dirName.c_str() );
             if ( dir ) {
               struct dirent* entry;
               while ( ( entry = readdir( dir ) ) ) {
@@ -154,19 +154,21 @@ namespace Gaudi {
                 if ( ( extpos != std::string::npos ) && ( ( extpos + 11 ) == name.size() ) ) {
                   std::string fullPath = ( dirName + '/' + name );
                   { // check if it is a regular file
-                    struct stat buf;
-                    stat( fullPath.c_str(), &buf );
-                    if ( !S_ISREG( buf.st_mode ) ) continue;
+                    std::error_code ec;
+                    if ( !std::filesystem::is_regular_file( fullPath, ec ) ) continue;
                   }
                   // read the file
                   logger().debug( std::string( "  reading " ) + name );
                   std::ifstream factories{ fullPath };
-                  std::string   line;
-                  int           factoriesCount = 0;
-                  int           lineCount      = 0;
-                  while ( !factories.eof() ) {
+                  if ( !factories ) {
+                    logger().warning( "cannot open " + fullPath );
+                    continue;
+                  }
+                  std::string line;
+                  int         factoriesCount = 0;
+                  int         lineCount      = 0;
+                  while ( std::getline( factories, line ) ) {
                     ++lineCount;
-                    std::getline( factories, line );
                     trim( line );
                     // skip empty lines and lines starting with '#'
                     if ( line.empty() || line[0] == '#' ) continue;

@@ -22,8 +22,10 @@
 #include <set>
 #include <sstream>
 #include <string>
+#include <string_view>
 #include <typeinfo>
 #include <utility>
+#include <vector>
 
 namespace Gaudi {
   namespace PluginService {
@@ -31,7 +33,7 @@ namespace Gaudi {
       /// \cond FWD_DECL
       template <typename>
       struct Factory;
-      /// \cond
+      /// \endcond
 
       /// Implementation details of Gaudi::PluginService
       namespace Details {
@@ -46,7 +48,6 @@ namespace Gaudi {
 
         /// Return a canonical name for type_info object (implementation borrowed
         /// from GaudiKernel/System.h).
-        GAUDIPS_API
         std::string demangle( const std::type_info& id );
 
         /// Return a canonical name for the template argument.
@@ -72,7 +73,7 @@ namespace Gaudi {
         void reportBadAnyCast( const std::type_info& factory_type, const std::string& id );
 
         /// Simple logging class, just to provide a default implementation.
-        class GAUDIPS_API Logger {
+        class Logger {
         public:
           enum Level { Debug = 0, Info = 1, Warning = 2, Error = 3 };
           Logger( Level level = Warning ) : m_level( level ) {}
@@ -90,13 +91,13 @@ namespace Gaudi {
         };
 
         /// Return the current logger instance.
-        GAUDIPS_API Logger& logger();
+        Logger& logger();
         /// Set the logger instance to use.
         /// It must be a new instance and the ownership is passed to the function.
-        GAUDIPS_API void setLogger( Logger* logger );
+        void setLogger( Logger* logger );
 
         /// In-memory database of the loaded factories.
-        class GAUDIPS_API Registry {
+        class Registry {
         public:
           using KeyType = std::string;
 
@@ -118,7 +119,8 @@ namespace Gaudi {
           /// Get the factory function for a given `id` from the registry.
           template <typename F>
           F get( const KeyType& id ) {
-            const FactoryInfo& info = Registry::instance().getInfo( id, true );
+            auto               _guard = std::scoped_lock{ m_mutex };
+            const FactoryInfo& info   = Registry::instance().getInfo( id, true );
 
             // Check if factory has been marked as deprecated.
             const auto& prop = info.properties.find( "deprecated" );
@@ -132,14 +134,6 @@ namespace Gaudi {
                 logger().warning( msg );
               }
             }
-
-#ifdef GAUDI_REFLEX_COMPONENT_ALIASES
-            if ( !info.getprop( "ReflexName" ).empty() ) {
-              const std::string real_name = info.getprop( "ClassName" );
-              logger().warning( "requesting factory via old name '" + id + "' use '" +
-                                ( real_name.empty() ? "<undefined>" : real_name ) + "' instead" );
-            }
-#endif
             return std::any_cast<F>( info.factory );
           }
 
@@ -230,9 +224,9 @@ namespace Gaudi {
       } // namespace Details
 
       /// Backward compatibility with Reflex.
-      GAUDIPS_API void SetDebug( int debugLevel );
+      void SetDebug( int debugLevel );
       /// Backward compatibility with Reflex.
-      GAUDIPS_API int Debug();
+      int Debug();
     }
   } // namespace PluginService
 } // namespace Gaudi

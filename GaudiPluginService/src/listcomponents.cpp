@@ -15,11 +15,11 @@
 #include <fstream>
 #include <iostream>
 #include <list>
+#include <map>
 #include <memory>
 #include <string>
 
 #include <dlfcn.h>
-#include <getopt.h>
 
 #define GAUDI_PLUGIN_SERVICE_V2
 #include <Gaudi/PluginService.h>
@@ -122,7 +122,8 @@ int main( int argc, char* argv[] ) {
       dump_from( reg2, lib, "v2" );
       dump_from( reg1, lib, "v1" );
     } else {
-      std::cerr << "ERROR: failed to load " << lib << ": " << dlerror() << std::endl;
+      auto msg = dlerror();
+      std::cerr << "ERROR: cannot load library " << lib << ": " << ( msg ? msg : "error above" ) << std::endl;
       return EXIT_FAILURE;
     }
   }

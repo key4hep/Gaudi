@@ -21,20 +21,20 @@ using namespace Gaudi::PluginService::v2::Details;
 
 extern "C" {
 
-typedef struct {
+using cgaudi_pluginsvc_t = struct {
   void* registry;
-} cgaudi_pluginsvc_t;
+};
 
-typedef struct {
+using cgaudi_factory_t = struct {
   cgaudi_pluginsvc_t registry;
   const char*        id;
-} cgaudi_factory_t;
+};
 
-typedef struct {
+using cgaudi_property_t = struct {
   cgaudi_pluginsvc_t registry;
   const char*        id;
   const char*        key;
-} cgaudi_property_t;
+};
 
 cgaudi_pluginsvc_t cgaudi_pluginsvc_instance() {
   static Registry& cxxreg = Registry::instance();

@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 2013-2025 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 2013-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -22,22 +22,4 @@
 #    define GAUDI_PLUGIN_SERVICE_V1_INLINE inline
 #    define GAUDI_PLUGIN_SERVICE_USE_V2 0
 #  endif
-#endif
-
-#define GAUDIPS_HASCLASSVISIBILITY
-
-#if defined( GAUDIPS_HASCLASSVISIBILITY )
-#  define GAUDIPS_IMPORT __attribute__( ( visibility( "default" ) ) )
-#  define GAUDIPS_EXPORT __attribute__( ( visibility( "default" ) ) )
-#  define GAUDIPS_LOCAL __attribute__( ( visibility( "hidden" ) ) )
-#else
-#  define GAUDIPS_IMPORT
-#  define GAUDIPS_EXPORT
-#  define GAUDIPS_LOCAL
-#endif
-
-#ifdef GaudiPluginService_EXPORTS
-#  define GAUDIPS_API GAUDIPS_EXPORT
-#else
-#  define GAUDIPS_API GAUDIPS_IMPORT
 #endif
