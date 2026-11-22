@@ -49,7 +49,6 @@ What is searched?
 * UUID
 * TBB>=2019.0.11007.2
 * Threads
-* Rangev3
 * cppgsl
 * fmt
 * nlohmann_json
@@ -111,7 +110,7 @@ endif()
 
 find_package(TBB 2019.0.11007.2 CONFIG REQUIRED ${__quiet})
 
-foreach(dep IN ITEMS UUID Threads Rangev3 cppgsl fmt nlohmann_json)
+foreach(dep IN ITEMS UUID Threads cppgsl fmt nlohmann_json)
   find_package(${dep} ${_gaudi_${dep}_MIN_VERSION} REQUIRED ${__quiet})
 endforeach()
 

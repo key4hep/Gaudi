@@ -318,7 +318,7 @@ Look and feel of typical sub-project ``CMakeLists.txt``:
   gaudi_add_library(SubdirNameLib SOURCES src/Lib/Counter.cpp src/Lib/Event.cpp LINK PUBLIC GaudiKernel)
   # Build the plugin gaudi_add_module(SubdirName
     SOURCES src/AbortEvent/AbortEventAlg.cpp src/AlgSequencer/HelloWorld.cpp
-    LINK GaudiKernel GaudiExamplesLib ROOT::Tree Rangev3::rangev3)
+    LINK GaudiKernel GaudiExamplesLib ROOT::Tree)
   if(GAUDI_USE_AIDA) # optional dependency
     target_sources(SubdirName
       PRIVATE src/EvtColsEx/EvtColAlg.cpp src/Histograms/Aida2Root.cpp)

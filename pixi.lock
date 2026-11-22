@@ -2,13 +2,13 @@ version: 7
 platforms:
 - name: linux-64
   virtual-packages:
-  - __unix=0=0
+  - __unix=0
   - __linux=4.18
   - __glibc=2.28
   - __archspec=0=x86_64
 - name: linux-aarch64
   virtual-packages:
-  - __unix=0=0
+  - __unix=0
   - __linux=4.18
   - __glibc=2.28
   - __archspec=0=aarch64
@@ -161,7 +161,6 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/pythia8-8.312-py314hf201540_105.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/python-3.14.6-habeac84_100_cp314.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/pyyaml-6.0.3-py314h67df5f8_1.conda
-      - conda: https://conda.anaconda.org/conda-forge/linux-64/range-v3-0.12.0-h59595ed_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/readline-8.3-h853b02a_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/rhash-1.4.6-hb9d3cd8_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/root_base-6.40.02-cxx23_heb21d79_0.conda
@@ -389,7 +388,6 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/pythia8-8.312-py314h033f2f8_7.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/python-3.14.10-hbec3b18_100_cp314.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/pyyaml-6.0.3-py314h807365f_1.conda
-      - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/range-v3-0.12.0-h2f0025b_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/readline-8.3-ha7194a6_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/rhash-1.4.6-he30d5cf_2.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/root_base-6.40.04-cxx23_h83484a5_1.conda
@@ -4101,16 +4099,6 @@ packages:
   run_exports: {}
   size: 202391
   timestamp: 1770223462836
-- conda: https://conda.anaconda.org/conda-forge/linux-64/range-v3-0.12.0-h59595ed_0.conda
-  sha256: 0aa8ef4b2c2722198e3cb279791bbac40ce43ea93bd5d154f675accc38c05ebe
-  md5: 8ace58ece3b22b7811f6e03be54b1318
-  depends:
-  - libgcc-ng >=12
-  - libstdcxx-ng >=12
-  license: BSL-1.0
-  run_exports: {}
-  size: 232021
-  timestamp: 1681982853303
 - conda: https://conda.anaconda.org/conda-forge/linux-64/readline-8.3-h853b02a_0.conda
   sha256: 12ffde5a6f958e285aa22c191ca01bbd3d6e710aa852e00618fa6ddc59149002
   md5: d7d95fc8287ea7bf33e0e7116d2b95ec
@@ -7382,16 +7370,6 @@ packages:
   run_exports: {}
   size: 195678
   timestamp: 1770223441816
-- conda: https://conda.anaconda.org/conda-forge/linux-aarch64/range-v3-0.12.0-h2f0025b_0.conda
-  sha256: 7a869dd10ad3e7e4b05b9e6119041cb98b98a8c49a352fbbcffe3ac0e0d685df
-  md5: d7bf79f9da861717ff92719d6ea12c99
-  depends:
-  - libgcc-ng >=12
-  - libstdcxx-ng >=12
-  license: BSL-1.0
-  run_exports: {}
-  size: 231901
-  timestamp: 1684612245824
 - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/readline-8.3-ha7194a6_1.conda
   sha256: 80167dcf73a96b6d0c1bb2298d7b8b9bc21b27cc5bf56979f9c548b49a4d1722
   md5: 5b399a7afa10098f2a6b02263181426e

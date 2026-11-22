@@ -1,5 +1,5 @@
 /***********************************************************************************\
-* (c) Copyright 1998-2024 CERN for the benefit of the LHCb and ATLAS collaborations *
+* (c) Copyright 1998-2026 CERN for the benefit of the LHCb and ATLAS collaborations *
 *                                                                                   *
 * This software is distributed under the terms of the Apache version 2 licence,     *
 * copied verbatim in the file "LICENSE".                                            *
@@ -56,7 +56,7 @@ void DHHVisitor::visit( const IDataHandleHolder* v ) {
 
   // The containers of handles are a different type than the on of input deps and input
   // objects, so we need another loop here.
-  // NOTE: perhaps a view from range v3 can be used to also avoid this second loop.
+  // NOTE: perhaps a concatenated view can be used to also avoid this second loop.
   for ( auto& hs : { make_tuple( v->extraInputDeps(), std::ref( m_ido ), std::ref( m_ign_i ) ),
                      make_tuple( v->extraOutputDeps(), std::ref( m_odo ), std::ref( m_ign_o ) ),
                      make_tuple( v->inputDataObjs(), std::ref( m_ido ), std::ref( m_ign_i ) ),
