@@ -9,10 +9,6 @@
 * or submit itself to any jurisdiction.                                             *
 \***********************************************************************************/
 
-// Local includes
-#include "HiveNumbers.h"
-
-// Framework includes
 #include <GaudiKernel/Algorithm.h>
 #include <GaudiKernel/DataObjectHandle.h>
 #include <GaudiKernel/ICPUCrunchSvc.h>
@@ -21,25 +17,19 @@
 #include <GaudiKernel/RndmGenerators.h>
 #include <GaudiKernel/ThreadLocalContext.h>
 
-// STL includes
-#include <chrono>
 #include <cmath>
 #include <ctime>
 #include <limits>
+#include <memory>
 #include <string>
 #include <vector>
 
-// System includes
-#include <sys/resource.h>
-#include <sys/times.h>
-
-// TBB includes
 #include <tbb/blocked_range.h>
 #include <tbb/concurrent_hash_map.h>
 #include <tbb/parallel_for.h>
 #include <tbb/tick_count.h>
 
-//------------------------------------------------------------------------------
+#include "HiveNumbers.h"
 
 /** @class CPUCruncher
  *
@@ -63,17 +53,8 @@ public:
   CPUCruncher( const std::string& name, // the algorithm instance name
                ISvcLocator*       pSvc );     // the Service Locator
 
-  /// virtual & protected destructor
-  virtual ~CPUCruncher();
-
 private:
-  /// the default constructor is disabled
-  CPUCruncher(); // no default constructor
-  /// the copy constructor is disabled
-  CPUCruncher( const CPUCruncher& ); // no copy constructor
-  /// the assignement operator is disabled
-  CPUCruncher& operator=( const CPUCruncher& ); // no assignement
-  /// The CPU intensive function
+  using CHM = tbb::concurrent_hash_map<std::string, unsigned int>;
 
   /// Pick up late-attributed data outputs
   void                  declareRuntimeRequestedOutputs();
@@ -95,10 +76,9 @@ private:
   Gaudi::Property<unsigned int> m_failNEvents{ this, "FailNEvents", 0, "Return FAILURE on every Nth event" };
   Gaudi::Property<int>          m_nParallel{ this, "NParallel", -1, "Run N parallel crunching tasks" };
 
-  std::vector<DataObjectHandle<DataObject>*> m_inputHandles;
-  std::vector<DataObjectHandle<DataObject>*> m_outputHandles;
+  std::vector<std::unique_ptr<DataObjectHandle<DataObject>>> m_inputHandles;
+  std::vector<std::unique_ptr<DataObjectHandle<DataObject>>> m_outputHandles;
 
-  using CHM = tbb::concurrent_hash_map<std::string, unsigned int>;
   static CHM m_name_ncopies_map;
 
   // CPUCrunchSvc
@@ -114,7 +94,6 @@ DECLARE_COMPONENT( CPUCruncher )
 
 #define ON_VERBOSE if ( msgLevel( MSG::VERBOSE ) )
 #define VERBOSE_MSG ON_VERBOSE verbose()
-
 //------------------------------------------------------------------------------
 
 CPUCruncher::CPUCruncher( const std::string& name, // the algorithm instance name
@@ -126,12 +105,6 @@ CPUCruncher::CPUCruncher( const std::string& name, // the algorithm instance nam
   CHM::accessor name_ninstances;
   m_name_ncopies_map.insert( name_ninstances, name );
   name_ninstances->second += 1;
-}
-
-CPUCruncher::~CPUCruncher() {
-  for ( uint i = 0; i < m_inputHandles.size(); ++i ) delete m_inputHandles[i];
-
-  for ( uint i = 0; i < m_outputHandles.size(); ++i ) delete m_outputHandles[i];
 }
 
 StatusCode CPUCruncher::initialize() {
@@ -153,7 +126,7 @@ StatusCode CPUCruncher::initialize() {
   int i = 0;
   for ( auto k : m_inpKeys ) {
     DEBUG_MSG << "adding input key " << k << endmsg;
-    m_inputHandles.push_back( new DataObjectHandle<DataObject>( k, Gaudi::DataHandle::Reader, this ) );
+    m_inputHandles.push_back( std::make_unique<DataObjectHandle<DataObject>>( k, Gaudi::DataHandle::Reader, this ) );
     declareProperty( "dummy_in_" + std::to_string( i ), *( m_inputHandles.back() ) );
     i++;
   }
@@ -161,7 +134,7 @@ StatusCode CPUCruncher::initialize() {
   i = 0;
   for ( auto k : m_outKeys ) {
     DEBUG_MSG << "adding output key " << k << endmsg;
-    m_outputHandles.push_back( new DataObjectHandle<DataObject>( k, Gaudi::DataHandle::Writer, this ) );
+    m_outputHandles.push_back( std::make_unique<DataObjectHandle<DataObject>>( k, Gaudi::DataHandle::Writer, this ) );
     declareProperty( "dummy_out_" + std::to_string( i ), *( m_outputHandles.back() ) );
     i++;
   }
@@ -173,10 +146,10 @@ StatusCode CPUCruncher::initialize() {
 void CPUCruncher::declareRuntimeRequestedOutputs() {
   //
   for ( const auto& k : outputDataObjs() ) {
-    auto outputHandle = new DataObjectHandle<DataObject>( k, Gaudi::DataHandle::Writer, this );
+    auto outputHandle = std::make_unique<DataObjectHandle<DataObject>>( k, Gaudi::DataHandle::Writer, this );
     VERBOSE_MSG << "found late-attributed output: " << outputHandle->objKey() << endmsg;
-    m_outputHandles.push_back( outputHandle );
-    declareProperty( "dummy_out_" + outputHandle->objKey(), *( m_outputHandles.back() ) );
+    m_outputHandles.push_back( std::move( outputHandle ) );
+    declareProperty( "dummy_out_" + m_outputHandles.back()->objKey(), *( m_outputHandles.back() ) );
   }
 
   initDataHandleHolder();
@@ -242,8 +215,7 @@ StatusCode CPUCruncher::execute() // the execution of the algorithm
   // Prepare to sleep (even if we won't enter the following if clause for sleeping).
   // This is needed to distribute evenly among all algorithms the overhead (around sleeping) which is harmful when
   // trying to achieve uniform distribution of algorithm timings.
-  const double                        dreamtime = m_avg_runtime * m_sleepFraction;
-  const std::chrono::duration<double> dreamtime_duration( dreamtime );
+  const double dreamtime = m_avg_runtime * m_sleepFraction;
 
   // Start to measure the total time here, together with the dreaming process straight ahead
   tbb::tick_count starttbb = tbb::tick_count::now();
@@ -303,8 +275,6 @@ StatusCode CPUCruncher::execute() // the execution of the algorithm
 
 StatusCode CPUCruncher::finalize() // the finalization of the algorithm
 {
-  MsgStream log( msgSvc(), name() );
-
   unsigned int ninstances;
 
   {
