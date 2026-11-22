@@ -18,14 +18,14 @@ from GaudiTesting import GaudiExeTest
 sys.path.append(os.path.dirname(__file__))
 
 from NTupleWriterTestBase import (
-    ALG_NAME as WRITER_ALG_NAME,
-)
-from NTupleWriterTestBase import (
     EXPECTED_ENTRIES,
     EXPECTED_STRING_VALUE,
 )
 from NTupleWriterTestBase import (
     OUTPUT_FILE_NAME as INPUT_FILE_NAME,
+)
+from NTupleWriterTestBase import (
+    TTREE_NAME as WRITER_ALG_NAME,
 )
 
 

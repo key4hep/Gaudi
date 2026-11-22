@@ -18,7 +18,14 @@ EXPECTED_ENTRIES = 100
 EXPECTED_FLOAT_VALUE = 2.5
 EXPECTED_VECTOR_CONTENT = [0, 1, 2, 3, 4]
 EXPECTED_STRING_VALUE = "hello world"
-ALG_NAME = "WriterAlg"
+# The vector producers give evt % 9 elements for event evt
+EXPECTED_ELEMENTS = sum(evt % 9 for evt in range(EXPECTED_ENTRIES))
+
+# One ntuple per writer, named after it
+TTREE_NAME = "TTreeWriter"
+RNTUPLE_NAME = "RNTupleWriter"
+TTREE_ELEMENT_NAME = "TTreeElementWriter"
+RNTUPLE_ELEMENT_NAME = "RNTupleElementWriter"
 
 
 class NTupleWriterTestBase(GaudiExeTest):
@@ -32,7 +39,7 @@ class NTupleWriterTestBase(GaudiExeTest):
             Tuple of the produced (ROOT file, ROOT TTree).
         """
         file = ROOT.TFile.Open(str(cwd / OUTPUT_FILE_NAME))
-        tree = file.Get(ALG_NAME)
+        tree = file.Get(TTREE_NAME)
         yield file, tree
         file.Close()
 
@@ -112,3 +119,39 @@ class NTupleWriterTestBase(GaudiExeTest):
             assert False, "Branch 'MissingData' unexpectedly exists."
         except ReferenceError:
             assert True
+
+    def test_rntuple_content(self, setup_file_tree):
+        """
+        Tests the RNTuple, written from the same inputs as the TTree
+        """
+        file, _ = setup_file_tree
+        reader = ROOT.RNTupleReader.Open(file.Get(RNTUPLE_NAME))
+        assert (
+            reader.GetNEntries() == EXPECTED_ENTRIES
+        ), f"Expected {EXPECTED_ENTRIES} entries, found {reader.GetNEntries()}."
+        entry = reader.CreateEntry()
+        for i in range(reader.GetNEntries()):
+            reader.LoadEntry(i, entry)
+            assert (
+                entry["MyFloat"] == EXPECTED_FLOAT_VALUE
+            ), "Float field does not contain the correct value."
+            assert (
+                entry["MyString"] == EXPECTED_STRING_VALUE
+            ), "String field does not contain the correct value."
+            assert (
+                list(entry["MyVector"]) == EXPECTED_VECTOR_CONTENT
+            ), "Vector<int> field does not contain the correct values."
+
+    def test_element_entries(self, setup_file_tree):
+        """
+        Checks that the element writers write one entry per vector element
+        """
+        file, _ = setup_file_tree
+        tree = file.Get(TTREE_ELEMENT_NAME)
+        reader = ROOT.RNTupleReader.Open(file.Get(RNTUPLE_ELEMENT_NAME))
+        assert (
+            tree.GetEntries() == EXPECTED_ELEMENTS
+        ), f"Expected {EXPECTED_ELEMENTS} TTree entries, found {tree.GetEntries()}."
+        assert (
+            reader.GetNEntries() == EXPECTED_ELEMENTS
+        ), f"Expected {EXPECTED_ELEMENTS} RNTuple entries, found {reader.GetNEntries()}."
