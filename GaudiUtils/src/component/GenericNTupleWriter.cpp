@@ -25,7 +25,7 @@
 #include <ROOT/RNTupleModel.hxx>
 #include <ROOT/RNTupleParallelWriter.hxx>
 #include <ROOT/RNTupleWriteOptions.hxx>
-#include <RVersion.h>
+#include <ROOT/RVersion.hxx>
 #include <TDirectory.h>
 #include <TFile.h>
 #include <TTree.h>
