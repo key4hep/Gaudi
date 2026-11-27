@@ -621,9 +621,10 @@ StatusCode THistSvc::deReg( TObject* obj ) {
       delete vhid;
 
     } else if ( vhid->size() > 1 ) {
-      vhid->erase( vhid->begin() + obj_itr->second.second );
+      const std::size_t idx = obj_itr->second.second;
+      vhid->erase( vhid->begin() + idx );
       m_tobjs.erase( obj_itr );
-
+      for ( std::size_t i = idx; i < vhid->size(); ++i ) { m_tobjs[vhid->at( i ).obj].second = i; }
       // vector of THistID is still not empty (i.e. other instances with same name registered)
     } else {
       error() << "Deregistration failed unexpectedly. (bug in THistSvc?)" << endmsg;
